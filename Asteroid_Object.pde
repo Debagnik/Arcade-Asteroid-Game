@@ -109,7 +109,7 @@ public class Asteroid {
       case TANGENT:
         return r * tan(angle);
       default:
-        return 1.0;
+        throw new IllegalArgumentException("Unsupported trigonometric function: " + function);
     }
   }
 
@@ -151,10 +151,10 @@ public class Asteroid {
         */
 
         //temp copy
-        PVector v1 = this.velocity;
-        PVector v2 = other.velocity;
-        PVector p1 = this.position;
-        PVector p2 = other.position;
+        PVector v1 = this.velocity.copy();;
+        PVector v2 = other.velocity.copy();
+        PVector p1 = this.position.copy();
+        PVector p2 = other.position.copy();
         float m1 = this.mass;
         float m2 = other.mass;
 
@@ -164,12 +164,16 @@ public class Asteroid {
 
         //Dot product
         float dotProduct = vDiff.dot(pDiff);
+        // Skip response if asteroids are already separating
+        if (dotProduct > 0) {
+          return;
+        }
 
         // Distance Squared.
         float distSq = pDiff.magSq();
 
         //prevents division by zero case
-        if(distSq == 0){
+        if(distSq < 0.0001){ // Small epsilon to handle floating-point precision
           return;
         } else {
           //calculate the scalar part of the equation:

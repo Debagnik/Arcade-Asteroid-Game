@@ -9,7 +9,8 @@ ArrayList<Asteroid> asteroids;
 void setup(){
   //create a window
   //Using P2D renderer
-  size(450, 400, P2D);
+  size(1080, 608, P2D);
+  pixelDensity(1);
   
   //Turn off Anti-aliasing
   smooth();
