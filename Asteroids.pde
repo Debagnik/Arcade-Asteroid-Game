@@ -39,4 +39,15 @@ void draw(){
     asteroid.display();
   }
 
+  //check for collision mechanics on game loop
+  for(int i = 0; i < asteroids.size(); ++i){
+    for(int j = i + 1; j < asteroids.size(); ++j){
+      Asteroid a1 = asteroids.get(i);
+      Asteroid a2 = asteroids.get(j);
+
+      //perform collistion detection
+      a1.checkCollision(a2);
+    }
+  }
+
 }

@@ -113,9 +113,82 @@ public class Asteroid {
     }
   }
 
+  
+    /**
+   * Checks collision with another asteroid and applies physics response.
+   * This handles both the velocity change (Conservation of Momentum) 
+   * and position correction (preventing sticking).
+   */
+    public void checkCollision(Asteroid other){
+
+      //Get the pointing vector from 'other' to this 'this'
+      PVector collisionVector = PVector.sub(this.position, other.position);
+
+      // Calculate distance between centers
+      float distance = collisionVector.mag();
+
+      // Calculate minimum distance needed to not overlap
+      float minDist = this.radius + other.radius;
+
+      //collision detection logic
+      if(distance < minDist){
+        /* Position Correction Mechanism,
+        *  Pushes the two asteroids apart so they don't get glued together in the next frame
+        *  Moves them apart along the collistion angle. creating a bouncing effect
+        */
+        float overlap = minDist - distance;
+        PVector correction = collisionVector.copy(); //get direction;
+        correction.normalize();
+        correction.mult(overlap/2.0); // moves each asteroids half the overlap distance.
 
 
+        this.position.add(correction);  //Moves this asteroid in a way
+        other.position.sub(correction); //Moves the other asteroids the other(opposite) way
 
+
+        /* Collision Resolution the Physics
+        *  Used the above mentioned elastic collision:
+        */
+
+        //temp copy
+        PVector v1 = this.velocity;
+        PVector v2 = other.velocity;
+        PVector p1 = this.position;
+        PVector p2 = other.position;
+        float m1 = this.mass;
+        float m2 = other.mass;
+
+        //applying the velocity formula
+        PVector vDiff = PVector.sub(v1, v2);
+        PVector pDiff = PVector.sub(p1, p2);
+
+        //Dot product
+        float dotProduct = vDiff.dot(pDiff);
+
+        // Distance Squared.
+        float distSq = pDiff.magSq();
+
+        //prevents division by zero case
+        if(distSq == 0){
+          return;
+        } else {
+          //calculate the scalar part of the equation:
+          float scalar1 = (((2 * m2)/(m1 + m2)) * (dotProduct / distSq));
+          float scalar2 = (((2 * m1)/(m1 + m2)) * (dotProduct / distSq));
+          //Calculate the final Vectors to substact
+          PVector v1_delta = PVector.mult(pDiff, scalar1);
+          PVector v2_delta = PVector.mult(pDiff, scalar2);
+
+          // Applying the sub: v1_new = v1_new = v - delta
+          this.velocity.sub(v1_delta);
+
+          // For the other asteroid (Symmetric math logic):
+          // Because we calculated vDiff as (v1-v2) and pDiff as (p1-p2), 
+          // we add the delta to v2 to conserve momentum correctly in this vector implementation
+          other.velocity.add(v2_delta);
+        }
+      }
+    }
 
 }
 
