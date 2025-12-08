@@ -90,8 +90,8 @@ public class Asteroid {
       float angle = map(i, 0, totalPoints, 0, AsteroidConstants.TWO_PI);
       float r = radius + offset[i];
 
-      float x = polarToCartesian(r, angle, AsteroidConstants.TRIGNOMETRIC_FUNCTIONS_ENUM.COSINE);
-      float y = polarToCartesian(r, angle, AsteroidConstants.TRIGNOMETRIC_FUNCTIONS_ENUM.SINE);
+      float x = polarToCartesian(r, angle, AsteroidConstants.TrigonometricFunctionEnum.COSINE);
+      float y = polarToCartesian(r, angle, AsteroidConstants.TrigonometricFunctionEnum.SINE);
 
       vertex(x, y);
 
@@ -100,7 +100,7 @@ public class Asteroid {
   }
 
   // converts polar coordinates to cartesian coordinates.
-  private float polarToCartesian(final float r, final float angle, final AsteroidConstants.TRIGNOMETRIC_FUNCTIONS_ENUM function){
+  private float polarToCartesian(final float r, final float angle, final AsteroidConstants.TrigonometricFunctionEnum function){
     switch(function){
       case SINE:
         return r * sin(angle);
