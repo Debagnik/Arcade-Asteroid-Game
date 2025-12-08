@@ -9,7 +9,8 @@ ArrayList<Asteroid> asteroids;
 void setup(){
   //create a window
   //Using P2D renderer
-  size(450, 400, P2D);
+  size(1080, 608, P2D);
+  pixelDensity(1);
   
   //Turn off Anti-aliasing
   smooth();
@@ -37,6 +38,17 @@ void draw(){
     Asteroid asteroid = asteroids.get(i);
     asteroid.update();
     asteroid.display();
+  }
+
+  //check for collision mechanics on game loop
+  for(int i = 0; i < asteroids.size(); ++i){
+    for(int j = i + 1; j < asteroids.size(); ++j){
+      Asteroid a1 = asteroids.get(i);
+      Asteroid a2 = asteroids.get(j);
+
+      //perform collistion detection
+      a1.checkCollision(a2);
+    }
   }
 
 }
