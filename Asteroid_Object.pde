@@ -134,7 +134,7 @@ public class Asteroid {
       if(distance < minDist){
         /* Position Correction Mechanism,
         *  Pushes the two asteroids apart so they don't get glued together in the next frame
-        *  Moves them apart along the collistion angle. creating a bouncing effect
+        *  Moves them apart along the collision angle, creating a bouncing effect
         */
         float overlap = minDist - distance;
         PVector correction = collisionVector.copy(); //get direction;
@@ -179,11 +179,11 @@ public class Asteroid {
           //calculate the scalar part of the equation:
           float scalar1 = (((2 * m2)/(m1 + m2)) * (dotProduct / distSq));
           float scalar2 = (((2 * m1)/(m1 + m2)) * (dotProduct / distSq));
-          //Calculate the final Vectors to substact
+          //Calculate the final Vectors to subtract
           PVector v1_delta = PVector.mult(pDiff, scalar1);
           PVector v2_delta = PVector.mult(pDiff, scalar2);
 
-          // Applying the sub: v1_new = v1_new = v - delta
+          // Applying the sub: v1_new = v - delta
           this.velocity.sub(v1_delta);
 
           // For the other asteroid (Symmetric math logic):

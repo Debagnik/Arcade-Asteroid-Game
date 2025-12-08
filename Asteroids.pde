@@ -4,7 +4,8 @@
 // Main Game File
 
 //Define Global Variables
-ArrayList<Asteroid> asteroids;
+ArrayList<Asteroid> asteroids; //adds a list of asteriods
+Spacecraft ship; //Adds a player ship
 
 void setup(){
   //create a window
@@ -22,18 +23,28 @@ void setup(){
   for(int i = 0; i < initalAsteroidCount; i++){
     asteroids.add(new Asteroid());
   }
+
+  ship = new Spacecraft();
   
   
 }
 
 void draw(){
   //Set BG to a a dark color with RGB values
-  background(20, 20, 30); //<>//
+  background(20, 20, 30);
   
   //Visual Test: Draw a simple text in the center of the screen
   //fill(255);
   //textAlign(CENTER);text("Test Text", width/2, height/2);
-  
+  //player input handling
+  shipMechanics();
+  //Asteroid mechanics
+  asteroidsMechanics();
+
+
+}
+
+private void asteroidsMechanics(){
   for (int i = asteroids.size() - 1; i >= 0; i--) {
     Asteroid asteroid = asteroids.get(i);
     asteroid.update();
@@ -50,5 +61,18 @@ void draw(){
       a1.checkCollision(a2);
     }
   }
+}
 
+private void shipMechanics(){
+  if(keyPressed) {
+    if(keyCode == LEFT){
+      ship.rotateShip(-1); // rorate anti-clockwise
+    } else if(keyCode == RIGHT){
+      ship.rotateShip(1); // Rotate clockwise
+    }
+  }
+
+  //display and update ship.
+  ship.update();
+  ship.display();
 }
