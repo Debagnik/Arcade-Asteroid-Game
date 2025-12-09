@@ -58,7 +58,7 @@ private void asteroidsMechanics(){
       Asteroid a2 = asteroids.get(j);
 
       //perform collistion detection
-      a1.checkCollision(a2);
+      PhysicsHelper.checkCollision(a1, a2);
     }
   }
 }
@@ -69,6 +69,9 @@ private void shipMechanics(){
       ship.rotateShip(-1); // rorate anti-clockwise
     } else if(keyCode == RIGHT){
       ship.rotateShip(1); // Rotate clockwise
+    }
+    if(keyCode == UP){
+      ship.thrust();
     }
   }
 

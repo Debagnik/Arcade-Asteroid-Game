@@ -1,25 +1,36 @@
 public class Spacecraft {
     // Spacecraft Variables
-    PVector position;   //Position vector of the spacecraft
-    float heading;      //The angle of the ship is pointing to (Radians)
-    float size;         //The size of the ship
-    float rotationSpeed;//The speed of rotation
+    PVector position;       //Position vector of the spacecraft
+    float heading;          //The angle of the ship is pointing to (Radians)
+    float size;             //The size of the ship
+    float rotationSpeed;    //The speed of rotation
+    PVector velocity;       //The velocity vector of the ship
+    PVector acceleration;   //The acceleration vector of the ship
+
+    boolean isThrusting;    //Flag to indicate if the ship is currently thrusting
 
     //Default Consteructor of Spacecraft
     public Spacecraft() {
-        //Initial ship position (spawn position)
-        position = new PVector(width/2, height/2);
-
-        //head toward 12 o clock
-        heading = -AsteroidConstants.PI/2;
-
-        size = AsteroidConstants.SHIP_SIZE;
+        //Initial ship position (spawn position) and parameters
+        position = new PVector(width/2, height/2); // Spawn at center of screen
+        velocity = new PVector(0, 0); // Initial velocity is zero
+        acceleration = new PVector(0, 0); // Initial acceleration is zero
+        heading = -AsteroidConstants.PI/2; // head towards 12 o clock
+        size = AsteroidConstants.SHIP_SIZE; 
         rotationSpeed = AsteroidConstants.SHIP_ROTATE_SPEED;
-
+        isThrusting = false;
     }
 
     public void update(){
-        //TODO: Ship Thrust and movement logic and physics
+        // Apply Newtonian Physics for movement
+        velocity.add(acceleration); // Update velocity based on acceleration
+        velocity.limit(AsteroidConstants.SHIP_MAX_SPEED); // Limit max speed
+        velocity.mult(AsteroidConstants.SHIP_FRICTION); // Apply friction
+        position.add(velocity); // Update position based on velocity
+        acceleration.mult(0); // Reset acceleration
+        isThrusting = false; // Reset thrusting flag
+
+        PhysicsHelper.screenWrap(position, size, width, height); // Screen wrapping logic (same as asteroids)
     }
 
     //Input method to change angle
@@ -51,24 +62,33 @@ public class Spacecraft {
 
     // Draws spaceship
     public void drawSpaceShip(){
-        /*  Because we translated and rotated, we draw this as if the ship 
-         *  is pointing to the RIGHT (0 degrees) relative to itself.
-         *  The "Nose" is at x = r
-         *  The "Tail" is at x = -r
-        */
-        float noseX = size;
-        float noseY = 0;
+        beginShape();
+        vertex(-size, -size);
+        vertex(size, 0);
+        vertex(-size, size);
+        vertex(-size * 0.5, 0);
+        endShape(CLOSE);
 
-        float rearX = -size;
-        float rearY = -size; // Top Left
-        float rearY2 = size; // Bottom left
+        line(-size/2, -size * 0.75, -size/2, size * 0.75);
 
-        //draw triangle
-        triangle(noseX, noseY, rearX, rearY, rearX, rearY2);
+        if(isThrusting){
+            drawExhaust();
+        }
 
-        //Draw a line inside to show the head
-        line (0, 0, size, 0);
+    }
 
+    public void thrust(){
+        // calculate force vector based on the anglr of attack
+        PVector force = PVector.fromAngle(heading);
+        force.mult(AsteroidConstants.SHIP_THRUST_POWER);
+
+        acceleration.add(force);
+        isThrusting = true;
+    }
+
+    //Draws a blinking fire
+    private void drawExhaust(){
+        // TODO: Draw fire logic when thrusting
     }
     
 }
