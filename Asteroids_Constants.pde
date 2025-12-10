@@ -10,7 +10,7 @@ public static class AsteroidConstants {
     };
 
     // ship constants
-    public static final float SHIP_SIZE = 10.0;
+    public static final float SHIP_SIZE = 15.0;
     public static final float SHIP_ROTATE_SPEED = 0.05;
     public static final float SHIP_THRUST_POWER = 0.1;
     public static final float SHIP_MAX_SPEED = 6.0;

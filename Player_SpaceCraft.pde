@@ -28,7 +28,6 @@ public class Spacecraft {
         velocity.mult(AsteroidConstants.SHIP_FRICTION); // Apply friction
         position.add(velocity); // Update position based on velocity
         acceleration.mult(0); // Reset acceleration
-        isThrusting = false; // Reset thrusting flag
 
         PhysicsHelper.screenWrap(position, size, width, height); // Screen wrapping logic (same as asteroids)
     }
@@ -55,7 +54,11 @@ public class Spacecraft {
 
         //draw ship
         drawSpaceShip();
+        if(isThrusting){
+            drawExhaust();
+        }
 
+        isThrusting = false; // Reset thrusting flag
         popMatrix();
         popStyle();
     }
@@ -71,10 +74,6 @@ public class Spacecraft {
 
         line(-size/2, -size * 0.75, -size/2, size * 0.75);
 
-        if(isThrusting){
-            drawExhaust();
-        }
-
     }
 
     public void thrust(){
@@ -88,7 +87,21 @@ public class Spacecraft {
 
     //Draws a blinking fire
     private void drawExhaust(){
-        // TODO: Draw fire logic when thrusting
+        if (random(1) > 0.3) { 
+            stroke(255);
+            fill(255);
+            
+            beginShape();
+            // Start at the "V" indent of the ship
+            vertex(-size * 0.5, size * 0.5); 
+            vertex(-size * 0.5, -size * 0.5);
+            
+            // The tip of the flame extends backward
+            // We randomize the length slightly for animation
+            float flicker = random(size, size * 1.5);
+            vertex(-flicker, 0);
+            endShape(CLOSE);
+        }
     }
     
 }
