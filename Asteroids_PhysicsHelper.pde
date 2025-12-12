@@ -65,7 +65,15 @@ public static class PhysicsHelper {
         */
         float overlap = minDist - distance;
         PVector correction = collisionVector.copy(); //get direction;
-        correction.normalize();
+        
+        // NaN PREVENTION
+        if (distance < 0.0001) { 
+            // If they are on top of each other, pick a random direction to push them apart
+            correction = PVector.random2D(); 
+        } else {
+            correction.normalize();
+        }
+
         correction.mult(overlap/2.0); // moves each asteroids half the overlap distance.
 
 
