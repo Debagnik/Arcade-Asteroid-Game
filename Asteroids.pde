@@ -66,7 +66,7 @@ private void asteroidsMechanics(){
 private void shipMechanics(){
   if(keyPressed) {
     if(keyCode == LEFT){
-      ship.rotateShip(-1); // rorate anti-clockwise
+      ship.rotateShip(-1); // rotate anti-clockwise
     } else if(keyCode == RIGHT){
       ship.rotateShip(1); // Rotate clockwise
     }

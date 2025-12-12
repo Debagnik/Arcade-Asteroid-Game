@@ -77,7 +77,7 @@ public class Spacecraft {
     }
 
     public void thrust(){
-        // calculate force vector based on the anglr of attack
+        // calculate force vector based on the angle of attack
         PVector force = PVector.fromAngle(heading);
         force.mult(AsteroidConstants.SHIP_THRUST_POWER);
 

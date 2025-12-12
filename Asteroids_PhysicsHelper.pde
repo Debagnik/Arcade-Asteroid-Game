@@ -78,7 +78,7 @@ public static class PhysicsHelper {
         */
 
         //temp copy
-        PVector v1 = thisOne.velocity.copy();;
+        PVector v1 = thisOne.velocity.copy();
         PVector v2 = other.velocity.copy();
         PVector p1 = thisOne.position.copy();
         PVector p2 = other.position.copy();
