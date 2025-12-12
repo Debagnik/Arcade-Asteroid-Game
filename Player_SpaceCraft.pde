@@ -36,6 +36,8 @@ public class Spacecraft {
     //direction: -1 for anti-clockwise, +1 for clockwise
     public void rotateShip(final int direction){
         heading = heading + direction * rotationSpeed;
+        // Normalize heading to stay within [-PI, PI] or [0, TWO_PI]
+        heading = heading % AsteroidConstants.TWO_PI;
     }
 
     // Displays the spacecraft
