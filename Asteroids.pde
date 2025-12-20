@@ -35,10 +35,6 @@ void draw() {
   //Set BG to a a dark color with RGB values
   background(20, 20, 30);
 
-  //Visual Test: Draw a simple text in the center of the screen
-  //fill(255);
-  //textAlign(CENTER);text("Test Text", width/2, height/2);
-  //player input handling
   shipMechanics();
   // Weapons Handling
   weapon.displayAndUpdate();
