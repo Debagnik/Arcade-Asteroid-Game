@@ -1,11 +1,18 @@
+/*
+ * Asteroids Game
+ * License DWTFYWTPL <https://www.wtfpl.net/about/>
+ * Copyright 2025 Rak Kingabed <debagnik@debagnik.in>
+ * FILE: Player_SpaceCraft.pde
+ */
+
 public class Spacecraft {
     // Spacecraft Variables
-    PVector position;       //Position vector of the spacecraft
-    float heading;          //The angle of the ship is pointing to (Radians)
-    float size;             //The size of the ship
-    float rotationSpeed;    //The speed of rotation
-    PVector velocity;       //The velocity vector of the ship
-    PVector acceleration;   //The acceleration vector of the ship
+    private PVector position;       //Position vector of the spacecraft
+    private float heading;          //The angle of the ship is pointing to (Radians)
+    private float size;             //The size of the ship
+    private float rotationSpeed;    //The speed of rotation
+    private PVector velocity;       //The velocity vector of the ship
+    private PVector acceleration;   //The acceleration vector of the ship
 
     boolean isThrusting;    //Flag to indicate if the ship is currently thrusting
 
@@ -105,5 +112,39 @@ public class Spacecraft {
             endShape(CLOSE);
         }
     }
+
+    // Access APIs and Actions.(Getters/Setters)
+    public PVector getPosition() {
+        return position.copy();
+    }
+
+    public float getHeading() {
+        return heading;
+    }
+    
+    public float getSize() {
+        return size;
+    }
+
+    public PVector getVelocity() {
+        return velocity.copy();
+    }
+
+    public void setPosition(PVector position) {
+        this.position = position;
+    }
+
+    public void setHeading(float heading) {
+        this.heading = heading;
+    }
+    
+    public void setSize(float size) {
+        this.size = size;
+    }
+
+    public void setVelocity(PVector velocity) {
+        this.velocity = velocity;
+    }
+
     
 }

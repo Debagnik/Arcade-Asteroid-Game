@@ -1,3 +1,10 @@
+/*
+ * Asteroids Game
+ * License DWTFYWTPL <https://www.wtfpl.net/about/>
+ * Copyright 2025 Rak Kingabed <debagnik@debagnik.in>
+ * FILE: Asteroids_PhysicsHelper.pde
+ */
+
 public static class PhysicsHelper {
     /**
       * Handles Arcade-style screen wrapping.
@@ -49,13 +56,13 @@ public static class PhysicsHelper {
   public static void checkCollision(Asteroid thisOne, Asteroid other){
 
       //Get the pointing vector from 'other' to thisOne 'thisOne'
-      PVector collisionVector = PVector.sub(thisOne.position, other.position);
+      PVector collisionVector = PVector.sub(thisOne.getPosition(), other.getPosition());
 
       // Calculate distance between centers
       float distance = collisionVector.mag();
 
       // Calculate minimum distance needed to not overlap
-      float minDist = thisOne.radius + other.radius;
+      float minDist = thisOne.getRadius() + other.getRadius();
 
       //collision detection logic
       if(distance < minDist){
@@ -76,26 +83,26 @@ public static class PhysicsHelper {
 
         correction.mult(overlap/2.0); // moves each asteroids half the overlap distance.
 
-
-        thisOne.position.add(correction);  //Moves thisOne asteroid in a way
-        other.position.sub(correction); //Moves the other asteroids the other(opposite) way
+        // Position Correction
+        PVector p1 = thisOne.getPosition();
+        PVector p2 = other.getPosition();
+        thisOne.setPosition(p1.add(correction));  //Moves thisOne asteroid in a way
+        other.setPosition(p2.sub(correction)); //Moves the other asteroids the other(opposite) way
 
 
         /* Collision Resolution the Physics
         *  Used the above mentioned elastic collision:
         */
 
-        //temp copy
-        PVector v1 = thisOne.velocity.copy();
-        PVector v2 = other.velocity.copy();
-        PVector p1 = thisOne.position.copy();
-        PVector p2 = other.position.copy();
-        float m1 = thisOne.mass;
-        float m2 = other.mass;
+        // Velocity Correction
+        PVector v1 = thisOne.getVelocity();
+        PVector v2 = other.getVelocity();
+        float m1 = thisOne.getMass();
+        float m2 = other.getMass();
 
         //applying the velocity formula
         PVector vDiff = PVector.sub(v1, v2);
-        PVector pDiff = PVector.sub(p1, p2);
+        PVector pDiff = PVector.sub(thisOne.getPosition(), other.getPosition());
 
         //Dot product
         float dotProduct = vDiff.dot(pDiff);
@@ -119,14 +126,28 @@ public static class PhysicsHelper {
           PVector v2_delta = PVector.mult(pDiff, scalar2);
 
           // Applying the sub: v1_new = v - delta
-          thisOne.velocity.sub(v1_delta);
+          v1.sub(v1_delta);
+          thisOne.setVelocity(v1);
 
           // For the other asteroid (Symmetric math logic):
           // Because we calculated vDiff as (v1-v2) and pDiff as (p1-p2), 
           // we add the delta to v2 to conserve momentum correctly in thisOne vector implementation
-          other.velocity.add(v2_delta);
+          v2.add(v2_delta);
+          other.setVelocity(v2);
         }
       }
+    }
+
+    /* Laser to Asteroid Collision Mechanics
+     * Checks if a laser has hit an asteroid.
+     * Simple Distance check: Dist < Radius
+     */
+    public static boolean checkLaserCollision(Laser l, Asteroid a){
+      float dist = PVector.dist(l.getPosition(), a.getPosition());
+      if(dist < a.getRadius() + AsteroidConstants.LASER_SIZE / 2.0){
+        return true;
+      }
+      return false;
     }
 
 
