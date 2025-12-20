@@ -27,7 +27,7 @@ public class Asteroid {
     velocity.limit(AsteroidConstants.ASTEROID_MAX_SPEED); //Limiting max speed
 
     // Set a random size
-    radius = random(15, AsteroidConstants.MAX_ASTEROID_SIZE);
+    radius = random(AsteroidConstants.MIN_ASTEROID_SIZE, AsteroidConstants.MAX_ASTEROID_SIZE);
 
     // Generate the jagged shape data
     generateShapeData();
@@ -36,6 +36,7 @@ public class Asteroid {
   //Child Constructor (Used when the parent asteroids splits)
   public Asteroid(PVector parentPosition, float newRadius){
     position = parentPosition.copy(); //spawns where parent died
+    position.add(PVector.random2D().mult(newRadius * 0.5)); //Add small random offset to prevent immediate collision with sibling
     radius = newRadius;
 
     // Smaller asteroids fly faster!
@@ -43,7 +44,7 @@ public class Asteroid {
     velocity.mult(random(2, 4)); 
     velocity.limit(AsteroidConstants.ASTEROID_MAX_SPEED);
 
-    //generate Jagged shapes on clild as well
+    // Generate Jagged shapes on child as well
     generateShapeData();
 
     

@@ -11,7 +11,7 @@ private ArrayList<Asteroid> asteroids; //adds a list of asteriods
 private Spacecraft ship; //Adds a player ship
 private WeaponsController weapon;
 private boolean isLeft, isRight, isUp;
-private int level = 1;
+private int level = 0;
 
 void setup() {
   //create a window
@@ -24,9 +24,8 @@ void setup() {
 
   //Init Asteroids List
   asteroids = new ArrayList<Asteroid>();
-  int initalAsteroidCount = AsteroidConstants.INITIAL_ASTEROID_COUNT;
   //create 5 asteroids to start game.
-  for (int i = 0; i < initalAsteroidCount; i++) {
+  for (int i = 0; i < AsteroidConstants.INITIAL_ASTEROID_COUNT; i++) {
     asteroids.add(new Asteroid());
   }
 
@@ -89,22 +88,44 @@ private void asteroidsMechanics() {
   // LASER VS ASTEROID COLLISION
   // Get all active lasers
   ArrayList<Laser> activeLasers = weapon.getLasers();
+  ArrayList<Asteroid> spawnChildAsteroids = new ArrayList<Asteroid>();
+  ArrayList<Asteroid> despawnParentAsteroids = new ArrayList<Asteroid>();
+  ArrayList<Laser> deactivateLasers = new ArrayList<Laser>();
 
   for (Laser l : activeLasers) {
+    // Optimization: If this laser is already marked inactive (e.g. somehow hit twice), skip it
+    if(deactivateLasers.contains(l)){
+      continue;
+    }
+
     for (Asteroid a : asteroids) {
+      // Optimization: If asteroid is already destroyed by another laser in this frame, skip it
+      if(despawnParentAsteroids.contains(a)){
+        continue;
+      }
+
       // Check Hit collision
       if (PhysicsHelper.checkLaserCollision(l, a)) {
         if (a.radius > AsteroidConstants.MIN_ASTEROID_SIZE) {
-          float newRadius = a.radius / 2.0;
-          // Asteroid Split logic
-          asteroids.add(new Asteroid(a.position, newRadius));
-          asteroids.add(new Asteroid(a.position, newRadius));
+          // Asteroid Split logic and spawning logic
+          spawnChildAsteroids.add(new Asteroid(a.position, (a.radius)/2.0));
+          spawnChildAsteroids.add(new Asteroid(a.position, (a.radius)/2.0));
+
         }
-        asteroids.remove(a);
-        l.active = false;
-        break;
+        despawnParentAsteroids.add(a);
+        deactivateLasers.add(l);
+        break; // Stops checking this Laser
       }
     }
+  }
+
+  // Safely add/remove child/parent asteroids
+  asteroids.removeAll(despawnParentAsteroids);
+  asteroids.addAll(spawnChildAsteroids);
+
+  // Safely deactivate Lasers
+  for(Laser l : deactivateLasers){
+    l.active = false;
   }
 
   // Asteroid Vs Asteroid Collision Mechanics

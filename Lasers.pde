@@ -27,7 +27,8 @@ public class Laser{
         velocity = PVector.fromAngle(angle);
         velocity.mult(AsteroidConstants.LASER_SPEED);
 
-        ttl = AsteroidConstants.LASER_LIFESPAN;
+        ttl = AsteroidConstants.LASER_LIFESPAN + level;
+        // println(ttl);
         active = true;
     }
 
@@ -47,8 +48,8 @@ public class Laser{
 
     public void display(){
         pushStyle();
-        stroke(255, 255, 255); // While Lazer
-        ellipse(position.x, position.y, 0.5, 0.5);
+        stroke(255, 255, 255); // White Laser
+        ellipse(position.x, position.y, AsteroidConstants.LASER_SIZE, AsteroidConstants.LASER_SIZE);
         // TODO: Trail Logic
         //println("Drawing laser at: " + position.x + ", " + position.y);
         popStyle();
