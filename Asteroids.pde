@@ -97,8 +97,9 @@ private void asteroidsMechanics() {
       if (PhysicsHelper.checkLaserCollision(l, a)) {
         if (a.radius > AsteroidConstants.MIN_ASTEROID_SIZE) {
           float newRadius = a.radius / 2.0;
+          // Asteroid Split logic
           asteroids.add(new Asteroid(a.position, newRadius));
-          //asteroids.add(new Asteroid(a.position, newRadius));
+          asteroids.add(new Asteroid(a.position, newRadius));
         }
         asteroids.remove(a);
         l.active = false;
@@ -121,7 +122,7 @@ private void asteroidsMechanics() {
 
   if (asteroids.size() == 0) { 
     level++;    
-    for (int i = 0; i < AsteroidConstants.INITIAL_ASTEROID_COUNT + 1; i++) {
+    for (int i = 0; i < AsteroidConstants.INITIAL_ASTEROID_COUNT + level; i++) {
        asteroids.add(new Asteroid());
     }
   }
