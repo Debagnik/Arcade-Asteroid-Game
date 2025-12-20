@@ -129,5 +129,17 @@ public static class PhysicsHelper {
       }
     }
 
+    /* Laser to Asteroid Collision Mechanics
+     * Checks if a laser has hit an asteroid.
+     * Simple Distance check: Dist < Radius
+     */
+    public static boolean checkLaserCollision(Laser l, Asteroid a){
+      float dist = PVector.dist(l.position, a.position);
+      if(dist < a.radius){
+        return true;
+      }
+      return false;
+    }
+
 
 }

@@ -20,22 +20,26 @@ public class Asteroid {
     velocity.limit(AsteroidConstants.ASTEROID_MAX_SPEED); //Limiting max speed
 
     // Set a random size
-    radius = random(15, 30);
+    radius = random(15, AsteroidConstants.MAX_ASTEROID_SIZE);
 
-    //Set the random jaggedness and rockiness by picking a random points (between 5 and 15) around the asteroid to turn the ellipse into a polygon
-    totalPoints = floor(random(5, 15));
-    //Then Offset array to store the random offset for each point by pushing in and pulling in the polygon vertexes
-    offset = new float[totalPoints];
+    // Generate the jagged shape data
+    generateShapeData();
+  }
 
-    //create unique jaggedness
-    for (int i = 0; i < totalPoints; i++) {
-      //Offset each point the radius by -5 to +5 pixels for each point
-      offset[i] = random(-radius * 0.5, radius * 0.5);
-    }
+  //Child Constructor (Used when the parent asteroids splits)
+  public Asteroid(PVector parentPosition, float newRadius){
+    position = parentPosition.copy(); //spawns where parent died
+    radius = newRadius;
 
-    mass = radius * radius;
+    // Smaller asteroids fly faster!
+    velocity = PVector.random2D();
+    velocity.mult(random(2, 4)); 
+    velocity.limit(AsteroidConstants.ASTEROID_MAX_SPEED);
 
+    //generate Jagged shapes on clild as well
+    generateShapeData();
 
+    
   }
 
   // Asteroid Movement Animation
@@ -82,6 +86,24 @@ public class Asteroid {
 
     }
     endShape(CLOSE);
+  }
+
+  // --- HELPER METHOD: Generates the random shape numbers ---
+  // This is used by BOTH constructors to ensure every asteroid (big or small) has a shape.
+  private void generateShapeData() {
+    //Set the random jaggedness and rockiness by picking a random points (between 5 and 15) around the asteroid to turn the ellipse into a polygon
+    totalPoints = floor(random(5, 15));
+    //Then Offset array to store the random offset for each point by pushing in and pulling in the polygon vertexes
+    offset = new float[totalPoints];
+
+    //create unique jaggedness
+    for (int i = 0; i < totalPoints; i++) {
+      //Offset each point the radius by -5 to +5 pixels for each point
+      offset[i] = random(-radius * 0.5, radius * 0.5);
+    }
+
+    //Mass Calculate
+    mass = radius * radius;
   }
     
 }
