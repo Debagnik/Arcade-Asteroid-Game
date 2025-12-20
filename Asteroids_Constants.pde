@@ -1,3 +1,11 @@
+/*
+ * Asteroids Game
+ * License DWTFYWTPL <https://www.wtfpl.net/about/>
+ * Copyright 2025 Rak Kingabed <debagnik@debagnik.in>
+ * FILE: Asteroids_Constants.pde
+ */
+
+
 public static class AsteroidConstants {
     // global Constants
     public static final float TWO_PI = 6.28318530718;

@@ -1,5 +1,12 @@
+/*
+ * Asteroids Game
+ * License DWTFYWTPL <https://www.wtfpl.net/about/>
+ * Copyright 2025 Rak Kingabed <debagnik@debagnik.in>
+ * FILE: Weapons_Controller.pde
+ */
+
 public class WeaponsController{
-    ArrayList<Laser> lasers;
+    private ArrayList<Laser> lasers;
 
     // Default Constructor
     public WeaponsController(){
@@ -23,7 +30,8 @@ public class WeaponsController{
 
     // Generic Getter
     public ArrayList<Laser> getLasers(){
-        return lasers;
+        // Returning the Laser List in a new List (Defensive Programming).
+        return new ArrayList<Laser>(lasers);
     }
      
 }

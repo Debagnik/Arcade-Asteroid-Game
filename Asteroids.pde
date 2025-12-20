@@ -1,14 +1,17 @@
-// Asteroids Clone Game
-// License MIT
-
+/*
+ * Asteroids Game
+ * License DWTFYWTPL <https://www.wtfpl.net/about/>
+ * Copyright 2025 Rak Kingabed <debagnik@debagnik.in>
+ * FILE: Asteroids.pde
+ */
+ 
 // Main Game File
-
-//Define Global Variables
-ArrayList<Asteroid> asteroids; //adds a list of asteriods
-Spacecraft ship; //Adds a player ship
-WeaponsController weapon;
-boolean isLeft, isRight, isUp;
-int level = 1;
+// Define Global Variables
+private ArrayList<Asteroid> asteroids; //adds a list of asteriods
+private Spacecraft ship; //Adds a player ship
+private WeaponsController weapon;
+private boolean isLeft, isRight, isUp;
+private int level = 1;
 
 void setup() {
   //create a window

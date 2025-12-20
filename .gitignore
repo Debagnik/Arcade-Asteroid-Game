@@ -1,6 +1,6 @@
 # Asteroids Game
 # License DWTFYWTPL <https://www.wtfpl.net/about/>
 # Copyright 2025 Rak Kingabed <debagnik@debagnik.in>
-# FILE: sketch.properties
+# FILE: .gitignore
 
-main=Asteroids.pde
+Sounds

@@ -1,3 +1,10 @@
+/*
+ * Asteroids Game
+ * License DWTFYWTPL <https://www.wtfpl.net/about/>
+ * Copyright 2025 Rak Kingabed <debagnik@debagnik.in>
+ * FILE: Asteroids_PhysicsHelper.pde
+ */
+
 public static class PhysicsHelper {
     /**
       * Handles Arcade-style screen wrapping.
@@ -135,7 +142,7 @@ public static class PhysicsHelper {
      */
     public static boolean checkLaserCollision(Laser l, Asteroid a){
       float dist = PVector.dist(l.position, a.position);
-      if(dist < a.radius){
+      if(dist < a.radius + AsteroidConstants.LASER_SIZE / 2.0){
         return true;
       }
       return false;

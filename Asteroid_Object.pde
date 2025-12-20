@@ -1,15 +1,22 @@
+/*
+ * Asteroids Game
+ * License DWTFYWTPL <https://www.wtfpl.net/about/>
+ * Copyright 2025 Rak Kingabed <debagnik@debagnik.in>
+ * FILE: Asteroid_Object.pde
+ */
+
 public class Asteroid {
   // The Default class of the Asteroids
-  PVector position;
-  PVector velocity;
-  float radius;
+  private PVector position;
+  private PVector velocity;
+  private float radius;
 
   //Variables for asteroids "Jaggedness" and "Rockiness"
-  int totalPoints;
-  float[] offset;
-  float mass; //Scaler Quantity, find explanation below comment
+  private int totalPoints;
+  private float[] offset;
+  private float mass; //Scaler Quantity, find explanation below comment
 
-  //Default constructor of the asterroids
+  //Default constructor of the asteroids
   public Asteroid() {
     //Spawns at a random location
     position = new PVector(random(width), random(height));

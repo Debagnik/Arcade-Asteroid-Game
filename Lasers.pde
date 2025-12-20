@@ -1,8 +1,16 @@
+/*
+ * Asteroids Game
+ * License DWTFYWTPL <https://www.wtfpl.net/about/>
+ * Copyright 2025 Rak Kingabed <debagnik@debagnik.in>
+ * FILE: Lasers.pde
+ */
+
+
 public class Laser{
-    PVector position;
-    PVector velocity;
-    int ttl;
-    boolean active;
+    private PVector position;
+    private PVector velocity;
+    private int ttl;
+    private boolean active;
 
     //Default Constructor
     public Laser(PVector shipPos, float angle){
