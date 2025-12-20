@@ -24,7 +24,7 @@ public class Asteroid {
     //gives a random speed and direction | PVector.random2D() gives a vector of length 1 pointing in a random direction
     velocity = PVector.random2D();
     velocity.mult(random(1, 3));
-    velocity.limit(AsteroidConstants.ASTEROID_MAX_SPEED + level); //Limiting max speed
+    velocity.limit(AsteroidConstants.ASTEROID_MAX_SPEED + getLevel()); //Limiting max speed
 
     // Set a random size
     radius = random(AsteroidConstants.MIN_ASTEROID_SIZE, AsteroidConstants.MAX_ASTEROID_SIZE);
@@ -42,12 +42,29 @@ public class Asteroid {
     // Smaller asteroids fly faster!
     velocity = PVector.random2D();
     velocity.mult(random(2, 4)); 
-    velocity.limit(AsteroidConstants.ASTEROID_MAX_SPEED + level);
+    velocity.limit(AsteroidConstants.ASTEROID_MAX_SPEED + getLevel());
 
     // Generate Jagged shapes on child as well
     generateShapeData();
 
     
+  }
+
+  // Constructor for spawing new asteroid for level > 0 
+  public Asteroid(Spacecraft ship, float safeDist){
+    velocity = PVector.random2D();
+    velocity.mult(random(1, 3));
+    velocity.limit(AsteroidConstants.ASTEROID_MAX_SPEED + getLevel());
+    radius = random(AsteroidConstants.MIN_ASTEROID_SIZE, AsteroidConstants.MAX_ASTEROID_SIZE);
+
+    generateShapeData();
+
+    int attempts = 0;
+    do {
+      position = new PVector(random(width), random(height));
+      attempts++;
+      // println(attempts);
+    } while (PVector.dist(position, ship.position) < safeDist && attempts < 100);
   }
 
   // Asteroid Movement Animation

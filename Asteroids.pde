@@ -4,7 +4,9 @@
  * Copyright 2025 Rak Kingabed <debagnik@debagnik.in>
  * FILE: Asteroids.pde
  */
- 
+
+import java.util.HashSet;
+
 // Main Game File
 // Define Global Variables
 private ArrayList<Asteroid> asteroids; //adds a list of asteriods
@@ -22,14 +24,16 @@ void setup() {
   //Turn off Anti-aliasing
   smooth();
 
+  //Init the player ship
+  ship = new Spacecraft();
+
   //Init Asteroids List
   asteroids = new ArrayList<Asteroid>();
   //create 5 asteroids to start game.
   for (int i = 0; i < AsteroidConstants.INITIAL_ASTEROID_COUNT; i++) {
-    asteroids.add(new Asteroid());
+    asteroids.add(new Asteroid(ship, AsteroidConstants.ASTEROID_SHIP_SAFE_DISTANCE));
   }
-
-  ship = new Spacecraft();
+  // Init Weapons controller
   weapon = new WeaponsController();
 }
 
@@ -88,19 +92,19 @@ private void asteroidsMechanics() {
   // LASER VS ASTEROID COLLISION
   // Get all active lasers
   ArrayList<Laser> activeLasers = weapon.getLasers();
-  ArrayList<Asteroid> spawnChildAsteroids = new ArrayList<Asteroid>();
-  ArrayList<Asteroid> despawnParentAsteroids = new ArrayList<Asteroid>();
-  ArrayList<Laser> deactivateLasers = new ArrayList<Laser>();
+  HashSet<Asteroid> spawnChildAsteroids = new HashSet<Asteroid>();
+  HashSet<Asteroid> despawnParentAsteroids = new HashSet<Asteroid>();
+  HashSet<Laser> deactivateLasers = new HashSet<Laser>();
 
   for (Laser l : activeLasers) {
     // Optimization: If this laser is already marked inactive (e.g. somehow hit twice), skip it
-    if(deactivateLasers.contains(l)){
+    if (deactivateLasers.contains(l)) {
       continue;
     }
 
     for (Asteroid a : asteroids) {
       // Optimization: If asteroid is already destroyed by another laser in this frame, skip it
-      if(despawnParentAsteroids.contains(a)){
+      if (despawnParentAsteroids.contains(a)) {
         continue;
       }
 
@@ -110,7 +114,6 @@ private void asteroidsMechanics() {
           // Asteroid Split logic and spawning logic
           spawnChildAsteroids.add(new Asteroid(a.position, (a.radius)/2.0));
           spawnChildAsteroids.add(new Asteroid(a.position, (a.radius)/2.0));
-
         }
         despawnParentAsteroids.add(a);
         deactivateLasers.add(l);
@@ -124,7 +127,7 @@ private void asteroidsMechanics() {
   asteroids.addAll(spawnChildAsteroids);
 
   // Safely deactivate Lasers
-  for(Laser l : deactivateLasers){
+  for (Laser l : deactivateLasers) {
     l.active = false;
   }
 
@@ -140,10 +143,19 @@ private void asteroidsMechanics() {
     }
   }
 
-  if (asteroids.size() == 0) { 
-    level++;    
-    for (int i = 0; i < AsteroidConstants.INITIAL_ASTEROID_COUNT + level; i++) {
-       asteroids.add(new Asteroid());
+  if (asteroids.size() == 0) {
+    setLevel(getLevel() + 1);
+    for (int i = 0; i < AsteroidConstants.INITIAL_ASTEROID_COUNT + getLevel(); i++) {
+      asteroids.add(new Asteroid(ship, AsteroidConstants.ASTEROID_SHIP_SAFE_DISTANCE));
     }
   }
 }
+
+public int getLevel() {
+  return level;
+}
+
+public void setLevel(int level) {
+  this.level = level;
+}
+

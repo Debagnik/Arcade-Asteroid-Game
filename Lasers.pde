@@ -27,8 +27,8 @@ public class Laser{
         velocity = PVector.fromAngle(angle);
         velocity.mult(AsteroidConstants.LASER_SPEED);
 
-        ttl = AsteroidConstants.LASER_LIFESPAN + level;
-        // println(ttl);
+        ttl = AsteroidConstants.LASER_LIFESPAN + getLevel();
+        //println(ttl);
         active = true;
     }
 
