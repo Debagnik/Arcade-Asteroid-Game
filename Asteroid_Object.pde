@@ -64,7 +64,7 @@ public class Asteroid {
       position = new PVector(random(width), random(height));
       attempts++;
       // println(attempts);
-    } while (PVector.dist(position, ship.position) < safeDist && attempts < 100);
+    } while (PVector.dist(position, ship.getPosition()) < safeDist && attempts < 100);
   }
 
   // Asteroid Movement Animation
@@ -129,6 +129,39 @@ public class Asteroid {
 
     //Mass Calculate
     mass = radius * radius;
+  }
+
+  // Generic APIs (Getters/Setters)
+  public PVector getPosition() {
+    return position.copy();
+  }
+  
+  public PVector getVelocity() {
+    return velocity.copy(); 
+  }
+  
+  public float getRadius() {
+    return radius;
+  }
+  
+  public float getMass() {
+    return mass;
+  }
+
+  public void setPosition(PVector position) {
+    this.position = position;
+  }
+  
+  public void setVelocity(PVector velocity) {
+    this.velocity = velocity; 
+  }
+  
+  public void setRadius(float radius) {
+    this.radius = radius;
+  }
+  
+  public void setMass(float mass) {
+    this.mass = mass;
   }
     
 }

@@ -110,10 +110,10 @@ private void asteroidsMechanics() {
 
       // Check Hit collision
       if (PhysicsHelper.checkLaserCollision(l, a)) {
-        if (a.radius > AsteroidConstants.MIN_ASTEROID_SIZE) {
+        if (a.getRadius() > AsteroidConstants.MIN_ASTEROID_SIZE) {
           // Asteroid Split logic and spawning logic
-          spawnChildAsteroids.add(new Asteroid(a.position, (a.radius)/2.0));
-          spawnChildAsteroids.add(new Asteroid(a.position, (a.radius)/2.0));
+          spawnChildAsteroids.add(new Asteroid(a.getPosition(), (a.getRadius())/2.0));
+          spawnChildAsteroids.add(new Asteroid(a.getPosition(), (a.getRadius())/2.0));
         }
         despawnParentAsteroids.add(a);
         deactivateLasers.add(l);
@@ -128,7 +128,7 @@ private void asteroidsMechanics() {
 
   // Safely deactivate Lasers
   for (Laser l : deactivateLasers) {
-    l.active = false;
+    l.setActive(false);
   }
 
   // Asteroid Vs Asteroid Collision Mechanics
@@ -151,11 +151,60 @@ private void asteroidsMechanics() {
   }
 }
 
+// Generic Main APIs (Getters/Setters)
 public int getLevel() {
   return level;
 }
 
 public void setLevel(int level) {
   this.level = level;
+}
+
+public ArrayList<Asteroid> getAsteroids() {
+  return asteroids;
+}
+
+public void setAsteroids(ArrayList<Asteroid> asteroids) {
+  this.asteroids = asteroids;
+}
+
+public Spacecraft getShip() {
+  return ship;
+}
+
+public void setShip(Spacecraft ship) {
+  this.ship = ship;
+}
+
+public WeaponsController getWeapon() {
+  return weapon;
+}
+
+public void setWeapon(WeaponsController weapon) {
+  this.weapon = weapon;
+}
+
+public boolean isLeft() {
+  return isLeft;
+}
+
+public void setLeft(boolean isLeft) {
+  this.isLeft = isLeft;
+}
+
+public boolean isRight() {
+  return isRight;
+}
+
+public void setRight(boolean isRight) {
+  this.isRight = isRight;
+}
+
+public boolean isUp() {
+  return isUp;
+}
+
+public void setUp(boolean isUp) {
+  this.isUp = isUp;
 }
 

@@ -112,5 +112,39 @@ public class Spacecraft {
             endShape(CLOSE);
         }
     }
+
+    // Access APIs and Actions.(Getters/Setters)
+    public PVector getPosition() {
+        return position.copy();
+    }
+
+    public float getHeading() {
+        return heading;
+    }
+    
+    public float getSize() {
+        return size;
+    }
+
+    public PVector getVelocity() {
+        return velocity.copy();
+    }
+
+    public void setPosition(PVector position) {
+        this.position = position;
+    }
+
+    public void setHeading(float heading) {
+        this.heading = heading;
+    }
+    
+    public void setSize(float size) {
+        this.size = size;
+    }
+
+    public void setVelocity(PVector velocity) {
+        this.velocity = velocity;
+    }
+
     
 }

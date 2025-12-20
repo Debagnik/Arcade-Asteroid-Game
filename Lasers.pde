@@ -55,4 +55,37 @@ public class Laser{
         popStyle();
     }
 
+    // Generic Class APIs (Getter/Setter)
+    public PVector getPosition() {
+        return position.copy();
+    }
+
+    public void setPosition(PVector position) {
+        this.position = position;
+    }
+
+    public PVector getVelocity() {
+        return velocity.copy();
+    }
+
+    public void setVelocity(PVector velocity) {
+        this.velocity = velocity;
+    }
+
+    public int getTTL() {
+        return ttl;
+    }
+
+    public void setTTL(int ttl) {
+        this.ttl = ttl;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
 }

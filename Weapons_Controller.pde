@@ -14,7 +14,7 @@ public class WeaponsController{
     }
 
     public void fire(Spacecraft ship){
-        lasers.add(new Laser(ship.position, ship.heading));
+        lasers.add(new Laser(ship.getPosition(), ship.getHeading()));
         //println("FIRE! Total Lasers: " + lasers.size());
     }
 
