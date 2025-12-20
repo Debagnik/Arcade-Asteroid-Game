@@ -24,7 +24,7 @@ public class Asteroid {
     //gives a random speed and direction | PVector.random2D() gives a vector of length 1 pointing in a random direction
     velocity = PVector.random2D();
     velocity.mult(random(1, 3));
-    velocity.limit(AsteroidConstants.ASTEROID_MAX_SPEED); //Limiting max speed
+    velocity.limit(AsteroidConstants.ASTEROID_MAX_SPEED + level); //Limiting max speed
 
     // Set a random size
     radius = random(AsteroidConstants.MIN_ASTEROID_SIZE, AsteroidConstants.MAX_ASTEROID_SIZE);
@@ -42,7 +42,7 @@ public class Asteroid {
     // Smaller asteroids fly faster!
     velocity = PVector.random2D();
     velocity.mult(random(2, 4)); 
-    velocity.limit(AsteroidConstants.ASTEROID_MAX_SPEED);
+    velocity.limit(AsteroidConstants.ASTEROID_MAX_SPEED + level);
 
     // Generate Jagged shapes on child as well
     generateShapeData();
