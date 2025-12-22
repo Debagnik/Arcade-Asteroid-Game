@@ -124,7 +124,7 @@ public static class Logger{
             json.setString("type", attrValue.getClass().getSimpleName());
             json.setBoolean("isCollectionTruncated", isTruncated);
             json.setInt("size", collectionLength);
-            if(isTruncated) json.setInt("CollectionLoggingLimit", collectionLoggingLimit);
+            if(isTruncated) json.setInt("collectionLoggingLimit", collectionLoggingLimit);
 
             for(int i = 0; i < (isTruncated ? collectionLoggingLimit : collectionLength); i++){
                 Object item = colArray.get(i);
