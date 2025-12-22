@@ -37,8 +37,8 @@ public static class Logger{
         root.setString("source", callSite + " -> " + methodName + "()");
         root.setInt("playerLevel", playerLevel);
         if (Objects.isNull(obj)) {
-           root.setString("objectType", null);
-           root.setJSONObject("data", null);
+           root.setString("objectType", NULL_VALUE);
+           root.setJSONObject("data", new JSONObject());
         } else {
            root.setString("objectType", obj.getClass().getSimpleName());
            root.setJSONObject("data", serializeObject(obj));
