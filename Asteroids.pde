@@ -72,7 +72,7 @@ public void keyPressed() {
   // We check for Spacebar HERE instead of using a boolean flag.
   // This ensures 1 press = 1 bullet.
   if (key == ' ') {
-    weapon.fire(ship);
+    weapon.fire(ship, getLevel());
   }
 }
 
