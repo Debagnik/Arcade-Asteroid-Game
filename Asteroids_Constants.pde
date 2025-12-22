@@ -42,7 +42,7 @@ public static class AsteroidConstants {
         DEBUG,
         PROD
     };
-    public static GameModeEnum GAME_MODE = GameModeEnum.DEBUG;
+    public static GameModeEnum GAME_MODE = GameModeEnum.PROD;
     public static int COLLECTION_LOGGING_LIMIT = 25;
 
 
