@@ -55,9 +55,7 @@ public static class Logger{
         if(Objects.isNull(obj)){
             return json;
         }
-        // Get all the attributes of the Object
-        Field[] fields = obj.getClass().getDeclaredFields();
-
+        // Get all the attributes of the Object and loop through it.
         for(Field attr : obj.getClass().getDeclaredFields()){
             attr.setAccessible(true);
             try {
