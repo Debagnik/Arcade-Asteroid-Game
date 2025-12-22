@@ -13,7 +13,7 @@ public class Laser{
     private boolean active;
 
     //Default Constructor
-    public Laser(PVector shipPos, float angle){
+    public Laser(PVector shipPos, float angle, int playerLevel){
         // Calculate Spawn Position (The Nose of the ship)
         // We don't want the laser spawning inside the ship's center.
         // We calculate the tip based on the ship's size and heading.
@@ -27,7 +27,7 @@ public class Laser{
         velocity = PVector.fromAngle(angle);
         velocity.mult(AsteroidConstants.LASER_SPEED);
 
-        ttl = AsteroidConstants.LASER_LIFESPAN + getLevel();
+        ttl = AsteroidConstants.LASER_LIFESPAN + playerLevel;
         //println(ttl);
         active = true;
     }

@@ -13,14 +13,13 @@ public class WeaponsController{
         lasers = new ArrayList<Laser>();
     }
 
-    public void fire(Spacecraft ship){
-        lasers.add(new Laser(ship.getPosition(), ship.getHeading()));
-        //println("FIRE! Total Lasers: " + lasers.size());
+    public void fire(Spacecraft ship, int playerLevel){
+        lasers.add(new Laser(ship.getPosition(), ship.getHeading(), playerLevel));
     }
 
     // Core Weapon display logic
     public void displayAndUpdate(){
-        // looping backwards to remove dead lasers
+        // looping to remove dead lasers
         for(Laser l : lasers){
             l.update();
             l.display();
