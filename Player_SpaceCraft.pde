@@ -13,11 +13,30 @@ public class Spacecraft {
     private float rotationSpeed;    //The speed of rotation
     private PVector velocity;       //The velocity vector of the ship
     private PVector acceleration;   //The acceleration vector of the ship
+    private int invincibilityTimer; //The time for player invinsibility
 
-    boolean isThrusting;    //Flag to indicate if the ship is currently thrusting
+    private boolean isThrusting;    //Flag to indicate if the ship is currently thrusting
+    private boolean isInvincible;   //Invinsibility Period after player ship death
 
-    //Default Consteructor of Spacecraft
+    //Default Constructor of Spacecraft
     public Spacecraft() {
+       initPhysics();
+       // for the invincible flag
+       activateInvincibility(AsteroidConstants.INVINCIBLE_TIMER);
+    }
+
+    //Constructor for invinsible player
+    public Spacecraft(final boolean isInvincible){
+        initPhysics();
+        if(isInvincible){
+            activateInvincibility(AsteroidConstants.INVINCIBLE_TIMER);
+        } else {
+            this.isInvincible = false;
+            this.invincibilityTimer = 0;
+        }
+    }
+
+    private void initPhysics(){
         //Initial ship position (spawn position) and parameters
         position = new PVector(width/2, height/2); // Spawn at center of screen
         velocity = new PVector(0, 0); // Initial velocity is zero
@@ -26,6 +45,12 @@ public class Spacecraft {
         size = AsteroidConstants.SHIP_SIZE; 
         rotationSpeed = AsteroidConstants.SHIP_ROTATE_SPEED;
         isThrusting = false;
+
+    }
+
+    private void activateInvincibility(int invincibilityTimer){
+        this.isInvincible = true;
+        this.invincibilityTimer = invincibilityTimer;
     }
 
     public void update(){
@@ -37,6 +62,16 @@ public class Spacecraft {
         acceleration.mult(0); // Reset acceleration
 
         PhysicsHelper.screenWrap(position, size, width, height); // Screen wrapping logic (same as asteroids)
+
+        // Apply invinsibility
+        if(AsteroidConstants.GAME_MODE == AsteroidConstants.GameModeEnum.TEST){
+            this.isInvincible = true;
+        } else if(invincibilityTimer > 0){
+            invincibilityTimer--;
+            isInvincible = true;
+        } else {
+            isInvincible = false;
+        }
     }
 
     //Input method to change angle
@@ -49,6 +84,16 @@ public class Spacecraft {
 
     // Displays the spacecraft
     public void display(){
+
+        //Blink if invinsible
+        if(AsteroidConstants.GAME_MODE != AsteroidConstants.GameModeEnum.TEST){
+            if(isInvincible && invincibilityTimer > 0){
+                if((invincibilityTimer / 10) % 2 == 0){ // dont draw in every 10 frames.
+                    return;
+                }
+            }
+        }
+
         pushStyle();
         noFill();
         stroke(255); //White
@@ -144,6 +189,14 @@ public class Spacecraft {
 
     public void setVelocity(PVector velocity) {
         this.velocity = velocity;
+    }
+
+    public boolean getIsInvincible(){
+        return isInvincible;
+    }
+
+    public void setIsInvincible(boolean isInvincible){
+        this.isInvincible = isInvincible;
     }
 
     

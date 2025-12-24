@@ -150,5 +150,21 @@ public static class PhysicsHelper {
       return false;
     }
 
+    /* Ship to Asteroid Collision mechanics
+     * Checks if the Game mode is PROD or DEBUG
+     * Checks if the player ship hit an asteroid
+     * Simple check: Dist < Radius
+     */
+    public static boolean checkShip2AsteroidCollision(Spacecraft ship, Asteroid a){
+      if(ship.getIsInvincible()){
+        return false;
+      }
+      float dist = PVector.dist(ship.getPosition(), a.getPosition());
+      if(dist < a.getRadius() + AsteroidConstants.SHIP_SIZE){
+        return true;
+      }
+      return false;
+    }
+
 
 }
