@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
-// [1] New Imports for File Logging
 import java.io.File;
 import java.io.FileWriter;
 import java.io.PrintWriter;
@@ -24,11 +23,16 @@ public static class Logger {
 
     private static final String NULL_ATTR_NAME = "Attribute name null";
     private static final String NULL_VALUE = "null";
+    
+    private static String logDirectoryPath = AsteroidConstants.LOGGING_DIR; 
+    
+    // [CHANGE 1] Store the session epoch so it doesn't change every millisecond
+    private static Long sessionEpoch = null;
 
-    /**
-     * Main Logging Method.
-     * Checks GameMode and prints detailed object state to a log file.
-     */
+    public static void setLogDir(String path) {
+        logDirectoryPath = path;
+    }
+
     public static void log(Object obj, Integer playerLevel){
         if(AsteroidConstants.GAME_MODE != AsteroidConstants.GameModeEnum.DEBUG){
             return;
@@ -39,10 +43,8 @@ public static class Logger {
         String methodName = caller.getMethodName();
         JSONObject root = new JSONObject();
 
-        // Note: Using standard Java Date for static context safety
-        SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
+        SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss.SSS");
         root.setString("timestamp", timeFormat.format(new Date()));
-
         root.setString("gameMode", AsteroidConstants.GAME_MODE.toString());
         root.setString("source", callSite + " -> " + methodName + "()");
         root.setInt("playerLevel", playerLevel);
@@ -55,36 +57,38 @@ public static class Logger {
            root.setJSONObject("data", serializeObject(obj));
         }
 
-        // [2] Prepare Log Content
         String logOutput = "================= DEBUG LOG =================\n" +
                            root.format(2) + 
                            "\n=============================================\n";
 
-        // [3] Write to File
         saveLogToFile(logOutput);
     }
 
-    // Helper method to handle directory creation and file writing
     private static void saveLogToFile(String content) {
         try {
-            // 1. Generate Folder Name: Log_ddMMyyyy
-            SimpleDateFormat dateFormat = new SimpleDateFormat("ddMMyyyy");
-            String dateStr = dateFormat.format(new Date());
-            String folderPath = "Logs/Log_" + dateStr;
-
-            // 2. Generate File Name: LOG_{epoch}.log
-            long epoch = System.currentTimeMillis();
-            String fileName = "LOG_" + epoch + ".log";
-
-            // 3. Create Directory if it doesn't exist
-            File dir = new File(folderPath);
-            if (!dir.exists()) {
-                dir.mkdirs();
+            // [CHANGE 2] Initialize the session ID only once per game run
+            if (sessionEpoch == null) {
+                sessionEpoch = System.currentTimeMillis();
             }
 
-            // 4. Write File
-            File logFile = new File(dir, fileName);
-            // Append mode is true, though the unique timestamp implies a new file per millisecond
+            SimpleDateFormat dateFormat = new SimpleDateFormat("ddMMyyyy");
+            String dateStr = dateFormat.format(new Date());
+            
+            String basePath = (logDirectoryPath.isEmpty()) ? "Logs" : logDirectoryPath;
+            
+            // Construct: {SketchPath}/Logs/Log_ddMMyyyy/
+            File baseDir = new File(basePath);
+            File dailyDir = new File(baseDir, "Log_" + dateStr);
+
+            if (!dailyDir.exists()) {
+                dailyDir.mkdirs();
+            }
+
+            // [CHANGE 3] Use the static sessionEpoch for the filename
+            String fileName = "Log_" + sessionEpoch + ".log";
+            File logFile = new File(dailyDir, fileName);
+
+            // FileWriter(file, true) appends to the SAME file now
             FileWriter fw = new FileWriter(logFile, true); 
             PrintWriter pw = new PrintWriter(fw);
             pw.write(content);
@@ -92,6 +96,7 @@ public static class Logger {
 
         } catch (IOException e) {
             System.err.println("Logger Failed: " + e.getMessage());
+            e.printStackTrace(); 
         }
     }
 
@@ -100,13 +105,14 @@ public static class Logger {
         if(Objects.isNull(obj)){
             return json;
         }
-        // If object is a collection or map then show the content
+        
         if (obj instanceof Collection || obj instanceof Map || obj.getClass().isArray()) {
             return getCmplxValueHelper("content", obj);
         }
 
-        // Get all the attributes of the Object and loop through it.
         for(Field attr : obj.getClass().getDeclaredFields()){
+            if (Modifier.isStatic(attr.getModifiers())) continue;
+
             attr.setAccessible(true);
             try {
                 final String attrName = Objects.nonNull(attr.getName()) ? attr.getName() : NULL_ATTR_NAME;
@@ -115,15 +121,32 @@ public static class Logger {
                 JSONObject formattedData = getCmplxValueHelper(attrName, attrValue);
 
                 if(Objects.nonNull(attrValue)){
-                    json.setJSONObject(attrName, formattedData);
+                    if (formattedData.hasKey(attrName)) {
+                        Object innerVal = formattedData.get(attrName);
+                        if (innerVal instanceof JSONObject) json.setJSONObject(attrName, (JSONObject)innerVal);
+                        else if (innerVal instanceof JSONArray) json.setJSONArray(attrName, (JSONArray)innerVal);
+                        else if (innerVal instanceof String) json.setString(attrName, (String)innerVal);
+                        else if (innerVal instanceof Boolean) json.setBoolean(attrName, (Boolean)innerVal);
+                        else if (innerVal instanceof Integer) json.setInt(attrName, (Integer)innerVal);
+                        else if (innerVal instanceof Float) json.setFloat(attrName, (Float)innerVal);
+                    }
+                    
+                    java.util.Set<String> keys = formattedData.keys();
+                    for(String key : keys) {
+                        if(!key.equals(attrName)) {
+                             try { json.setJSONObject(key, formattedData.getJSONObject(key)); } catch(Exception e) {}
+                             try { json.setJSONArray(key, formattedData.getJSONArray(key)); } catch(Exception e) {}
+                             try { json.setString(key, formattedData.getString(key)); } catch(Exception e) {}
+                             try { json.setInt(key, formattedData.getInt(key)); } catch(Exception e) {}
+                             try { json.setBoolean(key, formattedData.getBoolean(key)); } catch(Exception e) {}
+                        }
+                    }
                 } else{
                     json.setString(attrName, NULL_VALUE);
                 }
 
             } catch (IllegalAccessException e){
                 json.setString(attr.getName(), "[ACCESS DENIED]");
-                // We can print this to the console as a fallback warning
-                System.out.println(e.getMessage());
             }
         }
         return json;
@@ -135,7 +158,6 @@ public static class Logger {
             json.setString(name, NULL_VALUE);
             return json;
         }
-        // Handle PVector
         if(attrValue instanceof PVector){
             final PVector vect = (PVector) attrValue;
             final JSONObject vectJson = new JSONObject();
@@ -144,7 +166,7 @@ public static class Logger {
             vectJson.setFloat("z", vect.z);
             json.setJSONObject(name, vectJson);
 
-        } else if(attrValue.getClass().isArray()){ //HANDLE ARRAYS (Primitive & Wrapper)
+        } else if(attrValue.getClass().isArray()){ 
             final JSONArray jsonArray = new JSONArray();
             final int arrayLoggingLimit = AsteroidConstants.COLLECTION_LOGGING_LIMIT;
             final int arrayLength = Array.getLength(attrValue);
@@ -162,7 +184,7 @@ public static class Logger {
 
             json.setJSONArray(name, jsonArray);
 
-        } else if(attrValue instanceof Collection){  //Handle Collections
+        } else if(attrValue instanceof Collection){ 
             Collection<?> col = (Collection<?>) attrValue;
             ArrayList<Object> colArray = new ArrayList<Object>(col);
             final JSONArray jsonArray = new JSONArray();
@@ -183,7 +205,7 @@ public static class Logger {
 
             json.setJSONArray(name, jsonArray);
         
-        } else if(attrValue instanceof Map){ //Handles Maps
+        } else if(attrValue instanceof Map){ 
             Map<?, ?> attrMap = (Map<?, ?>) attrValue;
             final JSONArray jsonMap = new JSONArray();
             final int mapLoggingLimit = AsteroidConstants.COLLECTION_LOGGING_LIMIT;
@@ -210,17 +232,14 @@ public static class Logger {
 
             json.setJSONArray(name, jsonMap);
 
-
-        }else if(attrValue instanceof String || attrValue instanceof Character || attrValue instanceof Number || attrValue instanceof Boolean || attrValue.getClass().isEnum()){ // Handle rest of the primitive Data types or Enums
+        } else if(attrValue instanceof String || attrValue instanceof Character || attrValue instanceof Number || attrValue instanceof Boolean || attrValue.getClass().isEnum()){ 
             json.setString(name, attrValue.toString());
-        } else { // Handles Unknown Datatypes acting as a fallback
+        } else { 
             final JSONObject fallback = new JSONObject();
             fallback.setString("error", "DATATYPE NOT DEFINED IN LOGGER: " + attrValue.getClass().getSimpleName());
             json.setJSONObject(name, fallback);
         }
 
         return json;
-
     }
-
 }

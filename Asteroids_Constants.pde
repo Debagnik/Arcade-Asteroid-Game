@@ -46,5 +46,6 @@ public static class AsteroidConstants {
     };
     public static GameModeEnum GAME_MODE = GameModeEnum.DEBUG;
     public static int COLLECTION_LOGGING_LIMIT = 25;
+    public static final String LOGGING_DIR = "C:/Users/debag/Documents/Asteroids/Logs";
 
 }
