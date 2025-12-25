@@ -85,7 +85,7 @@ public class Spacecraft {
     // Displays the spacecraft
     public void display(){
 
-        //Blink if invinsible
+        //Blink if invincible
         if(AsteroidConstants.GAME_MODE != AsteroidConstants.GameModeEnum.TEST){
             if(isInvincible && invincibilityTimer > 0){
                 if((invincibilityTimer / 10) % 2 == 0){ // dont draw in every 10 frames.
