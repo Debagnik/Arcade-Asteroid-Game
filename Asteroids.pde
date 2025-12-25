@@ -104,7 +104,7 @@ private void activateRespawnMechanics() {
 
   //respawns
   if (respawnTimer == 0) {
-    ship = new Spacecraft(true); //Uses the incincibility constructor
+    ship = new Spacecraft(true); //Uses the invincibility constructor
 
     // reset the inputs
     isLeft = false;
