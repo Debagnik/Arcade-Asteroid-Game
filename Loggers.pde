@@ -137,6 +137,7 @@ public static class Logger {
                     java.util.Set<String> keys = formattedData.keys();
                     for(String key : keys) {
                         if(!key.equals(attrName)) {
+                            // Attempting multiple typed setters; exceptions expected for type mismatches
                              try { json.setJSONObject(key, formattedData.getJSONObject(key)); } catch(Exception e) {}
                              try { json.setJSONArray(key, formattedData.getJSONArray(key)); } catch(Exception e) {}
                              try { json.setString(key, formattedData.getString(key)); } catch(Exception e) {}

@@ -52,11 +52,11 @@ void draw() {
   if (respawnTimer > 0) {
     activateRespawnMechanics();
   } else {
-    activeGameplayhandler();
+    activeGameplayHandler();
   }
 }
 
-private void activeGameplayhandler() {
+private void activeGameplayHandler() {
   shipMechanics();
   // Weapons Handling
   weapon.displayAndUpdate();
