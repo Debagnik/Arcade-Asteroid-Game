@@ -63,7 +63,7 @@ public class Spacecraft {
 
         PhysicsHelper.screenWrap(position, size, width, height); // Screen wrapping logic (same as asteroids)
 
-        // Apply invinsibility
+        // Apply invincibility
         if(AsteroidConstants.GAME_MODE == AsteroidConstants.GameModeEnum.TEST){
             this.isInvincible = true;
         } else if(invincibilityTimer > 0){
