@@ -19,6 +19,8 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import static org.apache.commons.lang3.StringUtils;
+
 public static class Logger {
 
     private static final String NULL_ATTR_NAME = "Attribute name null";
@@ -29,7 +31,7 @@ public static class Logger {
     private static Long sessionEpoch = null;
 
     public static void setLogDir(String path) {
-        logDirectoryPath = path;
+        logDirectoryPath = StringUtils.isNotEmpty(path) ? path : "./Logs";
     }
 
     public static void log(Object obj, Integer playerLevel){
@@ -73,7 +75,7 @@ public static class Logger {
             SimpleDateFormat dateFormat = new SimpleDateFormat("ddMMyyyy");
             String dateStr = dateFormat.format(new Date());
             
-            String basePath = (logDirectoryPath.isEmpty()) ? "Logs" : logDirectoryPath;
+            String basePath = (StringUtils.isEmpty(logDirectoryPath)) ? "Logs" : logDirectoryPath;
             
             // Construct: {SketchPath}/Logs/Log_ddMMyyyy/
             File baseDir = new File(basePath);
