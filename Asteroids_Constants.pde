@@ -35,7 +35,7 @@ public static class AsteroidConstants {
 
     // LASER CONSTANTS
     public static final float LASER_SPEED = SHIP_MAX_SPEED + 2.0;
-    public static final int LASER_LIFESPAN = 70; // Frames before it disappears
+    public static final int LASER_LIFESPAN = 60; // Frames before it disappears
     public static final float LASER_SIZE = 0.5;
 
     // Logger Constants - Will be used later
@@ -44,8 +44,8 @@ public static class AsteroidConstants {
         DEBUG,
         PROD
     };
-    public static GameModeEnum GAME_MODE = GameModeEnum.DEBUG;
+    public static GameModeEnum GAME_MODE = GameModeEnum.TEST;
     public static int COLLECTION_LOGGING_LIMIT = 25;
-    public static final String LOGGING_DIR = "C:/Users/debag/Documents/Asteroids/Logs";
+    public static final String LOGGING_DIR = "./Logs";
 
 }

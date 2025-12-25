@@ -24,9 +24,8 @@ public static class Logger {
     private static final String NULL_ATTR_NAME = "Attribute name null";
     private static final String NULL_VALUE = "null";
     
-    private static String logDirectoryPath = AsteroidConstants.LOGGING_DIR; 
+    private static String logDirectoryPath; 
     
-    // [CHANGE 1] Store the session epoch so it doesn't change every millisecond
     private static Long sessionEpoch = null;
 
     public static void setLogDir(String path) {
@@ -89,12 +88,16 @@ public static class Logger {
             File logFile = new File(dailyDir, fileName);
 
             // FileWriter(file, true) appends to the SAME file now
-            FileWriter fw = new FileWriter(logFile, true); 
-            PrintWriter pw = new PrintWriter(fw);
-            pw.write(content);
-            pw.close();
+            try(FileWriter fw = new FileWriter(logFile, true); 
+            PrintWriter pw = new PrintWriter(fw);){
+                pw.write(content);
+            } catch (IOException e){
+                System.err.println("Logger file writer failed");
+                System.err.println(e.getMessage());
+                e.printStackTrace();
+            }
 
-        } catch (IOException e) {
+        } catch (Exception e) {
             System.err.println("Logger Failed: " + e.getMessage());
             e.printStackTrace(); 
         }

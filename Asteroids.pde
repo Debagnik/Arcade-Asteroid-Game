@@ -23,6 +23,9 @@ void setup() {
   size(1080, 608, P2D);
   pixelDensity(1);
 
+  // setup current logger
+  Logger.setLogDir(savePath(AsteroidConstants.LOGGING_DIR));
+
   //Turn off Anti-aliasing
   smooth();
 

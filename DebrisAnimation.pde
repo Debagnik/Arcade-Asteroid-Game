@@ -50,7 +50,7 @@ public class Debris{
     }
 
 
-    // Set up for buplic accessors, APIs (Getters/Setters)
+    // Set up for public accessors, APIs (Getters/Setters)
     public PVector getPosition(){
         return position.copy();
     }

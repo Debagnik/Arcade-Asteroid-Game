@@ -13,10 +13,10 @@ public class Spacecraft {
     private float rotationSpeed;    //The speed of rotation
     private PVector velocity;       //The velocity vector of the ship
     private PVector acceleration;   //The acceleration vector of the ship
-    private int invincibilityTimer; //The time for player invinsibility
+    private int invincibilityTimer; //The time for player invincibility
 
     private boolean isThrusting;    //Flag to indicate if the ship is currently thrusting
-    private boolean isInvincible;   //Invinsibility Period after player ship death
+    private boolean isInvincible;   //Invincibility Period after player ship death
 
     //Default Constructor of Spacecraft
     public Spacecraft() {
