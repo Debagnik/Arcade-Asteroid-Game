@@ -26,17 +26,22 @@ public static class Logger {
     private static final String NULL_ATTR_NAME = "Attribute name null";
     private static final String NULL_VALUE = "null";
     
-    private static String logDirectoryPath; 
+    private static String logDirectoryPath;
+    private static final String FALLBACK_LOGGING_DIRECTORY = "./.Asteroid/Logs";
     
-    private static Long sessionEpoch = null;
+    private static volatile Long sessionEpoch = null; // Race Condition Safe
 
     public static void setLogDir(String path) {
-        logDirectoryPath = StringUtils.isNotEmpty(path) ? path : "./Logs";
+        logDirectoryPath = StringUtils.isNotBlank(path) ? path : new File(System.getProperty("user.home"), FALLBACK_LOGGING_DIRECTORY).getAbsolutePath();
     }
 
     public static void log(Object obj, Integer playerLevel){
         if(AsteroidConstants.GAME_MODE != AsteroidConstants.GameModeEnum.DEBUG){
             return;
+        }
+
+        if(Objects.isNull(playerLevel)){
+            playerLevel = -1; //The player level can be set to -1 or any negative number, if the Logger outputs a Negative interger it is to be assumed that the Logger called is sharing a null player level. 
         }
         
         StackTraceElement caller = Thread.currentThread().getStackTrace()[2];
@@ -67,25 +72,33 @@ public static class Logger {
 
     private static void saveLogToFile(String content) {
         try {
-            // [CHANGE 2] Initialize the session ID only once per game run
+            // This double-checked locking pattern ensures only one thread initializes the session ID! and prevent race conditions.
             if (sessionEpoch == null) {
-                sessionEpoch = System.currentTimeMillis();
+                synchronized(Logger.class) {
+                    if (sessionEpoch == null) {
+                        sessionEpoch = System.currentTimeMillis();
+                    }
+                }
             }
 
             SimpleDateFormat dateFormat = new SimpleDateFormat("ddMMyyyy");
             String dateStr = dateFormat.format(new Date());
             
-            String basePath = (StringUtils.isEmpty(logDirectoryPath)) ? "Logs" : logDirectoryPath;
+            String basePath = (StringUtils.isBlank(logDirectoryPath)) ? new File(System.getProperty("user.home"), FALLBACK_LOGGING_DIRECTORY).getAbsolutePath() : logDirectoryPath;
             
             // Construct: {SketchPath}/Logs/Log_ddMMyyyy/
             File baseDir = new File(basePath);
+            
+            if(!baseDir.exists()){
+                baseDir.mkdirs();
+            }
+
             File dailyDir = new File(baseDir, "Log_" + dateStr);
 
             if (!dailyDir.exists()) {
                 dailyDir.mkdirs();
             }
 
-            // [CHANGE 3] Use the static sessionEpoch for the filename
             String fileName = "Log_" + sessionEpoch + ".log";
             File logFile = new File(dailyDir, fileName);
 
@@ -103,6 +116,11 @@ public static class Logger {
             System.err.println("Logger Failed: " + e.getMessage());
             e.printStackTrace(); 
         }
+    }
+
+    // Second Static Log method with different method signature.
+    public static void log(Object obj){
+        log(obj, null);
     }
 
     private static JSONObject serializeObject(Object obj){
@@ -141,11 +159,31 @@ public static class Logger {
                     for(String key : keys) {
                         if(!key.equals(attrName)) {
                             // Attempting multiple typed setters; exceptions expected for type mismatches
-                             try { json.setJSONObject(key, formattedData.getJSONObject(key)); } catch(Exception e) {}
-                             try { json.setJSONArray(key, formattedData.getJSONArray(key)); } catch(Exception e) {}
-                             try { json.setString(key, formattedData.getString(key)); } catch(Exception e) {}
-                             try { json.setInt(key, formattedData.getInt(key)); } catch(Exception e) {}
-                             try { json.setBoolean(key, formattedData.getBoolean(key)); } catch(Exception e) {}
+                            try { 
+                                json.setJSONObject(key, formattedData.getJSONObject(key)); 
+                            } catch(Exception e) {
+                                println(e.getMessage());
+                            }
+                            try { 
+                                json.setJSONArray(key, formattedData.getJSONArray(key)); 
+                            } catch(Exception e) {
+                                println(e.getMessage());
+                            }
+                            try { 
+                                json.setString(key, formattedData.getString(key)); 
+                            } catch(Exception e) {
+                                println(e.getMessage());
+                            }
+                            try { 
+                                json.setInt(key, formattedData.getInt(key)); 
+                            } catch(Exception e) {
+                                println(e.getMessage());
+                            }
+                            try { 
+                                json.setBoolean(key, formattedData.getBoolean(key)); 
+                            } catch(Exception e) {
+                                println(e.getMessage());
+                            }
                         }
                     }
                 } else{
