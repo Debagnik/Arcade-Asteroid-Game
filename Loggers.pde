@@ -28,6 +28,7 @@ public static class Logger {
     
     private static String logDirectoryPath;
     private static final String FALLBACK_LOGGING_DIRECTORY = "./.Asteroid/Logs";
+    private static final boolean isErrLog = false; // This Flag enables/Disables minor try/Catch error output. Set to true only if there is a need to debug a map
     
     private static volatile Long sessionEpoch = null; // Race Condition Safe
 
@@ -162,27 +163,27 @@ public static class Logger {
                             try { 
                                 json.setJSONObject(key, formattedData.getJSONObject(key)); 
                             } catch(Exception e) {
-                                println(e.getMessage());
+                                if(isErrLog) println(e.getMessage());
                             }
                             try { 
                                 json.setJSONArray(key, formattedData.getJSONArray(key)); 
                             } catch(Exception e) {
-                                println(e.getMessage());
+                                if(isErrLog) println(e.getMessage());
                             }
                             try { 
                                 json.setString(key, formattedData.getString(key)); 
                             } catch(Exception e) {
-                                println(e.getMessage());
+                                if(isErrLog) println(e.getMessage());
                             }
                             try { 
                                 json.setInt(key, formattedData.getInt(key)); 
                             } catch(Exception e) {
-                                println(e.getMessage());
+                                if(isErrLog) println(e.getMessage());
                             }
                             try { 
                                 json.setBoolean(key, formattedData.getBoolean(key)); 
                             } catch(Exception e) {
-                                println(e.getMessage());
+                                if(isErrLog) println(e.getMessage());
                             }
                         }
                     }
