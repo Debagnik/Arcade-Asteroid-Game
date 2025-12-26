@@ -16,6 +16,8 @@ public class Asteroid {
   private float[] offset;
   private float mass; //Scaler Quantity, find explanation below comment
 
+  private AsteroidConstants.AsteroidExplosionTypeEnum explosionType;
+
   //Default constructor of the asteroids
   public Asteroid() {
     //Spawns at a random location
@@ -28,6 +30,7 @@ public class Asteroid {
 
     // Set a random size
     radius = random(AsteroidConstants.MIN_ASTEROID_SIZE, AsteroidConstants.MAX_ASTEROID_SIZE);
+    determineExplosionType();
 
     // Generate the jagged shape data
     generateShapeData();
@@ -38,6 +41,7 @@ public class Asteroid {
     position = parentPosition.copy(); //spawns where parent died
     position.add(PVector.random2D().mult(newRadius * 0.5)); //Add small random offset to prevent immediate collision with sibling
     radius = newRadius;
+    determineExplosionType();
 
     // Smaller asteroids fly faster!
     velocity = PVector.random2D();
@@ -57,6 +61,8 @@ public class Asteroid {
     velocity.limit(AsteroidConstants.ASTEROID_MAX_SPEED + getLevel());
     radius = random(AsteroidConstants.MIN_ASTEROID_SIZE, AsteroidConstants.MAX_ASTEROID_SIZE);
 
+    determineExplosionType();
+
     generateShapeData();
 
     int attempts = 0;
@@ -65,6 +71,17 @@ public class Asteroid {
       attempts++;
       // println(attempts);
     } while (PVector.dist(position, ship.getPosition()) < safeDist && attempts < 100);
+  }
+
+  private void determineExplosionType(){
+    final float ratio = getRadius() / AsteroidConstants.MAX_ASTEROID_SIZE;
+    if(ratio > 0.6){
+      this.explosionType = AsteroidConstants.AsteroidExplosionTypeEnum.BIG_EXPLOSION;
+    } else if (ratio > 0.4){
+      this.explosionType = AsteroidConstants.AsteroidExplosionTypeEnum.MEDIUM_EXPLOSION;
+    } else {
+      this.explosionType = AsteroidConstants.AsteroidExplosionTypeEnum.SMALL_EXPLOSION;
+    }
   }
 
   // Asteroid Movement Animation
@@ -158,10 +175,20 @@ public class Asteroid {
   
   public void setRadius(float radius) {
     this.radius = radius;
+    determineExplosionType();
   }
   
   public void setMass(float mass) {
     this.mass = mass;
+    determineExplosionType();
+  }
+
+  public AsteroidConstants.AsteroidExplosionTypeEnum getExplosionType(){
+    return explosionType;
+  }
+
+  public void setExplosionType(AsteroidConstants.AsteroidExplosionTypeEnum explosionType){
+    this.explosionType = explosionType;
   }
     
 }

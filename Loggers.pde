@@ -134,6 +134,11 @@ public static class Logger {
             return json;
         }
         
+        if (obj instanceof String || obj instanceof Number || obj instanceof Boolean || obj.getClass().isEnum()) {
+            json.setString("value", obj.toString());
+            return json;
+        }
+        
         if (obj instanceof Collection || obj instanceof Map || obj.getClass().isArray()) {
             return getCmplxValueHelper("content", obj);
         }
