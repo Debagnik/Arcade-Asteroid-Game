@@ -116,7 +116,8 @@ public static class Logger {
         }
 
         for(Field attr : obj.getClass().getDeclaredFields()){
-            if (Modifier.isStatic(attr.getModifiers())) continue;
+            // Static fields will now be included in serialization
+            // (removed the filtering condition that was contradicting the design intent)
 
             attr.setAccessible(true);
             try {
