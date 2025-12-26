@@ -66,6 +66,7 @@ private class AsteroidExplosionFacade {
                 particleCount = AsteroidConstants.PARTICLE_COUNT_SMALL;
                 break;
             default:
+                System.err.println("WARNING: Unexpected explosion type: " + asteroid.getExplosionType());
                 break;
         }
 
@@ -94,7 +95,7 @@ private class AsteroidExplosionFacade {
 // Ship Explosion Facade
 private class ShipExplosionFacade{
     private ArrayList<ShipDebris> shipDebrisList;
-    private int SHIP_WRECKAGE_PARTS = 4;
+    private final int SHIP_WRECKAGE_PARTS = 4;
 
     // Default Constructor
     public ShipExplosionFacade(){
