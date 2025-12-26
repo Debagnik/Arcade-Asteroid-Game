@@ -10,16 +10,21 @@ import java.util.HashSet;
 // Main Game File
 // Define Global Variables
 private ArrayList<Asteroid> asteroids; //adds a list of asteriods
+private ArrayList<Debris> debrisList; //adds debris when player ship dies
 private Spacecraft ship; //Adds a player ship
 private WeaponsController weapon;
 private boolean isLeft, isRight, isUp;
 private int level = 0;
+private int respawnTimer = 0;
 
 void setup() {
   //create a window
   //Using P2D renderer
   size(1080, 608, P2D);
   pixelDensity(1);
+
+  // setup current logger
+  Logger.setLogDir(savePath(AsteroidConstants.LOGGING_DIR));
 
   //Turn off Anti-aliasing
   smooth();
@@ -35,18 +40,78 @@ void setup() {
   }
   // Init Weapons controller
   weapon = new WeaponsController();
+
+  //Init Debris list
+  debrisList = new ArrayList<Debris>();
 }
 
 void draw() {
   //Set BG to a a dark color with RGB values
   background(20, 20, 30);
 
+  if (respawnTimer > 0) {
+    activateRespawnMechanics();
+  } else {
+    activeGameplayHandler();
+  }
+}
+
+private void activeGameplayHandler() {
   shipMechanics();
   // Weapons Handling
   weapon.displayAndUpdate();
   //Asteroid mechanics
   asteroidsMechanics();
+  //player collision mechanics
+  checkPlayerCollision();
 }
+
+private void checkPlayerCollision() {
+  // Asteroid vs PlayerShip Collision
+  HashSet<Asteroid> spawnChildAsteroids = new HashSet<Asteroid>();
+  HashSet<Asteroid> despawnParentAsteroids = new HashSet<Asteroid>();
+  for (Asteroid a : asteroids) {
+    final boolean hit = PhysicsHelper.checkShip2AsteroidCollision(ship, a);
+    if (hit) {
+      despawnParentAsteroids.add(a);
+      if (a.getRadius() > AsteroidConstants.MIN_ASTEROID_SIZE) {
+        spawnChildAsteroids.add(new Asteroid(a.getPosition(), a.getRadius()/2.0));
+        spawnChildAsteroids.add(new Asteroid(a.getPosition(), a.getRadius()/2.0));
+      }
+      animateShipDestroy(ship);
+      break;
+    }
+  }
+  asteroids.removeAll(despawnParentAsteroids);
+  asteroids.addAll(spawnChildAsteroids);
+}
+
+private void activateRespawnMechanics() {
+  respawnTimer--;
+  //Animate Debris
+  for (int i = debrisList.size() - 1; i >= 0; i--) {
+    Debris d = debrisList.get(i);
+    d.update();
+    d.display();
+    if (d.isDead()) debrisList.remove(i);
+    Logger.log(d, getLevel());
+  }
+
+  // keeping the asteroids alive in the BG
+  asteroidsMechanics();
+  weapon.displayAndUpdate();
+
+  //respawns
+  if (respawnTimer == 0) {
+    ship = new Spacecraft(true); //Uses the invincibility constructor
+
+    // reset the inputs
+    isLeft = false;
+    isRight = false;
+    isUp = false;
+  }
+}
+
 
 private void shipMechanics() {
 
@@ -101,12 +166,14 @@ private void asteroidsMechanics() {
     if (deactivateLasers.contains(l)) {
       continue;
     }
+    Logger.log(l, getLevel());
 
     for (Asteroid a : asteroids) {
       // Optimization: If asteroid is already destroyed by another laser in this frame, skip it
       if (despawnParentAsteroids.contains(a)) {
         continue;
       }
+      Logger.log(a, getLevel());
 
       // Check Hit collision
       if (PhysicsHelper.checkLaserCollision(l, a)) {
@@ -138,17 +205,35 @@ private void asteroidsMechanics() {
       Asteroid a1 = asteroids.get(i);
       Asteroid a2 = asteroids.get(j);
 
+      Logger.log(a1, getLevel());
+      Logger.log(a2, getLevel());
       //perform collistion detection
       PhysicsHelper.checkCollision(a1, a2);
     }
   }
 
+  Logger.log(ship, getLevel());
+  Logger.log(weapon, getLevel());
+
+  // Level Up and infinite gameplay logic
   if (asteroids.size() == 0) {
     setLevel(getLevel() + 1);
     for (int i = 0; i < AsteroidConstants.INITIAL_ASTEROID_COUNT + getLevel(); i++) {
       asteroids.add(new Asteroid(ship, AsteroidConstants.ASTEROID_SHIP_SAFE_DISTANCE));
     }
   }
+}
+
+private void animateShipDestroy(Spacecraft playerShip) {
+  respawnTimer = AsteroidConstants.RESPAWN_TIMER;
+  for (int i=0; i < 4; i++) {
+    debrisList.add(new Debris(playerShip.getPosition()));
+  }
+
+  //Reseting the inputs for extra safety
+  isLeft = false;
+  isRight = false;
+  isUp = false;
 }
 
 // Generic Main APIs (Getters/Setters)

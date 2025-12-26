@@ -23,28 +23,30 @@ public static class AsteroidConstants {
     public static final float SHIP_THRUST_POWER = 0.1;
     public static final float SHIP_MAX_SPEED = 6.0;
     public static final float SHIP_FRICTION = 0.99;
+    public static final Integer RESPAWN_TIMER = 90;
+    public static final Integer INVINCIBLE_TIMER = 150;
 
     // Asteroids constants
     public static final int INITIAL_ASTEROID_COUNT = 5;
-    public static final float ASTEROID_MAX_SPEED = SHIP_MAX_SPEED + 2.0;
+    public static final float ASTEROID_MAX_SPEED = 5.0;
     public static final float MIN_ASTEROID_SIZE = 10.0;
     public static final float MAX_ASTEROID_SIZE = 50.0;
     public static final float ASTEROID_SHIP_SAFE_DISTANCE = 200;
 
     // LASER CONSTANTS
     public static final float LASER_SPEED = SHIP_MAX_SPEED + 2.0;
-    public static final int LASER_LIFESPAN = 70; // Frames before it disappears
+    public static final int LASER_LIFESPAN = 60; // Frames before it disappears
     public static final float LASER_SIZE = 0.5;
 
     // Logger Constants - Will be used later
     public static enum GameModeEnum{
         TEST,
         DEBUG,
+        LOG,
         PROD
     };
-    public static GameModeEnum GAME_MODE = GameModeEnum.PROD;
+    public static GameModeEnum GAME_MODE = GameModeEnum.LOG;
     public static int COLLECTION_LOGGING_LIMIT = 25;
-
-
+    public static final String LOGGING_DIR = "./Logs";
 
 }
