@@ -10,9 +10,9 @@ import java.util.HashSet;
 // Main Game File
 // Define Global Variables
 private ArrayList<Asteroid> asteroids; //adds a list of asteriods
-private ArrayList<Debris> debrisList; //adds debris when player ship dies
 private Spacecraft ship; //Adds a player ship
 private WeaponsController weapon;
+private ExplosionController explosions;  //Explosion Particle controller
 private boolean isLeft, isRight, isUp;
 private int level = 0;
 private int respawnTimer = 0;
@@ -41,8 +41,9 @@ void setup() {
   // Init Weapons controller
   weapon = new WeaponsController();
 
-  //Init Debris list
-  debrisList = new ArrayList<Debris>();
+  //Init Explosion Controller
+  explosions = new ExplosionController();
+  
 }
 
 void draw() {
@@ -60,6 +61,8 @@ private void activeGameplayHandler() {
   shipMechanics();
   // Weapons Handling
   weapon.displayAndUpdate();
+  //Explosion handling
+  explosions.displayAndUpdate();
   //Asteroid mechanics
   asteroidsMechanics();
   //player collision mechanics
@@ -89,13 +92,7 @@ private void checkPlayerCollision() {
 private void activateRespawnMechanics() {
   respawnTimer--;
   //Animate Debris
-  for (int i = debrisList.size() - 1; i >= 0; i--) {
-    Debris d = debrisList.get(i);
-    d.update();
-    d.display();
-    if (d.isDead()) debrisList.remove(i);
-    Logger.log(d, getLevel());
-  }
+  explosions.displayAndUpdate();
 
   // keeping the asteroids alive in the BG
   asteroidsMechanics();
@@ -166,17 +163,19 @@ private void asteroidsMechanics() {
     if (deactivateLasers.contains(l)) {
       continue;
     }
-    Logger.log(l, getLevel());
+    //Logger.log(l, getLevel());
 
     for (Asteroid a : asteroids) {
       // Optimization: If asteroid is already destroyed by another laser in this frame, skip it
       if (despawnParentAsteroids.contains(a)) {
         continue;
       }
-      Logger.log(a, getLevel());
+      //Logger.log(a, getLevel());
 
       // Check Hit collision
       if (PhysicsHelper.checkLaserCollision(l, a)) {
+        explosions.animateAsteroidExplosion(a); //Asteroid explosion Animation
+        
         if (a.getRadius() > AsteroidConstants.MIN_ASTEROID_SIZE) {
           // Asteroid Split logic and spawning logic
           spawnChildAsteroids.add(new Asteroid(a.getPosition(), (a.getRadius())/2.0));
@@ -205,15 +204,15 @@ private void asteroidsMechanics() {
       Asteroid a1 = asteroids.get(i);
       Asteroid a2 = asteroids.get(j);
 
-      Logger.log(a1, getLevel());
-      Logger.log(a2, getLevel());
+      //Logger.log(a1, getLevel());
+      //Logger.log(a2, getLevel());
       //perform collistion detection
       PhysicsHelper.checkCollision(a1, a2);
     }
   }
 
-  Logger.log(ship, getLevel());
-  Logger.log(weapon, getLevel());
+  //Logger.log(ship, getLevel());
+  //Logger.log(weapon, getLevel());
 
   // Level Up and infinite gameplay logic
   if (asteroids.size() == 0) {
@@ -226,9 +225,7 @@ private void asteroidsMechanics() {
 
 private void animateShipDestroy(Spacecraft playerShip) {
   respawnTimer = AsteroidConstants.RESPAWN_TIMER;
-  for (int i=0; i < 4; i++) {
-    debrisList.add(new Debris(playerShip.getPosition()));
-  }
+  explosions.animateShipExplosion(playerShip);
 
   //Reseting the inputs for extra safety
   isLeft = false;

@@ -5,16 +5,16 @@
  * FILE: DebrisAnimation.pde
  */
 
-public class Debris{
+public class ShipDebris{
     private PVector position;
     private PVector velocity;
     private float length;
     private float angle;
     private float spin;
-    private Integer lifespan;
+    private int lifespan;
 
     //Default Constructor
-    public Debris(final PVector position){
+    public ShipDebris(final PVector position){
         this.position = position.copy();
         velocity = PVector.random2D();
         velocity.mult(random(1, 3));
@@ -66,7 +66,7 @@ public class Debris{
     public float getSpin(){
         return spin;
     }
-    public Integer getLifespan(){
+    public int getLifespan(){
         return lifespan;
     }
 
@@ -85,7 +85,95 @@ public class Debris{
     public void setSpin(final float spin){
         this.spin = spin;
     }
-    public void setLifespan(final Integer lifespan){
+    public void setLifespan(final int lifespan){
         this.lifespan = lifespan;
     }
+}
+
+public class AsteroidDebris{
+    private PVector position;
+    private PVector velocity;
+    private float size;
+    private int lifespan;
+    private int maxLifespan;
+
+    // Default constructor
+    public AsteroidDebris(Asteroid asteroid){
+        this.position = asteroid.getPosition().copy();
+        
+       if(asteroid.getExplosionType() == AsteroidConstants.AsteroidExplosionTypeEnum.BIG_EXPLOSION){
+        final float spread = random(-AsteroidConstants.PI/6 , AsteroidConstants.PI/6); //Tight Cone, in direction of laser
+        setVelocity(asteroid.getVelocity().normalize().rotate(spread).mult(random(1.0, 2.5)));
+        setSize(random(3, 5));
+        setMaxLifespan(40);
+       } else if(asteroid.getExplosionType() == AsteroidConstants.AsteroidExplosionTypeEnum.MEDIUM_EXPLOSION){
+        final float spread = random(-AsteroidConstants.PI/2 , AsteroidConstants.PI/2); //Loose Cone, in direction of laser
+        setVelocity(asteroid.getVelocity().normalize().mult(spread).mult(random(1.5, 3.5)));
+        setSize(random(2, 4));
+        setMaxLifespan(30);
+       } else {
+        //spread is radial no specific direction.
+        setVelocity(PVector.random2D().mult(random(2, 5)));
+        setSize(random(1, 3));
+        setMaxLifespan(20);
+       }
+       setLifespan(getMaxLifespan());
+
+
+    }
+
+    public void update(){
+        position.add(getVelocity());
+        setLifespan(getLifespan() - 1);
+    }
+
+    public boolean isDead(){
+        return getLifespan() < 0;
+    }
+
+    public void display(){
+        pushStyle();
+        noStroke();
+
+        // fading effect
+        final float alpha = map(lifespan, 0, maxLifespan, 0, 255);
+        fill(255, 255, 255, alpha);
+        ellipse(getPosition().x, getPosition().y, getSize(), getSize());
+
+        popStyle();
+    }
+
+
+    //Public Accessors, APIs (getters/setters)
+    public PVector getPosition(){
+        return position.copy();
+    }
+    public PVector getVelocity(){
+        return velocity.copy();
+    }
+    public float getSize(){
+        return size;
+    }
+    public int getLifespan(){
+        return lifespan;
+    }
+    public int getMaxLifespan(){
+        return maxLifespan;
+    }
+    public void setPosition(final PVector position){
+        this.position = position;
+    }
+    public void setVelocity(final PVector velocity){
+        this.velocity = velocity;
+    }
+    public void setSize(final float size){
+        this.size = size;
+    }
+    public void setLifespan(final int lifespan){
+        this.lifespan = lifespan;
+    }
+    public void setMaxLifespan(final int maxLifespan){
+        this.maxLifespan = maxLifespan;
+    }
+
 }

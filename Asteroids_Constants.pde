@@ -23,8 +23,8 @@ public static class AsteroidConstants {
     public static final float SHIP_THRUST_POWER = 0.1;
     public static final float SHIP_MAX_SPEED = 6.0;
     public static final float SHIP_FRICTION = 0.99;
-    public static final Integer RESPAWN_TIMER = 90;
-    public static final Integer INVINCIBLE_TIMER = 150;
+    public static final int RESPAWN_TIMER = 90;
+    public static final int INVINCIBLE_TIMER = 150;
 
     // Asteroids constants
     public static final int INITIAL_ASTEROID_COUNT = 5;
@@ -32,11 +32,22 @@ public static class AsteroidConstants {
     public static final float MIN_ASTEROID_SIZE = 10.0;
     public static final float MAX_ASTEROID_SIZE = 50.0;
     public static final float ASTEROID_SHIP_SAFE_DISTANCE = 200;
+    public static enum AsteroidExplosionTypeEnum {
+        BIG_EXPLOSION,
+        MEDIUM_EXPLOSION,
+        SMALL_EXPLOSION
+    };
 
     // LASER CONSTANTS
     public static final float LASER_SPEED = SHIP_MAX_SPEED + 2.0;
     public static final int LASER_LIFESPAN = 60; // Frames before it disappears
     public static final float LASER_SIZE = 0.5;
+
+    // Debris Constants
+    public static final float EXPLOSION_FORCE_MULTIPLIER = 0.5; 
+    public static final int PARTICLE_COUNT_SMALL = 12; 
+    public static final int PARTICLE_COUNT_MEDIUM = 8;
+    public static final int PARTICLE_COUNT_BIG = 5;
 
     // Logger Constants - Will be used later
     public static enum GameModeEnum{
