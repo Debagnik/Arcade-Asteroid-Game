@@ -37,7 +37,7 @@ public static class Logger {
     }
 
     public static void log(Object obj, Integer playerLevel){
-        if(AsteroidConstants.GAME_MODE != AsteroidConstants.GameModeEnum.DEBUG){
+        if(AsteroidConstants.GAME_MODE != AsteroidConstants.GameModeEnum.LOG){
             return;
         }
 
@@ -91,13 +91,17 @@ public static class Logger {
             File baseDir = new File(basePath);
             
             if(!baseDir.exists()){
-                baseDir.mkdirs();
+                if(!baseDir.mkdirs()) {
+                    System.err.println("Warning: Failed to create base log directory: " + baseDir.getAbsolutePath());
+                }
             }
 
             File dailyDir = new File(baseDir, "Log_" + dateStr);
 
             if (!dailyDir.exists()) {
-                dailyDir.mkdirs();
+                if(!dailyDir.mkdirs()) {
+                    System.err.println("Warning: Failed to create daily log directory: " + dailyDir.getAbsolutePath());
+                }
             }
 
             String fileName = "Log_" + sessionEpoch + ".log";

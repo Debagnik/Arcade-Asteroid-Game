@@ -151,7 +151,7 @@ public static class PhysicsHelper {
     }
 
     /* Ship to Asteroid Collision mechanics
-     * Checks if the ship is Invincible ie. Game mode is either TEST or the player ship was recently destroyed
+     * Checks if the ship is Invincible ie. Game mode is either TEST/DEBUG or the player ship was recently destroyed
      * Checks if the player ship hit an asteroid
      * Simple check: Dist < Radius
      */

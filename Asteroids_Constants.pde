@@ -42,9 +42,10 @@ public static class AsteroidConstants {
     public static enum GameModeEnum{
         TEST,
         DEBUG,
+        LOG,
         PROD
     };
-    public static GameModeEnum GAME_MODE = GameModeEnum.TEST;
+    public static GameModeEnum GAME_MODE = GameModeEnum.LOG;
     public static int COLLECTION_LOGGING_LIMIT = 25;
     public static final String LOGGING_DIR = "./Logs";
 

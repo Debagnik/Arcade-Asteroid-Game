@@ -64,7 +64,7 @@ public class Spacecraft {
         PhysicsHelper.screenWrap(position, size, width, height); // Screen wrapping logic (same as asteroids)
 
         // Apply invincibility
-        if(AsteroidConstants.GAME_MODE == AsteroidConstants.GameModeEnum.TEST){
+        if(AsteroidConstants.GAME_MODE == AsteroidConstants.GameModeEnum.TEST || AsteroidConstants.GAME_MODE == AsteroidConstants.GameModeEnum.DEBUG){
             this.isInvincible = true;
         } else if(invincibilityTimer > 0){
             invincibilityTimer--;
@@ -86,7 +86,7 @@ public class Spacecraft {
     public void display(){
 
         //Blink if invincible
-        if(AsteroidConstants.GAME_MODE != AsteroidConstants.GameModeEnum.TEST){
+        if(AsteroidConstants.GAME_MODE != AsteroidConstants.GameModeEnum.TEST || AsteroidConstants.GAME_MODE != AsteroidConstants.GameModeEnum.DEBUG){
             if(isInvincible && invincibilityTimer > 0){
                 if((invincibilityTimer / 10) % 2 == 0){ // dont draw in every 10 frames.
                     return;
