@@ -96,7 +96,6 @@ private void activateRespawnMechanics() {
     if (d.isDead()) debrisList.remove(i);
     Logger.log(d, getLevel());
   }
-  Logger.log(debrisList, getLevel());
 
   // keeping the asteroids alive in the BG
   asteroidsMechanics();
@@ -213,10 +212,8 @@ private void asteroidsMechanics() {
     }
   }
 
-  Logger.log(asteroids, getLevel());
   Logger.log(ship, getLevel());
   Logger.log(weapon, getLevel());
-  Logger.log(activeLasers, getLevel());
 
   // Level Up and infinite gameplay logic
   if (asteroids.size() == 0) {

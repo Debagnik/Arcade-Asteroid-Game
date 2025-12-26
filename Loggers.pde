@@ -19,7 +19,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import static org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 public static class Logger {
 
