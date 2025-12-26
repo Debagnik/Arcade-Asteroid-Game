@@ -94,6 +94,7 @@ private class AsteroidExplosionFacade {
 // Ship Explosion Facade
 private class ShipExplosionFacade{
     private ArrayList<ShipDebris> shipDebrisList;
+    private int SHIP_WRECKAGE_PARTS = 4;
 
     // Default Constructor
     public ShipExplosionFacade(){
@@ -101,7 +102,7 @@ private class ShipExplosionFacade{
     }
 
     public void animateShipExplosion(Spacecraft ship){
-        for(int i = 0; i < 4; i++){
+        for(int i = 0; i < SHIP_WRECKAGE_PARTS; i++){
             shipDebrisList.add(new ShipDebris(ship.getPosition()));
         }
     }

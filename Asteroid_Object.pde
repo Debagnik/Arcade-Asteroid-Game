@@ -175,10 +175,12 @@ public class Asteroid {
   
   public void setRadius(float radius) {
     this.radius = radius;
+    determineExplosionType();
   }
   
   public void setMass(float mass) {
     this.mass = mass;
+    determineExplosionType();
   }
 
   public AsteroidConstants.AsteroidExplosionTypeEnum getExplosionType(){

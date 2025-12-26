@@ -108,7 +108,7 @@ public class AsteroidDebris{
         setMaxLifespan(40);
        } else if(asteroid.getExplosionType() == AsteroidConstants.AsteroidExplosionTypeEnum.MEDIUM_EXPLOSION){
         final float spread = random(-AsteroidConstants.PI/2 , AsteroidConstants.PI/2); //Loose Cone, in direction of laser
-        setVelocity(asteroid.getVelocity().normalize().mult(spread).mult(random(1.5, 3.5)));
+        setVelocity(asteroid.getVelocity().normalize().rotate(spread).mult(random(1.5, 3.5)));
         setSize(random(2, 4));
         setMaxLifespan(30);
        } else {
