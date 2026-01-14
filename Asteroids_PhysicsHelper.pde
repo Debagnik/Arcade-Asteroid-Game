@@ -197,7 +197,7 @@ public static class PhysicsHelper {
     public static boolean checkPlayerLaser2UFOCollision(PlayerLaser pl, UFO ufo) {
       float dist = PVector.dist(pl.getPosition(), ufo.getPosition());
 
-      return dist < (ufo.getRadius() + AsteroidConstants.LASER_SIZE);
+      return dist < (ufo.getRadius() + (AsteroidConstants.LASER_SIZE / 2.0));
     }
 
 
