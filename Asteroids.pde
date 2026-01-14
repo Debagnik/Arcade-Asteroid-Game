@@ -153,12 +153,12 @@ private void asteroidsMechanics() {
 
   // LASER VS ASTEROID COLLISION
   // Get all active lasers
-  ArrayList<Laser> activeLasers = weapon.getLasers();
+  ArrayList<PlayerLaser> activeLasers = weapon.getPlayerLasers();
   HashSet<Asteroid> spawnChildAsteroids = new HashSet<Asteroid>();
   HashSet<Asteroid> despawnParentAsteroids = new HashSet<Asteroid>();
-  HashSet<Laser> deactivateLasers = new HashSet<Laser>();
+  HashSet<PlayerLaser> deactivateLasers = new HashSet<PlayerLaser>();
 
-  for (Laser l : activeLasers) {
+  for (PlayerLaser l : activeLasers) {
     // Optimization: If this laser is already marked inactive (e.g. somehow hit twice), skip it
     if (deactivateLasers.contains(l)) {
       continue;
@@ -193,7 +193,7 @@ private void asteroidsMechanics() {
   asteroids.addAll(spawnChildAsteroids);
 
   // Safely deactivate Lasers
-  for (Laser l : deactivateLasers) {
+  for (PlayerLaser l : deactivateLasers) {
     l.setActive(false);
   }
 

@@ -5,31 +5,25 @@
  * FILE: Lasers.pde
  */
 
-
-public class Laser{
+// base class
+public abstract class Laser{
     private PVector position;
     private PVector velocity;
     private int ttl;
     private boolean active;
 
     //Default Constructor
-    public Laser(PVector shipPos, float angle, int playerLevel){
-        // Calculate Spawn Position (The Nose of the ship)
-        // We don't want the laser spawning inside the ship's center.
-        // We calculate the tip based on the ship's size and heading.
-        float noseX = shipPos.x + (AsteroidConstants.SHIP_SIZE * cos(angle));
-        float noseY = shipPos.y + (AsteroidConstants.SHIP_SIZE * sin(angle));
+    public Laser(PVector origin, float angle, float speed, int ttl){
+        this.position = origin.copy();
 
-        position = new PVector(noseX, noseY);
 
         // Calculate Velocity
         // It moves in the direction of the angle, but faster than the ship
-        velocity = PVector.fromAngle(angle);
-        velocity.mult(AsteroidConstants.LASER_SPEED);
+        velocity = PVector.fromAngle(angle).mult(speed);
 
-        ttl = AsteroidConstants.LASER_LIFESPAN + playerLevel;
-        //println(ttl);
-        active = true;
+        this.ttl = ttl;
+
+        this.active = true;
     }
 
     public void update(){
@@ -46,14 +40,7 @@ public class Laser{
 
     }
 
-    public void display(){
-        pushStyle();
-        stroke(255, 255, 255); // White Laser
-        ellipse(position.x, position.y, AsteroidConstants.LASER_SIZE, AsteroidConstants.LASER_SIZE);
-        // TODO: Trail Logic
-        //println("Drawing laser at: " + position.x + ", " + position.y);
-        popStyle();
-    }
+    public abstract void display();
 
     // Generic Class APIs (Getter/Setter)
     public PVector getPosition() {
@@ -88,4 +75,59 @@ public class Laser{
         this.active = active;
     }
 
+}
+
+// Player Laser Inherits the Base (Stroke = white)
+public class PlayerLaser extends Laser {
+    // Default Constructor
+    public PlayerLaser(PVector shipPos, float angle, int playerLevel){
+        // Calculate nose position logic
+        super(
+            new PVector(
+                shipPos.x + (AsteroidConstants.SHIP_SIZE * cos(angle)),
+                shipPos.y + (AsteroidConstants.SHIP_SIZE * sin(angle))
+            ),
+            angle, 
+            AsteroidConstants.LASER_SPEED, 
+            AsteroidConstants.LASER_LIFESPAN + playerLevel
+        );
+    }
+
+    @Override
+    public void display(){
+        pushStyle();
+        stroke(255); //white lasers
+        strokeWeight(2);
+        ellipse(super.getPosition().x, super.getPosition().y, AsteroidConstants.LASER_SIZE, AsteroidConstants.LASER_SIZE);
+        popStyle();
+    }
+    
+}
+
+// Enemy Laser Class deals damage to player, Stroke(RED)
+public class EnemyLaser extends Laser {
+    private float damage;
+
+    public EnemyLaser(PVector origin, float angle, float damage) {
+        super(origin, angle, AsteroidConstants.LASER_SPEED, AsteroidConstants.LASER_LIFESPAN + 30);
+        setDamage(damage);
+    }
+
+    @Override
+    public void display(){
+        pushStyle();
+        stroke(255, 0, 0);
+        strokeWeight(3);
+        ellipse(super.getPosition().x, super.getPosition().y, AsteroidConstants.LASER_SIZE, AsteroidConstants.LASER_SIZE);
+        popStyle();
+    }
+
+
+    //General Public APIs (Getters/Setters)
+    public float getDamage(){
+        return damage;
+    }
+    public void setDamage(final float damage){
+        this.damage = damage;
+    }
 }

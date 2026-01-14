@@ -6,31 +6,31 @@
  */
 
 public class WeaponsController{
-    private ArrayList<Laser> lasers;
+    private ArrayList<PlayerLaser> playerLasers;
 
     // Default Constructor
     public WeaponsController(){
-        lasers = new ArrayList<Laser>();
+        playerLasers = new ArrayList<PlayerLaser>();
     }
 
     public void fire(Spacecraft ship, int playerLevel){
-        lasers.add(new Laser(ship.getPosition(), ship.getHeading(), playerLevel));
+        playerLasers.add(new PlayerLaser(ship.getPosition(), ship.getHeading(), playerLevel));
     }
 
     // Core Weapon display logic
     public void displayAndUpdate(){
         // looping to remove dead lasers
-        for(Laser l : lasers){
+        for(PlayerLaser l : playerLasers){
             l.update();
             l.display();
         }
-        lasers.removeIf(l -> !l.active);
+        playerLasers.removeIf(l -> !l.isActive());
     }
 
     // Generic Getter
-    public ArrayList<Laser> getLasers(){
+    public ArrayList<PlayerLaser> getPlayerLasers(){
         // Returning the Laser List in a new List (Defensive Programming).
-        return new ArrayList<Laser>(lasers);
+        return new ArrayList<PlayerLaser>(playerLasers);
     }
      
 }

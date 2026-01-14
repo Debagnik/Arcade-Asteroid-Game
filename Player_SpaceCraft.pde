@@ -14,6 +14,7 @@ public class Spacecraft {
     private PVector velocity;       //The velocity vector of the ship
     private PVector acceleration;   //The acceleration vector of the ship
     private int invincibilityTimer; //The time for player invincibility
+    private float HP;               //Player Health points
 
     private boolean isThrusting;    //Flag to indicate if the ship is currently thrusting
     private boolean isInvincible;   //Invincibility Period after player ship death
@@ -21,6 +22,7 @@ public class Spacecraft {
     //Default Constructor of Spacecraft
     public Spacecraft() {
        initPhysics();
+       this.HP = AsteroidConstants.PLAYER_MAX_HP;
        // for the invincible flag
        activateInvincibility(AsteroidConstants.INVINCIBLE_TIMER);
     }
@@ -28,6 +30,7 @@ public class Spacecraft {
     //Constructor for invinsible player
     public Spacecraft(final boolean isInvincible){
         initPhysics();
+        this.HP = AsteroidConstants.PLAYER_MAX_HP;
         if(isInvincible){
             activateInvincibility(AsteroidConstants.INVINCIBLE_TIMER);
         } else {
@@ -41,7 +44,7 @@ public class Spacecraft {
         position = new PVector(width/2, height/2); // Spawn at center of screen
         velocity = new PVector(0, 0); // Initial velocity is zero
         acceleration = new PVector(0, 0); // Initial acceleration is zero
-        heading = -AsteroidConstants.PI/2; // head towards 12 o clock
+        heading = -PI/2; // head towards 12 o clock
         size = AsteroidConstants.SHIP_SIZE; 
         rotationSpeed = AsteroidConstants.SHIP_ROTATE_SPEED;
         isThrusting = false;
@@ -79,7 +82,7 @@ public class Spacecraft {
     public void rotateShip(final int direction){
         heading = heading + direction * rotationSpeed;
         // Normalize heading to stay within [-PI, PI] or [0, TWO_PI]
-        heading = heading % AsteroidConstants.TWO_PI;
+        heading = heading % TWO_PI;
     }
 
     // Displays the spacecraft
@@ -158,6 +161,24 @@ public class Spacecraft {
         }
     }
 
+    public boolean takeDamage(float amount){
+        if(isInvincible){
+            return false;
+        }
+
+        // Takes the damage
+        this.HP -= amount;
+
+        if(this.HP <= 0){
+            // player is very ded
+            this.HP = 0;
+            return true;
+        }
+
+        return false;
+
+    }
+
     // Access APIs and Actions.(Getters/Setters)
     public PVector getPosition() {
         return position.copy();
@@ -175,19 +196,19 @@ public class Spacecraft {
         return velocity.copy();
     }
 
-    public void setPosition(PVector position) {
+    public void setPosition(final PVector position) {
         this.position = position;
     }
 
-    public void setHeading(float heading) {
+    public void setHeading(final float heading) {
         this.heading = heading;
     }
     
-    public void setSize(float size) {
+    public void setSize(final float size) {
         this.size = size;
     }
 
-    public void setVelocity(PVector velocity) {
+    public void setVelocity(final PVector velocity) {
         this.velocity = velocity;
     }
 
@@ -195,8 +216,16 @@ public class Spacecraft {
         return isInvincible;
     }
 
-    public void setIsInvincible(boolean isInvincible){
+    public void setIsInvincible(final boolean isInvincible){
         this.isInvincible = isInvincible;
+    }
+
+    public float getHP(){
+        return HP;
+    }
+
+    public void setHP(final float HP){
+        this.HP = HP;
     }
 
     

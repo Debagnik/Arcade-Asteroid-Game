@@ -13,11 +13,13 @@ import java.util.ArrayList;
 public class ExplosionController{
     private AsteroidExplosionFacade asteroidExplosionFacade;
     private ShipExplosionFacade shipExplosionFacade;
+    private UFOExplosionFacade ufoExplosionFacade;
 
     // default controller constructor
     public ExplosionController(){
         asteroidExplosionFacade = new AsteroidExplosionFacade();
         shipExplosionFacade = new ShipExplosionFacade();
+        ufoExplosionFacade = new UFOExplosionFacade();
     }
 
     // Delegates Animation for Asteroid Explosion.
@@ -29,14 +31,20 @@ public class ExplosionController{
         shipExplosionFacade.animateShipExplosion(ship);
     }
 
+    public void animateUFOExplosion(UFO ufo){
+        ufoExplosionFacade.animateShipExplosion(ufo);
+    }
+
     public void displayAndUpdate(){
         asteroidExplosionFacade.updateAndDisplay();
         shipExplosionFacade.updateAndDisplay();
+        ufoExplosionFacade.updateAndDisplay();
     }
 
     public void reset(){
         shipExplosionFacade.reset();
         asteroidExplosionFacade.reset();
+        ufoExplosionFacade.reset();
     }
 
 
@@ -126,4 +134,49 @@ private class ShipExplosionFacade{
     }
 
 
+}
+
+// UFO Explosion Facade
+private class UFOExplosionFacade{
+
+    private final int UFO_WRECKAGE_PARTS = 8;
+
+    private ArrayList<UFODebris> ufoDebrisList;
+
+    public UFOExplosionFacade(){
+        setUfoDebrisList(new ArrayList<UFODebris>());
+    }
+
+    public void animateShipExplosion(UFO ufo){
+        // Debris spawning and animation
+        for(int i = 0; i < UFO_WRECKAGE_PARTS; i++){
+            ufoDebrisList.add(new UFODebris(ufo.getPosition()));
+        }
+    }
+
+    public void reset(){
+        ufoDebrisList.clear();
+    }
+
+    public void updateAndDisplay(){
+        final HashSet<UFODebris> despawnUFODebrisSet = new HashSet<UFODebris>();
+
+        for(UFODebris ud : getUfoDebrisList()){
+            ud.update();
+            ud.display();
+            if(ud.isDead()){
+                despawnUFODebrisSet.add(ud);
+            }
+        }
+        
+        ufoDebrisList.removeAll(despawnUFODebrisSet);
+    }
+
+
+    public void setUfoDebrisList(ArrayList<UFODebris> ufoDebrisList){
+        this.ufoDebrisList = ufoDebrisList;
+    }
+    public ArrayList<UFODebris> getUfoDebrisList(){
+        return ufoDebrisList;
+    }
 }

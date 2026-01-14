@@ -8,8 +8,7 @@
 
 public static class AsteroidConstants {
     // global Constants
-    public static final float TWO_PI = 6.28318530718;
-    public static final float PI = 3.14159265359;
+    public static final float PLAYER_MAX_HP = 100.0;
     // Enum for trigonometric functions
     public static enum TrigonometricFunctionEnum {
         SINE,
@@ -49,14 +48,39 @@ public static class AsteroidConstants {
     public static final int PARTICLE_COUNT_MEDIUM = 8;
     public static final int PARTICLE_COUNT_BIG = 5;
 
-    // Logger Constants - Will be used later
+    // Alien UFO Constants
+    public static final boolean ALLOW_MULTIPLE_UFOS = false;
+    public static final int MAX_UFO_COUNT = 3;
+    public static final int UFO_START_LEVEL = 5; // The player level that BIG UFOs will start Spawning
+    public static final int UFO_DUAL_SPAWN_LEVEL = 10;  // The player Level that Both Small and Big UFOs will start spawning
+    public static enum UFOTypeEnum {
+        BIG,
+        SMALL
+    }
+
+    // Alien UFO Settings
+    public static final float UFO_SIZE_BIG = 40.0;
+    public static final float UFO_SIZE_SMALL = 20.0;
+    public static final float UFO_SPEED_BIG = 2.0;
+    public static final float UFO_SPEED_SMALL = 4.0;
+    public static final float UFO_FIRE_RATE = 60;
+    public static final float UFO_SPAWN_CHANCE = 0.005;
+
+    // UFO Damage: Small UFO deals MORE damage (harder to hit, hits harder)
+    public static final float DAMAGE_BIG_UFO = 10.0;
+    public static final float DAMAGE_SMALL_UFO = 20.0;
+
+    // UFO Asteroid Avoidance System Constant
+    public static final float UFO_AVOIDANCE_RADIUS = 150.0;
+
+    // Logger Constants
     public static enum GameModeEnum{
         TEST,
         DEBUG,
         LOG,
         PROD
     };
-    public static GameModeEnum GAME_MODE = GameModeEnum.LOG;
+    public static GameModeEnum GAME_MODE = GameModeEnum.TEST;
     public static int COLLECTION_LOGGING_LIMIT = 25;
     public static final String LOGGING_DIR = "./Logs";
 

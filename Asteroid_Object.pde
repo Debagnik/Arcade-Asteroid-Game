@@ -118,7 +118,7 @@ public class Asteroid {
     for(int i=0; i < totalPoints; i++){
       //Calculate the angle for the specific vertex
       //map() converts vertex i to an angle (0 - 2*PI)
-      float angle = map(i, 0, totalPoints, 0, AsteroidConstants.TWO_PI);
+      float angle = map(i, 0, totalPoints, 0, TWO_PI);
       float r = radius + offset[i];
 
       float x = PhysicsHelper.polarToCartesian(r, angle, AsteroidConstants.TrigonometricFunctionEnum.COSINE);

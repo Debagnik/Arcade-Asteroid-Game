@@ -166,5 +166,39 @@ public static class PhysicsHelper {
       return false;
     }
 
+    public static PVector avoidAsteroidForUFO(final PVector ufoPos, final ArrayList<Asteroid> asteroids){
+      PVector avoidance = new PVector(0, 0);
+      int c = 0;
+
+      for(Asteroid a : asteroids){
+        final float dist = PVector.dist(ufoPos, a.getPosition());
+        // points vector away from asteroids
+        if(dist < AsteroidConstants.UFO_AVOIDANCE_RADIUS){
+          PVector diff = PVector.sub(ufoPos, a.getPosition());
+          diff.normalize();
+          // Weight by distance (closer = stronger push)
+          diff.div(dist);
+          avoidance.add(diff);
+          c++; //HEHE C++ reference in a Processing (JAVA) code.
+        }
+      }
+
+      if(c > 0){
+        // Maximise avoidance force by a factor of 2
+        avoidance.div(c);
+        avoidance.normalize();
+        avoidance.mult(2.0);
+      }
+
+      return avoidance;
+
+    }
+
+    public static boolean checkPlayerLaser2UFOCollision(PlayerLaser pl, UFO ufo) {
+      float dist = PVector.dist(pl.getPosition(), ufo.getPosition());
+
+      return dist < (ufo.getRadius() + AsteroidConstants.LASER_SIZE);
+    }
+
 
 }

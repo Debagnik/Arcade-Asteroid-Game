@@ -6,12 +6,12 @@
  */
 
 public class ShipDebris{
-    private PVector position;
-    private PVector velocity;
-    private float length;
-    private float angle;
-    private float spin;
-    private int lifespan;
+    protected PVector position;
+    protected PVector velocity;
+    protected float length;
+    protected float angle;
+    protected float spin;
+    protected int lifespan;
 
     //Default Constructor
     public ShipDebris(final PVector position){
@@ -20,7 +20,7 @@ public class ShipDebris{
         velocity.mult(random(1, 3));
 
         length = random(5, 15);
-        angle = random(AsteroidConstants.TWO_PI);
+        angle = random(TWO_PI);
         spin = random(-0.2, 0.2);
         lifespan = AsteroidConstants.RESPAWN_TIMER;
     }
@@ -102,12 +102,12 @@ public class AsteroidDebris{
         this.position = asteroid.getPosition().copy();
         
        if(asteroid.getExplosionType() == AsteroidConstants.AsteroidExplosionTypeEnum.BIG_EXPLOSION){
-        final float spread = random(-AsteroidConstants.PI/6 , AsteroidConstants.PI/6); //Tight Cone, in direction of laser
+        final float spread = random(-PI/6 , PI/6); //Tight Cone, in direction of laser
         setVelocity(asteroid.getVelocity().normalize().rotate(spread).mult(random(1.0, 2.5)));
         setSize(random(3, 5));
         setMaxLifespan(40);
        } else if(asteroid.getExplosionType() == AsteroidConstants.AsteroidExplosionTypeEnum.MEDIUM_EXPLOSION){
-        final float spread = random(-AsteroidConstants.PI/2 , AsteroidConstants.PI/2); //Loose Cone, in direction of laser
+        final float spread = random(-PI/2 , PI/2); //Loose Cone, in direction of laser
         setVelocity(asteroid.getVelocity().normalize().rotate(spread).mult(random(1.5, 3.5)));
         setSize(random(2, 4));
         setMaxLifespan(30);
@@ -176,4 +176,28 @@ public class AsteroidDebris{
         this.maxLifespan = maxLifespan;
     }
 
+}
+
+public class UFODebris extends ShipDebris{
+
+    //Default Constructor
+    public UFODebris(final PVector position){
+        super(position);
+        
+    }
+
+    @Override
+    public void display() {
+        if (lifespan > 0) {
+            pushStyle();
+            stroke(0, 255, 0);  // green for UFO
+            strokeWeight(2);
+            pushMatrix();
+            translate(position.x, position.y);
+            rotate(angle);
+            line(-length/2, 0, length/2, 0);
+            popMatrix();
+            popStyle();
+        }
+    }
 }
