@@ -32,7 +32,7 @@ public class ExplosionController{
     }
 
     public void animateUFOExplosion(UFO ufo){
-        ufoExplosionFacade.animateShipExplosion(ufo);
+        ufoExplosionFacade.animateUFOExplosion(ufo);
     }
 
     public void displayAndUpdate(){
@@ -147,7 +147,7 @@ private class UFOExplosionFacade{
         setUfoDebrisList(new ArrayList<UFODebris>());
     }
 
-    public void animateShipExplosion(UFO ufo){
+    public void animateUFOExplosion(UFO ufo){
         // Debris spawning and animation
         for(int i = 0; i < UFO_WRECKAGE_PARTS; i++){
             ufoDebrisList.add(new UFODebris(ufo.getPosition()));

@@ -173,7 +173,7 @@ public static class PhysicsHelper {
       for(Asteroid a : asteroids){
         final float dist = PVector.dist(ufoPos, a.getPosition());
         // points vector away from asteroids
-        if(dist < AsteroidConstants.UFO_AVOIDANCE_RADIUS){
+        if(dist < AsteroidConstants.UFO_AVOIDANCE_RADIUS && dist > 0.0001){
           PVector diff = PVector.sub(ufoPos, a.getPosition());
           diff.normalize();
           // Weight by distance (closer = stronger push)

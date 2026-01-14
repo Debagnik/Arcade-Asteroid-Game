@@ -2,7 +2,7 @@
  * Asteroids Game
  * License DWTFYWTPL <https://www.wtfpl.net/about/>
  * Copyright 2026 Rak Kingabed <debagnik@debagnik.in>
- * FILE:
+ * FILE:UFO_Object.pde
  */
 
 import java.util.HashSet;
@@ -18,12 +18,12 @@ public class UFO{
     private float damageOutput;
     private int fireTimer;
 
-    private ArrayList<EnemyLaser> ufoLaser;
+    private ArrayList<EnemyLaser> ufoLasers;
 
     // Default Constructor
     public UFO(AsteroidConstants.UFOTypeEnum type){
         setType(type);
-        setUfoLaser(new ArrayList<EnemyLaser>());
+        setUFOLasers(new ArrayList<EnemyLaser>());
 
         if(AsteroidConstants.UFOTypeEnum.BIG == type){
             setSize(AsteroidConstants.UFO_SIZE_BIG);
@@ -53,7 +53,14 @@ public class UFO{
 
     public void update(ArrayList<Asteroid> asteroids){
         // seek desired waypoint.
-        PVector desired = PVector.sub(getTargetWaypoint(), getPosition()).normalize().mult(getSpeed());
+        PVector toWayPoint = PVector.sub(getTargetWaypoint(), getPosition());
+        PVector desired;
+        if(toWayPoint.mag() > 0){
+            desired = toWayPoint.normalize().mult(getSpeed());
+        } else {
+            desired = new PVector(0, 0);
+            pickNewWaypoint(); // Pick new waypoint if we're exactly at target
+        }
 
         // Obstacle Avoidance (Using PhysicsHelper)
         PVector avoidance = PhysicsHelper.avoidAsteroidForUFO(getPosition(), asteroids);
@@ -81,19 +88,18 @@ public class UFO{
         if (getFireTimer() <= 0) {
             float randomAngle = random(TWO_PI);
             //Spawns Enemy Laser at random angle.
-            ufoLaser.add(new EnemyLaser(getPosition(), randomAngle, getDamageOutput()));
-            fireTimer = (int)AsteroidConstants.UFO_FIRE_RATE;
+            getUFOLasers().add(new EnemyLaser(getPosition(), randomAngle, getDamageOutput()));
+            setFireTimer((int)AsteroidConstants.UFO_FIRE_RATE);
         }
 
         final HashSet<EnemyLaser> lasersToRemove = new HashSet<EnemyLaser>();
-        for(EnemyLaser el : ufoLaser){
-            el.display();
+        for(EnemyLaser el : getUFOLasers()){
             el.update();
             if(!el.isActive()){
                 lasersToRemove.add(el);
             }
         }
-        ufoLaser.removeAll(lasersToRemove);
+        getUFOLasers().removeAll(lasersToRemove);
     }
 
     public void display() {
@@ -109,6 +115,10 @@ public class UFO{
         arc(0, -s * 0.1, s * 0.5, s * 0.4, -PI, 0); 
         popMatrix();
         popStyle();
+        // renders UFO Lasers
+        for(EnemyLaser el : getUFOLasers()){
+            el.display();
+        }
     }
 
 
@@ -182,12 +192,12 @@ public class UFO{
         this.fireTimer = fireTimer;
     }
 
-    public ArrayList<EnemyLaser> getUfoLaser() {
-        return ufoLaser;
+    public ArrayList<EnemyLaser> getUFOLasers() {
+        return ufoLasers;
     }
 
-    public void setUfoLaser(ArrayList<EnemyLaser> ufoLaser) {
-        this.ufoLaser = ufoLaser;
+    public void setUFOLasers(ArrayList<EnemyLaser> ufoLasers) {
+        this.ufoLasers = ufoLasers;
     }
 
 }
