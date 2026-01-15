@@ -76,7 +76,7 @@ public class UFO{
         }
 
         // Same ol' screen wrapping logic
-        PhysicsHelper.screenWrap(getPosition(), getSize(), width, height);
+        PhysicsHelper.screenWrap(position, size, width, height);
 
         handleFiring();
 

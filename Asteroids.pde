@@ -13,8 +13,9 @@ private ArrayList<Asteroid> asteroids; //adds a list of asteriods
 private Spacecraft ship; //Adds a player ship
 private WeaponsController weapon;
 private ExplosionController explosions;  //Explosion Particle controller
+private UFOController ufoController;
 private boolean isLeft, isRight, isUp;
-private int level = 0;
+private int level = 10;
 private int respawnTimer = 0;
 
 void setup() {
@@ -43,6 +44,9 @@ void setup() {
 
   //Init Explosion Controller
   explosions = new ExplosionController();
+
+  // Init ufo controller
+  ufoController = new UFOController(explosions);
   
 }
 
@@ -63,8 +67,12 @@ private void activeGameplayHandler() {
   weapon.displayAndUpdate();
   //Explosion handling
   explosions.displayAndUpdate();
+  //UFO Mechanics
+  ufoController.update(getLevel(), asteroids, weapon.getPlayerLasers());
   //Asteroid mechanics
   asteroidsMechanics();
+  //UFO Hits mechanism
+  checkUFOAttacksOnPlayer();
   //player collision mechanics
   checkPlayerCollision();
 }
@@ -231,6 +239,43 @@ private void animateShipDestroy(Spacecraft playerShip) {
   isLeft = false;
   isRight = false;
   isUp = false;
+}
+
+private void checkUFOAttacksOnPlayer(){
+  ArrayList<UFO> activeUFOs = ufoController.getActiveUFOs();
+  for(UFO ufo : activeUFOs){
+    // If UFO wants a suicide route.
+    float distBody = PVector.dist(ship.getPosition(), ufo.getPosition());
+     if(distBody < (ufo.getRadius() + AsteroidConstants.SHIP_SIZE)){
+      if(ship.takeDamage(100)){
+        animateShipDestroy(ship);
+      }
+      explosions.animateUFOExplosion(ufo);
+      //Logger.log(ship);
+      //Logger.log(ufo);
+     }
+
+     // If UFO laser hits ship.
+     for(EnemyLaser el : ufo.getUFOLasers()){
+      if(!el.isActive()){
+        continue;
+      }
+      float distLaser = PVector.dist(ship.getPosition(), el.getPosition());
+      //Collision check
+      if (distLaser < (AsteroidConstants.SHIP_SIZE + (AsteroidConstants.LASER_SIZE / 2.0))) {
+        // Deals with Ship Damage
+        boolean isDed = ship.takeDamage(el.getDamage());
+        el.setActive(false);
+
+        if(isDed){
+          animateShipDestroy(ship);
+        }
+      }
+
+     }
+
+  }
+
 }
 
 // Generic Main APIs (Getters/Setters)
