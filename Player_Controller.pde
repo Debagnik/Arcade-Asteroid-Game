@@ -64,7 +64,7 @@ public class PlayerController {
     // Firing Logic:
     // We check for Spacebar HERE instead of using a boolean flag.
     // This ensures 1 press = 1 bullet.
-    if (key == ' ') {
+    if (key == ' ' && respawnTimer == 0) {
       weapon.fire(ship, getLevel());
     }
   }
