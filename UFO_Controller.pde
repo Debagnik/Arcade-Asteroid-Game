@@ -79,7 +79,7 @@ public class UFOController{
     }
 
     public void setActiveUFOs(ArrayList<UFO> activeUFOs){
-        this.activeUFOs = (activeUFOs == null) ? new ArrayList<UFO>() : activeUFOs;
+        this.activeUFOs = (activeUFOs == null) ? new ArrayList<UFO>() : new ArrayList<UFO>(activeUFOs);
     }
     public void setExplosionController(ExplosionController fx){
         if (fx == null){
@@ -91,7 +91,7 @@ public class UFOController{
         return fx;
     }
     public ArrayList<UFO> getActiveUFOs(){
-        return activeUFOs;
+        return new ArrayList<UFO>(activeUFOs);
     }
 
 

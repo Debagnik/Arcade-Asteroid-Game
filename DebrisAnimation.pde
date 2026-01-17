@@ -190,7 +190,7 @@ public class UFODebris extends ShipDebris{
     public void display() {
         if (lifespan > 0) {
             pushStyle();
-            stroke(0, 255, 0);  // green for UFO
+            stroke(255);
             strokeWeight(2);
             pushMatrix();
             translate(position.x, position.y);
