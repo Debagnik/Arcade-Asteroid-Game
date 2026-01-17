@@ -9,11 +9,11 @@
 public abstract class Laser {
   private PVector position;
   private PVector velocity;
-  private double ttl;
+  private int ttl;
   private boolean active;
 
   //Default Constructor
-  public Laser(PVector origin, float angle, float speed, double ttl) {
+  public Laser(PVector origin, float angle, float speed, int ttl) {
     this.position = origin.copy();
 
 
@@ -58,11 +58,11 @@ public abstract class Laser {
     this.velocity = velocity;
   }
 
-  public double getTTL() {
+  public int getTTL() {
     return ttl;
   }
 
-  public void setTTL(double ttl) {
+  public void setTTL(int ttl) {
     this.ttl = ttl;
   }
 
@@ -88,7 +88,7 @@ public class PlayerLaser extends Laser {
       angle,
       AsteroidConstants.LASER_SPEED,
       // This line increses the laser ttl in a logarithmic scale 
-      Math.log(Math.pow((playerLevel > 0 ? playerLevel : 1), 2)) + AsteroidConstants.LASER_LIFESPAN
+      (int)ceil(AsteroidConstants.LASER_LIFESPAN + 10.0 * log(playerLevel))
       );
   }
 

@@ -102,41 +102,36 @@ public class UFO {
   public void display() {
     pushStyle();
     fill(0);
-    stroke(0, 255, 0); // UFO is green in color
+    stroke(255);
     strokeWeight(2);
     pushMatrix();
     translate(getPosition().x, getPosition().y);
     // Scale drawing based on size
-    float s = getSize();
+    float r = getSize() / 2.0; 
     noFill();
+    beginShape();
+    vertex(-r, 0);
+    vertex(-r * 0.4, -r * 0.35);
+    vertex(r * 0.4, -r * 0.35);
+    vertex(r, 0);
+    vertex(r * 0.4, r * 0.35);
+    vertex(-r * 0.4, r * 0.35);
+    endShape(CLOSE);
 
-    float w = s;
-    float h = s * 0.35;
-    float domeW = s * 0.22;
-    float domeH = s * 0.18;
+    line(-r, 0, r, 0);
 
-    // Base saucer outline (classic)
-    line(-w*0.50, 0, w*0.50, 0);
-    line(-w*0.35, h*0.50, w*0.35, h*0.50);
-    line(-w*0.50, 0, -w*0.35, h*0.50);
-    line( w*0.50, 0, w*0.35, h*0.50);
-
-    // Dome (approx curve using small segments)
-    int steps = 8;
-    for (int i = 0; i < steps; i++) {
-      float a1 = map(i, 0, steps, PI, TWO_PI);
-      float a2 = map(i+1, 0, steps, PI, TWO_PI);
-
-      float x1 = cos(a1) * domeW;
-      float y1 = sin(a1) * domeH - h*0.15;
-      float x2 = cos(a2) * domeW;
-      float y2 = sin(a2) * domeH - h*0.15;
-
-      line(x1, y1, x2, y2);
+    float deckY = -r * 0.35;
+    float domeW = r * 0.35;
+    float domeH = r * 0.35;
+    beginShape();
+    for (int i = 0; i <= 8; i++) {
+      float angle = map(i, 0, 8, PI, TWO_PI);
+      float x = cos(angle) * domeW;
+      float y = deckY + (sin(angle) * domeH); 
+      vertex(x, y);
     }
-
-    // Center detail line
-    line(-w*0.25, h*0.20, w*0.25, h*0.20);
+    endShape();
+    
     popMatrix();
     popStyle();
     // renders UFO Lasers

@@ -26,7 +26,7 @@ public static class AsteroidConstants {
     public static final int INVINCIBLE_TIMER = 150;
 
     // Asteroids constants
-    public static final int INITIAL_ASTEROID_COUNT = 5;
+    public static final int INITIAL_ASTEROID_COUNT = 5; //This is a non-zero value
     public static final float ASTEROID_MAX_SPEED = 5.0;
     public static final float MIN_ASTEROID_SIZE = 10.0;
     public static final float MAX_ASTEROID_SIZE = 50.0;
