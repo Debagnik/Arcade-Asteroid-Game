@@ -11,7 +11,7 @@ private void activateRespawnMechanics() {
   explosions.displayAndUpdate();
 
   // keeping the asteroids alive in the BG
-  asteroidsMechanics();
+  collisionMechanics.asteroidsMechanics();
   weapon.displayAndUpdate();
 
   //respawns

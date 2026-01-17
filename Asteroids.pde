@@ -15,6 +15,7 @@ private WeaponsController weapon;
 private ExplosionController explosions;  //Explosion Particle controller
 private UFOController ufoController;
 private boolean isLeft, isRight, isUp;
+private CollisionMechanics collisionMechanics;
 private int level = 1; // Never Set it 0 (Non-Zero value)
 private int respawnTimer = 0;
 
@@ -47,6 +48,9 @@ void setup() {
 
   // Init ufo controller
   ufoController = new UFOController(explosions);
+
+  // Init Collision Mechanics
+  collisionMechanics = new CollisionMechanics();
 }
 
 void draw() {
@@ -69,11 +73,11 @@ private void activeGameplayHandler() {
   //UFO Mechanics
   ufoController.update(getLevel(), asteroids, weapon.getPlayerLasers());
   //Asteroid mechanics
-  asteroidsMechanics();
+  collisionMechanics.asteroidsMechanics();
   //UFO Hits mechanism
-  checkUFOAttacksOnPlayer();
+  collisionMechanics.checkUFOAttacksOnPlayer();
   //player collision mechanics
-  checkPlayerCollision();
+  collisionMechanics.checkPlayerCollision();
 }
 
 
