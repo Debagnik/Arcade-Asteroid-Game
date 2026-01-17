@@ -14,8 +14,8 @@ private Spacecraft ship; //Adds a player ship
 private WeaponsController weapon;
 private ExplosionController explosions;  //Explosion Particle controller
 private UFOController ufoController;
-private boolean isLeft, isRight, isUp;
 private CollisionMechanics collisionMechanics;
+private PlayerController playerController;
 private int level = 1; // Never Set it 0 (Non-Zero value)
 private int respawnTimer = 0;
 
@@ -51,6 +51,9 @@ void setup() {
 
   // Init Collision Mechanics
   collisionMechanics = new CollisionMechanics();
+
+  // Init Player Controller
+  playerController = new PlayerController();
 }
 
 void draw() {
@@ -58,14 +61,14 @@ void draw() {
   background(20, 20, 30);
 
   if (respawnTimer > 0) {
-    activateRespawnMechanics();
+    playerController.activateRespawnMechanics();
   } else {
     activeGameplayHandler();
   }
 }
 
 private void activeGameplayHandler() {
-  shipMechanics();
+  playerController.shipMechanics();
   // Weapons Handling
   weapon.displayAndUpdate();
   //Explosion handling
@@ -114,27 +117,11 @@ public void setWeapon(WeaponsController weapon) {
   this.weapon = weapon;
 }
 
-public boolean isLeft() {
-  return isLeft;
+public void keyPressed() {
+  playerController.keyPressed();
 }
 
-public void setLeft(boolean isLeft) {
-  this.isLeft = isLeft;
-}
-
-public boolean isRight() {
-  return isRight;
-}
-
-public void setRight(boolean isRight) {
-  this.isRight = isRight;
-}
-
-public boolean isUp() {
-  return isUp;
-}
-
-public void setUp(boolean isUp) {
-  this.isUp = isUp;
+public void keyReleased() {
+  playerController.keyReleased();
 }
 

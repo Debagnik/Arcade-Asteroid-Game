@@ -19,7 +19,7 @@ public class CollisionMechanics {
           spawnChildAsteroids.add(new Asteroid(a.getPosition(), a.getRadius()/2.0));
           spawnChildAsteroids.add(new Asteroid(a.getPosition(), a.getRadius()/2.0));
         }
-        animateShipDestroy(ship);
+        playerController.animateShipDestroy(ship);
         break;
       }
     }
@@ -114,7 +114,7 @@ public class CollisionMechanics {
       float distBody = PVector.dist(ship.getPosition(), ufo.getPosition());
       if (distBody < (ufo.getRadius() + AsteroidConstants.SHIP_SIZE)) {
         if (ship.takeDamage(AsteroidConstants.PLAYER_MAX_HP)) {
-          animateShipDestroy(ship);
+          playerController.animateShipDestroy(ship);
         }
         explosions.animateUFOExplosion(ufo);
         ufoController.despawnUFO(ufo);
@@ -135,7 +135,7 @@ public class CollisionMechanics {
           el.setActive(false);
 
           if (isDed) {
-            animateShipDestroy(ship);
+            playerController.animateShipDestroy(ship);
             break;
           }
         }
