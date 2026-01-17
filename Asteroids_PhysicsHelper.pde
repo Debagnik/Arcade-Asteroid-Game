@@ -74,14 +74,14 @@ public static class PhysicsHelper {
         PVector correction = collisionVector.copy(); //get direction;
         
         // NaN PREVENTION
-        if (distance < 0.0001) { 
+        if (distance < AsteroidConstants.EPS) { 
             // If they are on top of each other, pick a random direction to push them apart
             correction = PVector.random2D(); 
         } else {
             correction.normalize();
         }
 
-        correction.mult(overlap/2.0); // moves each asteroids half the overlap distance.
+        correction.mult(overlap / 2.0f); // moves each asteroids half the overlap distance.
 
         // Position Correction
         PVector p1 = thisOne.getPosition();
@@ -99,6 +99,7 @@ public static class PhysicsHelper {
         PVector v2 = other.getVelocity();
         float m1 = thisOne.getMass();
         float m2 = other.getMass();
+        if((m1 + m2) < AsteroidConstants.EPS) return;
 
         //applying the velocity formula
         PVector vDiff = PVector.sub(v1, v2);
@@ -115,7 +116,7 @@ public static class PhysicsHelper {
         float distSq = pDiff.magSq();
 
         //prevents division by zero case
-        if(distSq < 0.0001){ // Small epsilon to handle floating-point precision
+        if(distSq < AsteroidConstants.EPS){ 
           return;
         } else {
           //calculate the scalar part of the equation:
@@ -144,7 +145,7 @@ public static class PhysicsHelper {
      */
     public static boolean checkLaserCollision(Laser l, Asteroid a){
       float dist = PVector.dist(l.getPosition(), a.getPosition());
-      if(dist < a.getRadius() + AsteroidConstants.LASER_SIZE / 2.0){
+      if(dist < a.getRadius() + AsteroidConstants.LASER_SIZE / 2.0f){
         return true;
       }
       return false;
@@ -173,7 +174,7 @@ public static class PhysicsHelper {
       for(Asteroid a : asteroids){
         final float dist = PVector.dist(ufoPos, a.getPosition());
         // points vector away from asteroids
-        if(dist < AsteroidConstants.UFO_AVOIDANCE_RADIUS && dist > 0.0001){
+        if(dist < AsteroidConstants.UFO_AVOIDANCE_RADIUS && dist > AsteroidConstants.EPS){
           PVector diff = PVector.sub(ufoPos, a.getPosition());
           diff.normalize();
           // Weight by distance (closer = stronger push)
@@ -197,7 +198,7 @@ public static class PhysicsHelper {
     public static boolean checkPlayerLaser2UFOCollision(PlayerLaser pl, UFO ufo) {
       float dist = PVector.dist(pl.getPosition(), ufo.getPosition());
 
-      return dist < (ufo.getRadius() + (AsteroidConstants.LASER_SIZE / 2.0));
+      return dist < (ufo.getRadius() + (AsteroidConstants.LASER_SIZE / 2.0f));
     }
 
 
