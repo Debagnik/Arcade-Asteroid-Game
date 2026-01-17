@@ -34,7 +34,7 @@ public abstract class Laser {
 
     // Decrease TTL
     ttl--;
-    if (ttl < 0.0001) {
+    if (ttl < 0) {
       active = false;
     }
   }
