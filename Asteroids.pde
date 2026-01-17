@@ -270,6 +270,7 @@ private void checkUFOAttacksOnPlayer() {
 
         if (isDed) {
           animateShipDestroy(ship);
+          break;
         }
       }
     }
