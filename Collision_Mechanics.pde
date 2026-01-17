@@ -43,7 +43,7 @@ public class CollisionMechanics {
 
     for (PlayerLaser l : activeLasers) {
       // Optimization: If this laser is already marked inactive (e.g. somehow hit twice), skip it
-      if (deactivateLasers.contains(l)) {
+      if (!l.isActive() || deactivateLasers.contains(l)) {
         continue;
       }
       //Logger.log(l, getLevel());
@@ -118,6 +118,7 @@ public class CollisionMechanics {
         }
         explosions.animateUFOExplosion(ufo);
         ufoController.despawnUFO(ufo);
+        continue;
         //Logger.log(ship);
         //Logger.log(ufo);
       }
