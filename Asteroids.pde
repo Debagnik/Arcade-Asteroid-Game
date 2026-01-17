@@ -15,7 +15,7 @@ private WeaponsController weapon;
 private ExplosionController explosions;  //Explosion Particle controller
 private UFOController ufoController;
 private boolean isLeft, isRight, isUp;
-private int level = 1;
+private int level = 1; // Never Set it 0
 private int respawnTimer = 0;
 
 void setup() {
