@@ -79,9 +79,12 @@ public class UFOController{
     }
 
     public void setActiveUFOs(ArrayList<UFO> activeUFOs){
-        this.activeUFOs = activeUFOs;
+        this.activeUFOs = (activeUFOs == null) ? new ArrayList<UFO>() : activeUFOs;
     }
     public void setExplosionController(ExplosionController fx){
+        if (fx == null){
+            throw new IllegalArgumentException("ExplosionController is required");
+        }
         this.fx = fx;
     }
     public ExplosionController getExplosionController(){
