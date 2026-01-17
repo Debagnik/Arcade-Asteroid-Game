@@ -5,87 +5,128 @@
  * FILE: Lasers.pde
  */
 
+// base class
+public abstract class Laser {
+  private PVector position;
+  private PVector velocity;
+  private int ttl;
+  private boolean active;
 
-public class Laser{
-    private PVector position;
-    private PVector velocity;
-    private int ttl;
-    private boolean active;
+  //Default Constructor
+  public Laser(PVector origin, float angle, float speed, int ttl) {
+    this.position = origin.copy();
 
-    //Default Constructor
-    public Laser(PVector shipPos, float angle, int playerLevel){
-        // Calculate Spawn Position (The Nose of the ship)
-        // We don't want the laser spawning inside the ship's center.
-        // We calculate the tip based on the ship's size and heading.
-        float noseX = shipPos.x + (AsteroidConstants.SHIP_SIZE * cos(angle));
-        float noseY = shipPos.y + (AsteroidConstants.SHIP_SIZE * sin(angle));
 
-        position = new PVector(noseX, noseY);
+    // Calculate Velocity
+    // It moves in the direction of the angle, but faster than the ship
+    velocity = PVector.fromAngle(angle).mult(speed);
 
-        // Calculate Velocity
-        // It moves in the direction of the angle, but faster than the ship
-        velocity = PVector.fromAngle(angle);
-        velocity.mult(AsteroidConstants.LASER_SPEED);
+    this.ttl = ttl;
 
-        ttl = AsteroidConstants.LASER_LIFESPAN + playerLevel;
-        //println(ttl);
-        active = true;
+    this.active = true;
+  }
+
+  public void update() {
+    position.add(velocity);
+
+    // Screen Wrap
+    PhysicsHelper.screenWrap(position, 1.0, width, height);
+
+    // Decrease TTL
+    ttl--;
+    if (ttl < 0) {
+      active = false;
     }
+  }
 
-    public void update(){
-        position.add(velocity);
+  public abstract void display();
 
-        // Screen Wrap
-        PhysicsHelper.screenWrap(position, 1.0, width, height);
+  // Generic Class APIs (Getter/Setter)
+  public PVector getPosition() {
+    return position.copy();
+  }
 
-        // Decrease TTL
-        ttl--;
-        if(ttl < 0){
-            active = false;
-        }
+  public void setPosition(PVector position) {
+    this.position = position;
+  }
 
-    }
+  public PVector getVelocity() {
+    return velocity.copy();
+  }
 
-    public void display(){
+  public void setVelocity(PVector velocity) {
+    this.velocity = velocity;
+  }
+
+  public int getTTL() {
+    return ttl;
+  }
+
+  public void setTTL(int ttl) {
+    this.ttl = ttl;
+  }
+
+  public boolean isActive() {
+    return active;
+  }
+
+  public void setActive(boolean active) {
+    this.active = active;
+  }
+}
+
+// Player Laser Inherits the Base (Stroke = white)
+public class PlayerLaser extends Laser {
+  // Default Constructor
+  public PlayerLaser(PVector shipPos, float angle, int playerLevel) {
+    // Calculate nose position logic
+    super(
+      new PVector(
+      shipPos.x + (AsteroidConstants.SHIP_SIZE * cos(angle)),
+      shipPos.y + (AsteroidConstants.SHIP_SIZE * sin(angle))
+      ),
+      angle,
+      AsteroidConstants.LASER_SPEED,
+      // This line increses the laser ttl in a logarithmic scale 
+      (int)ceil(AsteroidConstants.LASER_LIFESPAN + 10.0 * log(playerLevel))
+      );
+  }
+
+
+    @Override
+    public void display() {
         pushStyle();
-        stroke(255, 255, 255); // White Laser
-        ellipse(position.x, position.y, AsteroidConstants.LASER_SIZE, AsteroidConstants.LASER_SIZE);
-        // TODO: Trail Logic
-        //println("Drawing laser at: " + position.x + ", " + position.y);
+        stroke(255); //white lasers
+        strokeWeight(2);
+        ellipse(super.getPosition().x, super.getPosition().y, AsteroidConstants.LASER_SIZE, AsteroidConstants.LASER_SIZE);
         popStyle();
     }
+}
 
-    // Generic Class APIs (Getter/Setter)
-    public PVector getPosition() {
-        return position.copy();
-    }
+// Enemy Laser Class deals damage to player, Stroke(RED)
+public class EnemyLaser extends Laser {
+  private float damage;
 
-    public void setPosition(PVector position) {
-        this.position = position;
-    }
+  public EnemyLaser(PVector origin, float angle, float damage) {
+    super(origin, angle, AsteroidConstants.LASER_SPEED, AsteroidConstants.LASER_LIFESPAN + 30);
+    setDamage(damage);
+  }
 
-    public PVector getVelocity() {
-        return velocity.copy();
-    }
+  @Override
+    public void display() {
+    pushStyle();
+    stroke(255, 0, 0);
+    strokeWeight(3);
+    ellipse(super.getPosition().x, super.getPosition().y, AsteroidConstants.LASER_SIZE, AsteroidConstants.LASER_SIZE);
+    popStyle();
+  }
 
-    public void setVelocity(PVector velocity) {
-        this.velocity = velocity;
-    }
 
-    public int getTTL() {
-        return ttl;
-    }
-
-    public void setTTL(int ttl) {
-        this.ttl = ttl;
-    }
-
-    public boolean isActive() {
-        return active;
-    }
-
-    public void setActive(boolean active) {
-        this.active = active;
-    }
-
+  //General Public APIs (Getters/Setters)
+  public float getDamage() {
+    return damage;
+  }
+  public void setDamage(final float damage) {
+    this.damage = damage;
+  }
 }

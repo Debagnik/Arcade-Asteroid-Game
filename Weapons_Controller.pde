@@ -4,33 +4,38 @@
  * Copyright 2025 Rak Kingabed <debagnik@debagnik.in>
  * FILE: Weapons_Controller.pde
  */
+import java.util.HashSet;
 
 public class WeaponsController{
-    private ArrayList<Laser> lasers;
+    private ArrayList<PlayerLaser> playerLasers;
 
     // Default Constructor
     public WeaponsController(){
-        lasers = new ArrayList<Laser>();
+        playerLasers = new ArrayList<PlayerLaser>();
     }
 
     public void fire(Spacecraft ship, int playerLevel){
-        lasers.add(new Laser(ship.getPosition(), ship.getHeading(), playerLevel));
+        playerLasers.add(new PlayerLaser(ship.getPosition(), ship.getHeading(), playerLevel));
     }
 
     // Core Weapon display logic
     public void displayAndUpdate(){
         // looping to remove dead lasers
-        for(Laser l : lasers){
+        HashSet<PlayerLaser> dedPlayerLasers = new HashSet<PlayerLaser>();
+        for(PlayerLaser l : playerLasers){
             l.update();
             l.display();
+            if(!l.isActive()){
+                dedPlayerLasers.add(l);
+            }
         }
-        lasers.removeIf(l -> !l.active);
+        playerLasers.removeAll(dedPlayerLasers);
     }
 
     // Generic Getter
-    public ArrayList<Laser> getLasers(){
+    public ArrayList<PlayerLaser> getPlayerLasers(){
         // Returning the Laser List in a new List (Defensive Programming).
-        return new ArrayList<Laser>(lasers);
+        return new ArrayList<PlayerLaser>(playerLasers);
     }
      
 }

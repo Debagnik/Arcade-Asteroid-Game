@@ -13,8 +13,9 @@ private ArrayList<Asteroid> asteroids; //adds a list of asteriods
 private Spacecraft ship; //Adds a player ship
 private WeaponsController weapon;
 private ExplosionController explosions;  //Explosion Particle controller
+private UFOController ufoController;
 private boolean isLeft, isRight, isUp;
-private int level = 0;
+private int level = 1; // Never Set it 0 (Non-Zero value)
 private int respawnTimer = 0;
 
 void setup() {
@@ -34,7 +35,7 @@ void setup() {
 
   //Init Asteroids List
   asteroids = new ArrayList<Asteroid>();
-  //create 5 asteroids to start game.
+  //create INITIAL_ASTEROID_COUNT asteroids to start game.
   for (int i = 0; i < AsteroidConstants.INITIAL_ASTEROID_COUNT; i++) {
     asteroids.add(new Asteroid(ship, AsteroidConstants.ASTEROID_SHIP_SAFE_DISTANCE));
   }
@@ -43,7 +44,9 @@ void setup() {
 
   //Init Explosion Controller
   explosions = new ExplosionController();
-  
+
+  // Init ufo controller
+  ufoController = new UFOController(explosions);
 }
 
 void draw() {
@@ -63,8 +66,12 @@ private void activeGameplayHandler() {
   weapon.displayAndUpdate();
   //Explosion handling
   explosions.displayAndUpdate();
+  //UFO Mechanics
+  ufoController.update(getLevel(), asteroids, weapon.getPlayerLasers());
   //Asteroid mechanics
   asteroidsMechanics();
+  //UFO Hits mechanism
+  checkUFOAttacksOnPlayer();
   //player collision mechanics
   checkPlayerCollision();
 }
@@ -153,12 +160,12 @@ private void asteroidsMechanics() {
 
   // LASER VS ASTEROID COLLISION
   // Get all active lasers
-  ArrayList<Laser> activeLasers = weapon.getLasers();
+  ArrayList<PlayerLaser> activeLasers = weapon.getPlayerLasers();
   HashSet<Asteroid> spawnChildAsteroids = new HashSet<Asteroid>();
   HashSet<Asteroid> despawnParentAsteroids = new HashSet<Asteroid>();
-  HashSet<Laser> deactivateLasers = new HashSet<Laser>();
+  HashSet<PlayerLaser> deactivateLasers = new HashSet<PlayerLaser>();
 
-  for (Laser l : activeLasers) {
+  for (PlayerLaser l : activeLasers) {
     // Optimization: If this laser is already marked inactive (e.g. somehow hit twice), skip it
     if (deactivateLasers.contains(l)) {
       continue;
@@ -175,7 +182,7 @@ private void asteroidsMechanics() {
       // Check Hit collision
       if (PhysicsHelper.checkLaserCollision(l, a)) {
         explosions.animateAsteroidExplosion(a); //Asteroid explosion Animation
-        
+
         if (a.getRadius() > AsteroidConstants.MIN_ASTEROID_SIZE) {
           // Asteroid Split logic and spawning logic
           spawnChildAsteroids.add(new Asteroid(a.getPosition(), (a.getRadius())/2.0));
@@ -193,7 +200,7 @@ private void asteroidsMechanics() {
   asteroids.addAll(spawnChildAsteroids);
 
   // Safely deactivate Lasers
-  for (Laser l : deactivateLasers) {
+  for (PlayerLaser l : deactivateLasers) {
     l.setActive(false);
   }
 
@@ -217,7 +224,7 @@ private void asteroidsMechanics() {
   // Level Up and infinite gameplay logic
   if (asteroids.size() == 0) {
     setLevel(getLevel() + 1);
-    for (int i = 0; i < AsteroidConstants.INITIAL_ASTEROID_COUNT + getLevel(); i++) {
+    for (int i = 0; i < AsteroidConstants.INITIAL_ASTEROID_COUNT ; i++) {
       asteroids.add(new Asteroid(ship, AsteroidConstants.ASTEROID_SHIP_SAFE_DISTANCE));
     }
   }
@@ -231,6 +238,44 @@ private void animateShipDestroy(Spacecraft playerShip) {
   isLeft = false;
   isRight = false;
   isUp = false;
+}
+
+private void checkUFOAttacksOnPlayer() {
+  ArrayList<UFO> activeUFOs = ufoController.getActiveUFOs();
+  for (int i = activeUFOs.size() - 1; i >= 0; i--) {
+    UFO ufo = activeUFOs.get(i);
+    // If UFO wants a suicide route.
+    float distBody = PVector.dist(ship.getPosition(), ufo.getPosition());
+    if (distBody < (ufo.getRadius() + AsteroidConstants.SHIP_SIZE)) {
+      if (ship.takeDamage(AsteroidConstants.PLAYER_MAX_HP)) {
+        animateShipDestroy(ship);
+      }
+      explosions.animateUFOExplosion(ufo);
+      ufoController.despawnUFO(ufo);
+      //Logger.log(ship);
+      //Logger.log(ufo);
+    }
+
+    // If UFO laser hits ship.
+    for (EnemyLaser el : ufo.getUFOLasers()) {
+      if (!el.isActive()) {
+        continue;
+      }
+      float distLaser = PVector.dist(ship.getPosition(), el.getPosition());
+      //Collision check
+      if (distLaser < (AsteroidConstants.SHIP_SIZE + (AsteroidConstants.LASER_SIZE / 2.0))) {
+        // Deals with Ship Damage
+        boolean isDed = ship.takeDamage(el.getDamage());
+        el.setActive(false);
+
+        if (isDed) {
+          animateShipDestroy(ship);
+          break;
+        }
+      }
+    }
+  }
+  
 }
 
 // Generic Main APIs (Getters/Setters)
