@@ -23,6 +23,8 @@ public class UFOController{
         }
         // Flag for multiple UFO spawn
         int limit = AsteroidConstants.ALLOW_MULTIPLE_UFOS ? AsteroidConstants.MAX_UFO_COUNT : 1;
+        limit = level > AsteroidConstants.UFO_DUAL_SPAWN_LEVEL ? limit : 1;
+        //Logger.log(limit);
 
         if(activeUFOs.size() >= limit){
             return;
@@ -57,6 +59,10 @@ public class UFOController{
         }
         activeUFOs.removeAll(despawnUFOSet);
 
+    }
+
+    public void despawnUFO(UFO ufo){
+        activeUFOs.remove(ufo);
     }
 
     private boolean handleUFOCollisions(UFO ufo, ArrayList<PlayerLaser> playerLasers){

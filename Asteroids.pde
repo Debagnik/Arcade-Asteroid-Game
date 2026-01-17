@@ -15,7 +15,7 @@ private WeaponsController weapon;
 private ExplosionController explosions;  //Explosion Particle controller
 private UFOController ufoController;
 private boolean isLeft, isRight, isUp;
-private int level = 10;
+private int level = 1;
 private int respawnTimer = 0;
 
 void setup() {
@@ -35,7 +35,7 @@ void setup() {
 
   //Init Asteroids List
   asteroids = new ArrayList<Asteroid>();
-  //create 5 asteroids to start game.
+  //create INITIAL_ASTEROID_COUNT asteroids to start game.
   for (int i = 0; i < AsteroidConstants.INITIAL_ASTEROID_COUNT; i++) {
     asteroids.add(new Asteroid(ship, AsteroidConstants.ASTEROID_SHIP_SAFE_DISTANCE));
   }
@@ -47,7 +47,6 @@ void setup() {
 
   // Init ufo controller
   ufoController = new UFOController(explosions);
-  
 }
 
 void draw() {
@@ -183,7 +182,7 @@ private void asteroidsMechanics() {
       // Check Hit collision
       if (PhysicsHelper.checkLaserCollision(l, a)) {
         explosions.animateAsteroidExplosion(a); //Asteroid explosion Animation
-        
+
         if (a.getRadius() > AsteroidConstants.MIN_ASTEROID_SIZE) {
           // Asteroid Split logic and spawning logic
           spawnChildAsteroids.add(new Asteroid(a.getPosition(), (a.getRadius())/2.0));
@@ -225,7 +224,7 @@ private void asteroidsMechanics() {
   // Level Up and infinite gameplay logic
   if (asteroids.size() == 0) {
     setLevel(getLevel() + 1);
-    for (int i = 0; i < AsteroidConstants.INITIAL_ASTEROID_COUNT + getLevel(); i++) {
+    for (int i = 0; i < AsteroidConstants.INITIAL_ASTEROID_COUNT ; i++) {
       asteroids.add(new Asteroid(ship, AsteroidConstants.ASTEROID_SHIP_SAFE_DISTANCE));
     }
   }
@@ -241,23 +240,25 @@ private void animateShipDestroy(Spacecraft playerShip) {
   isUp = false;
 }
 
-private void checkUFOAttacksOnPlayer(){
+private void checkUFOAttacksOnPlayer() {
   ArrayList<UFO> activeUFOs = ufoController.getActiveUFOs();
-  for(UFO ufo : activeUFOs){
+  for (int i = activeUFOs.size() - 1; i >= 0; i--) {
+    UFO ufo = activeUFOs.get(i);
     // If UFO wants a suicide route.
     float distBody = PVector.dist(ship.getPosition(), ufo.getPosition());
-     if(distBody < (ufo.getRadius() + AsteroidConstants.SHIP_SIZE)){
-      if(ship.takeDamage(100)){
+    if (distBody < (ufo.getRadius() + AsteroidConstants.SHIP_SIZE)) {
+      if (ship.takeDamage(AsteroidConstants.PLAYER_MAX_HP)) {
         animateShipDestroy(ship);
       }
       explosions.animateUFOExplosion(ufo);
+      ufoController.despawnUFO(ufo);
       //Logger.log(ship);
       //Logger.log(ufo);
-     }
+    }
 
-     // If UFO laser hits ship.
-     for(EnemyLaser el : ufo.getUFOLasers()){
-      if(!el.isActive()){
+    // If UFO laser hits ship.
+    for (EnemyLaser el : ufo.getUFOLasers()) {
+      if (!el.isActive()) {
         continue;
       }
       float distLaser = PVector.dist(ship.getPosition(), el.getPosition());
@@ -267,15 +268,13 @@ private void checkUFOAttacksOnPlayer(){
         boolean isDed = ship.takeDamage(el.getDamage());
         el.setActive(false);
 
-        if(isDed){
+        if (isDed) {
           animateShipDestroy(ship);
         }
       }
-
-     }
-
+    }
   }
-
+  
 }
 
 // Generic Main APIs (Getters/Setters)

@@ -5,199 +5,222 @@
  * FILE:UFO_Object.pde
  */
 
-import java.util.HashSet;
+ import java.util.HashSet;
 
-public class UFO{
-    // UFO Global attributes
-    private PVector position;
-    private PVector velocity;
-    private PVector targetWaypoint;
-    private AsteroidConstants.UFOTypeEnum type;
-    private float size;
-    private float speed;
-    private float damageOutput;
-    private int fireTimer;
+public class UFO {
+  // UFO Global attributes
+  private PVector position;
+  private PVector velocity;
+  private PVector targetWaypoint;
+  private AsteroidConstants.UFOTypeEnum type;
+  private float size;
+  private float speed;
+  private float damageOutput;
+  private int fireTimer;
 
-    private ArrayList<EnemyLaser> ufoLasers;
+  private ArrayList<EnemyLaser> ufoLasers;
 
-    // Default Constructor
-    public UFO(AsteroidConstants.UFOTypeEnum type){
-        setType(type);
-        setUFOLasers(new ArrayList<EnemyLaser>());
+  // Default Constructor
+  public UFO(AsteroidConstants.UFOTypeEnum type) {
+    setType(type);
+    setUFOLasers(new ArrayList<EnemyLaser>());
 
-        if(AsteroidConstants.UFOTypeEnum.BIG == type){
-            setSize(AsteroidConstants.UFO_SIZE_BIG);
-            setSpeed(AsteroidConstants.UFO_SPEED_BIG);
-            setDamageOutput(AsteroidConstants.DAMAGE_BIG_UFO);
-        } else { 
-            setSize(AsteroidConstants.UFO_SIZE_SMALL);
-            setSpeed(AsteroidConstants.UFO_SPEED_SMALL);
-            setDamageOutput(AsteroidConstants.DAMAGE_SMALL_UFO);
-        }
-
-        // Random spawn on the edge of the playable area
-        if(random(1) < 0.5){
-            setPosition(new PVector((random(1) < 0.5 ? 0 : width), random(height)));
-        } else {
-            setPosition(new PVector(random(width), (random(1) < 0.5 ? 0 : height)));
-        }
-
-        pickNewWaypoint(); // Pick next moving direction
-        setFireTimer((int)AsteroidConstants.UFO_FIRE_RATE);
-
+    if (AsteroidConstants.UFOTypeEnum.BIG == type) {
+      setSize(AsteroidConstants.UFO_SIZE_BIG);
+      setSpeed(AsteroidConstants.UFO_SPEED_BIG);
+      setDamageOutput(AsteroidConstants.DAMAGE_BIG_UFO);
+    } else {
+      setSize(AsteroidConstants.UFO_SIZE_SMALL);
+      setSpeed(AsteroidConstants.UFO_SPEED_SMALL);
+      setDamageOutput(AsteroidConstants.DAMAGE_SMALL_UFO);
     }
 
-    private void pickNewWaypoint(){
-        setTargetWaypoint(new PVector(random(width), random(height)));
+    // Random spawn on the edge of the playable area
+    if (random(1) < 0.5) {
+      setPosition(new PVector((random(1) < 0.5 ? 0 : width), random(height)));
+    } else {
+      setPosition(new PVector(random(width), (random(1) < 0.5 ? 0 : height)));
     }
 
-    public void update(ArrayList<Asteroid> asteroids){
-        // seek desired waypoint.
-        PVector toWayPoint = PVector.sub(getTargetWaypoint(), getPosition());
-        PVector desired;
-        if(toWayPoint.mag() > 0){
-            desired = toWayPoint.normalize().mult(getSpeed());
-        } else {
-            desired = new PVector(0, 0);
-            pickNewWaypoint(); // Pick new waypoint if we're exactly at target
-        }
+    pickNewWaypoint(); // Pick next moving direction
+    setFireTimer((int)AsteroidConstants.UFO_FIRE_RATE);
+  }
 
-        // Obstacle Avoidance (Using PhysicsHelper)
-        PVector avoidance = PhysicsHelper.avoidAsteroidForUFO(getPosition(), asteroids);
+  private void pickNewWaypoint() {
+    setTargetWaypoint(new PVector(random(width), random(height)));
+  }
 
-        // Apply velocity Vector
-        setVelocity(desired.add(avoidance));
-        velocity.limit(getSpeed());
-        position.add(velocity);
-
-        // Pick new waypoint
-        if (PVector.dist(getPosition(), getTargetWaypoint()) < 10){
-            pickNewWaypoint();
-        }
-
-        // Same ol' screen wrapping logic
-        PhysicsHelper.screenWrap(position, size, width, height);
-
-        handleFiring();
-
-
+  public void update(ArrayList<Asteroid> asteroids) {
+    // seek desired waypoint.
+    PVector toWayPoint = PVector.sub(getTargetWaypoint(), getPosition());
+    PVector desired;
+    if (toWayPoint.mag() > 0) {
+      desired = toWayPoint.normalize().mult(getSpeed());
+    } else {
+      desired = new PVector(0, 0);
+      pickNewWaypoint(); // Pick new waypoint if we're exactly at target
     }
 
-    private void handleFiring(){
-        setFireTimer(getFireTimer() - 1);
-        if (getFireTimer() <= 0) {
-            float randomAngle = random(TWO_PI);
-            //Spawns Enemy Laser at random angle.
-            getUFOLasers().add(new EnemyLaser(getPosition(), randomAngle, getDamageOutput()));
-            setFireTimer((int)AsteroidConstants.UFO_FIRE_RATE);
-        }
+    // Obstacle Avoidance (Using PhysicsHelper)
+    PVector avoidance = PhysicsHelper.avoidAsteroidForUFO(getPosition(), asteroids);
 
-        final HashSet<EnemyLaser> lasersToRemove = new HashSet<EnemyLaser>();
-        for(EnemyLaser el : getUFOLasers()){
-            el.update();
-            if(!el.isActive()){
-                lasersToRemove.add(el);
-            }
-        }
-        getUFOLasers().removeAll(lasersToRemove);
+    // Apply velocity Vector
+    setVelocity(desired.add(avoidance));
+    velocity.limit(getSpeed());
+    position.add(velocity);
+
+    // Pick new waypoint
+    if (PVector.dist(getPosition(), getTargetWaypoint()) < 10) {
+      pickNewWaypoint();
     }
 
-    public void display() {
-        pushStyle();
-        fill(0);
-        stroke(0, 255, 0); // UFO is green in color
-        strokeWeight(2);
-        pushMatrix();
-        translate(getPosition().x, getPosition().y);
-        // Scale drawing based on size
-        float s = getSize();
-        ellipse(0, 0, s, s * 0.4); 
-        arc(0, -s * 0.1, s * 0.5, s * 0.4, -PI, 0); 
-        popMatrix();
-        popStyle();
-        // renders UFO Lasers
-        for(EnemyLaser el : getUFOLasers()){
-            el.display();
-        }
+    // Same ol' screen wrapping logic
+    PhysicsHelper.screenWrap(position, size, width, height);
+
+    handleFiring();
+  }
+
+  private void handleFiring() {
+    setFireTimer(getFireTimer() - 1);
+    if (getFireTimer() <= 0) {
+      float randomAngle = random(TWO_PI);
+      //Spawns Enemy Laser at random angle.
+      getUFOLasers().add(new EnemyLaser(getPosition(), randomAngle, getDamageOutput()));
+      setFireTimer((int)AsteroidConstants.UFO_FIRE_RATE);
     }
 
+    final HashSet<EnemyLaser> lasersToRemove = new HashSet<EnemyLaser>();
+    for (EnemyLaser el : getUFOLasers()) {
+      el.update();
+      if (!el.isActive()) {
+        lasersToRemove.add(el);
+      }
+    }
+    getUFOLasers().removeAll(lasersToRemove);
+  }
 
+  public void display() {
+    pushStyle();
+    fill(0);
+    stroke(0, 255, 0); // UFO is green in color
+    strokeWeight(2);
+    pushMatrix();
+    translate(getPosition().x, getPosition().y);
+    // Scale drawing based on size
+    float s = getSize();
+    noFill();
 
-    public float getRadius(){
-        return this.size / 2.0;
+    float w = s;
+    float h = s * 0.35;
+    float domeW = s * 0.22;
+    float domeH = s * 0.18;
+
+    // Base saucer outline (classic)
+    line(-w*0.50, 0, w*0.50, 0);
+    line(-w*0.35, h*0.50, w*0.35, h*0.50);
+    line(-w*0.50, 0, -w*0.35, h*0.50);
+    line( w*0.50, 0, w*0.35, h*0.50);
+
+    // Dome (approx curve using small segments)
+    int steps = 8;
+    for (int i = 0; i < steps; i++) {
+      float a1 = map(i, 0, steps, PI, TWO_PI);
+      float a2 = map(i+1, 0, steps, PI, TWO_PI);
+
+      float x1 = cos(a1) * domeW;
+      float y1 = sin(a1) * domeH - h*0.15;
+      float x2 = cos(a2) * domeW;
+      float y2 = sin(a2) * domeH - h*0.15;
+
+      line(x1, y1, x2, y2);
     }
 
-    // APIs and Accessors (Getter and setters)
-    public PVector getPosition() {
-        return position.copy();
+    // Center detail line
+    line(-w*0.25, h*0.20, w*0.25, h*0.20);
+    popMatrix();
+    popStyle();
+    // renders UFO Lasers
+    for (EnemyLaser el : getUFOLasers()) {
+      el.display();
     }
+  }
 
-    public void setPosition(PVector position) {
-        this.position = position;
-    }
 
-    public PVector getVelocity() {
-        return velocity.copy();
-    }
 
-    public void setVelocity(PVector velocity) {
-        this.velocity = velocity;
-    }
+  public float getRadius() {
+    return this.size / 2.0;
+  }
 
-    public PVector getTargetWaypoint() {
-        return targetWaypoint.copy();
-    }
+  // APIs and Accessors (Getter and setters)
+  public PVector getPosition() {
+    return position.copy();
+  }
 
-    public void setTargetWaypoint(PVector targetWaypoint) {
-        this.targetWaypoint = targetWaypoint;
-    }
+  public void setPosition(PVector position) {
+    this.position = position;
+  }
 
-    public AsteroidConstants.UFOTypeEnum getType() {
-        return type;
-    }
+  public PVector getVelocity() {
+    return velocity.copy();
+  }
 
-    public void setType(AsteroidConstants.UFOTypeEnum type) {
-        this.type = type;
-    }
+  public void setVelocity(PVector velocity) {
+    this.velocity = velocity;
+  }
 
-    public float getSize() {
-        return size;
-    }
+  public PVector getTargetWaypoint() {
+    return targetWaypoint.copy();
+  }
 
-    public void setSize(float size) {
-        this.size = size;
-    }
+  public void setTargetWaypoint(PVector targetWaypoint) {
+    this.targetWaypoint = targetWaypoint;
+  }
 
-    public float getSpeed() {
-        return speed;
-    }
+  public AsteroidConstants.UFOTypeEnum getType() {
+    return type;
+  }
 
-    public void setSpeed(float speed) {
-        this.speed = speed;
-    }
+  public void setType(AsteroidConstants.UFOTypeEnum type) {
+    this.type = type;
+  }
 
-    public float getDamageOutput() {
-        return damageOutput;
-    }
+  public float getSize() {
+    return size;
+  }
 
-    public void setDamageOutput(float damageOutput) {
-        this.damageOutput = damageOutput;
-    }
+  public void setSize(float size) {
+    this.size = size;
+  }
 
-    public int getFireTimer() {
-        return fireTimer;
-    }
+  public float getSpeed() {
+    return speed;
+  }
 
-    public void setFireTimer(int fireTimer) {
-        this.fireTimer = fireTimer;
-    }
+  public void setSpeed(float speed) {
+    this.speed = speed;
+  }
 
-    public ArrayList<EnemyLaser> getUFOLasers() {
-        return ufoLasers;
-    }
+  public float getDamageOutput() {
+    return damageOutput;
+  }
 
-    public void setUFOLasers(ArrayList<EnemyLaser> ufoLasers) {
-        this.ufoLasers = ufoLasers;
-    }
+  public void setDamageOutput(float damageOutput) {
+    this.damageOutput = damageOutput;
+  }
 
+  public int getFireTimer() {
+    return fireTimer;
+  }
+
+  public void setFireTimer(int fireTimer) {
+    this.fireTimer = fireTimer;
+  }
+
+  public ArrayList<EnemyLaser> getUFOLasers() {
+    return ufoLasers;
+  }
+
+  public void setUFOLasers(ArrayList<EnemyLaser> ufoLasers) {
+    this.ufoLasers = ufoLasers;
+  }
 }

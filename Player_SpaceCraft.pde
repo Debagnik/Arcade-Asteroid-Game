@@ -212,7 +212,7 @@ public class Spacecraft {
         this.velocity = velocity;
     }
 
-    public boolean getIsInvincible(){
+    public boolean isInvincible(){
         return isInvincible;
     }
 

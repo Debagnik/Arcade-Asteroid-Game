@@ -49,8 +49,8 @@ public static class AsteroidConstants {
     public static final int PARTICLE_COUNT_BIG = 5;
 
     // Alien UFO Constants
-    public static final boolean ALLOW_MULTIPLE_UFOS = false;
-    public static final int MAX_UFO_COUNT = 3;
+    public static final boolean ALLOW_MULTIPLE_UFOS = true;
+    public static final int MAX_UFO_COUNT = 2;
     public static final int UFO_START_LEVEL = 5; // The player level that BIG UFOs will start Spawning
     public static final int UFO_DUAL_SPAWN_LEVEL = 10;  // The player Level that Both Small and Big UFOs will start spawning
     public static enum UFOTypeEnum {
@@ -80,7 +80,7 @@ public static class AsteroidConstants {
         LOG,
         PROD
     };
-    public static GameModeEnum GAME_MODE = GameModeEnum.TEST;
+    public static GameModeEnum GAME_MODE = GameModeEnum.PROD;
     public static int COLLECTION_LOGGING_LIMIT = 25;
     public static final String LOGGING_DIR = "./Logs";
 

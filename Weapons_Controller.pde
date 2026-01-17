@@ -4,6 +4,7 @@
  * Copyright 2025 Rak Kingabed <debagnik@debagnik.in>
  * FILE: Weapons_Controller.pde
  */
+import java.util.HashSet;
 
 public class WeaponsController{
     private ArrayList<PlayerLaser> playerLasers;
@@ -20,11 +21,15 @@ public class WeaponsController{
     // Core Weapon display logic
     public void displayAndUpdate(){
         // looping to remove dead lasers
+        HashSet<PlayerLaser> dedPlayerLasers = new HashSet<PlayerLaser>();
         for(PlayerLaser l : playerLasers){
             l.update();
             l.display();
+            if(!l.isActive()){
+                dedPlayerLasers.add(l);
+            }
         }
-        playerLasers.removeIf(l -> !l.isActive());
+        playerLasers.removeAll(dedPlayerLasers);
     }
 
     // Generic Getter

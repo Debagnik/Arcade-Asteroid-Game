@@ -156,7 +156,7 @@ public static class PhysicsHelper {
      * Simple check: Dist < Radius
      */
     public static boolean checkShip2AsteroidCollision(Spacecraft ship, Asteroid a){
-      if(ship.getIsInvincible()){
+      if(ship.isInvincible()){
         return false;
       }
       float dist = PVector.dist(ship.getPosition(), a.getPosition());
