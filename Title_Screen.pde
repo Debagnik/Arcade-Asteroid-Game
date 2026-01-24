@@ -43,7 +43,7 @@ public class TitleScreen{
     private void loadCredits(){
         String creditsPath = "assets/data/credits/credits.txt";
         setCredits(getParent().loadStrings(creditsPath));
-        if (Objects.isNull(getCredits())){
+        if (Objects.isNull(getCredits()) || getCredits().length == 0){
             System.err.println("ERROR: Credits file not found at " + creditsPath);
             setCredits(new String[]{"CREDITS", "Created by Rak Kingabed", "Credits File Missing"});
         }
