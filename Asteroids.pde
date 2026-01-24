@@ -118,6 +118,11 @@ private void resetGame() {
     level = 1;
     respawnTimer = 0;
     ufoController = new UFOController(explosions);
+    weapon = new WeaponsController();
+    explosions.reset();
+    ufoController = new UFOController(explosions);
+    collisionMechanics = new CollisionMechanics();
+    playerController = new PlayerController();
 }
 
 

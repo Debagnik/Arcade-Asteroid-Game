@@ -97,7 +97,7 @@ public class TitleScreen{
         getParent().textFont(getTFont());
         getParent().fill(255);
         getParent().textSize(getParent().width/10);
-        getParent().text("ASTERIODS", getParent().width/2, getParent().height/4.05);
+        getParent().text("ASTEROIDS", getParent().width/2, getParent().height/4.05);
 
         getParent().textFont(getMFont());
         
@@ -147,7 +147,7 @@ public class TitleScreen{
     private void drawGameModeSelect() {
         getParent().textFont(getTFont());
         getParent().textSize(getParent().width/10);
-        getParent().text("ASTERIODS", getParent().width/2, getParent().height/4.05);
+        getParent().text("ASTEROIDS", getParent().width/2, getParent().height/4.05);
 
         getParent().textSize(getParent().width/15);
         getParent().text("SELECT GAME TYPE", getParent().width/2, getParent().height/2.70);
@@ -175,7 +175,7 @@ public class TitleScreen{
     private void drawHighScores() {
         getParent().textFont(tFont);
         getParent().textSize(getParent().width/10);
-        getParent().text("ASTERIODS", getParent().width/2, getParent().height/4.05);
+        getParent().text("ASTEROIDS", getParent().width/2, getParent().height/4.05);
 
         getParent().textSize(getParent().width/20);
         getParent().text("GLOBAL HIGHSCORE", getParent().width/2, getParent().height/2.70);
