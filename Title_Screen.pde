@@ -177,16 +177,16 @@ public class TitleScreen{
         getParent().textSize(getParent().width/10);
         getParent().text("ASTERIODS", getParent().width/2, getParent().height/4.05);
 
-        getParent().textSize(getParent().width/15);
+        getParent().textSize(getParent().width/20);
         getParent().text("GLOBAL HIGHSCORE", getParent().width/2, getParent().height/2.70);
 
         getParent().textFont(getMFont());
-        getParent().textSize(getParent().width/20);
-        getParent().text("WORK IN PROGRESS", getParent().width/20, getParent().height/2.21);
+        getParent().textSize(getParent().width/30);
+        getParent().text("WORK IN PROGRESS", getParent().width/2, getParent().height/2.21);
 
 
         getParent().textSize(18);
-        drawButton("MAIN MENU", getParent().width/2, getParent().height/1.35f, getParent().width/20);
+        drawButton("MAIN MENU", getParent().width/2, getParent().height/1.35f, getParent().width/50);
 
     }
 
@@ -198,6 +198,7 @@ public class TitleScreen{
         
         float y = getCreditsY();
         for (String line : getCredits()) {
+            getParent().textSize(getParent().width/36);
             getParent().text(line, getParent().width/2, y);
             y += 40;
         }
@@ -205,8 +206,9 @@ public class TitleScreen{
         setCreditsY(getCreditsY() - 1.0f);
         
         // Allow exit
-        getParent().fill(200, 50, 50);
-        getParent().text("Click to Return", getParent().width/2, getParent().height - 50);
+        getParent().fill(255);
+        getParent().textSize(20);
+        getParent().text("Click to Return", getParent().width/2, 18);
     }
 
     private void gameExit(){
