@@ -120,7 +120,7 @@ public class TitleScreen{
      */
     private void drawButton(String label, float x, float y, float size) {
         getParent().textSize(size);
-        if(isMouseOver(x, y, 200, 30)){
+        if(isMouseOver(x, y, 300, size)){
             getParent().fill(255);
             getParent().text("> " + label + " <", x, y);
         } else {
