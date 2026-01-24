@@ -16,6 +16,8 @@ private ExplosionController explosions;  //Explosion Particle controller
 private UFOController ufoController;
 private CollisionMechanics collisionMechanics;
 private PlayerController playerController;
+private TitleScreen titleScreen;
+private AsteroidConstants.GameState gameState = AsteroidConstants.INITIAL_GAME_STATE; //game Starts with the title screen
 private int level = 1; // Never Set it 0 (Non-Zero value)
 private int respawnTimer = 0;
 
@@ -23,6 +25,7 @@ void setup() {
   //create a window
   //Using P2D renderer
   size(1080, 608, P2D);
+  //fullscreen(P2D);
   pixelDensity(1);
 
   // setup current logger
@@ -30,6 +33,9 @@ void setup() {
 
   //Turn off Anti-aliasing
   smooth();
+
+  //Init Title Screen 
+  titleScreen = new TitleScreen(this);
 
   //Init the player ship
   ship = new Spacecraft();
@@ -56,16 +62,36 @@ void setup() {
   playerController = new PlayerController();
 }
 
-void draw() {
+public void draw() {
   //Set BG to a a dark color with RGB values
   background(20, 20, 30);
 
+  if(gameState == AsteroidConstants.GameState.PLAYING){
+    runGame();
+  } else {
+    titleScreen.display(gameState, asteroids);
+  }
+
+}
+
+public void mousePressed() {
+  if (gameState != AsteroidConstants.GameState.PLAYING) {
+      AsteroidConstants.GameState newState = titleScreen.handleTitleScreenClick(gameState);
+      
+      if (newState == AsteroidConstants.GameState.PLAYING && gameState != AsteroidConstants.GameState.PLAYING) {
+          resetGame();
+      }
+      gameState = newState;
+  }
+}
+
+private void runGame(){
   if (respawnTimer > 0) {
     playerController.activateRespawnMechanics();
   } else {
     activeGameplayHandler();
   }
-}
+} 
 
 private void activeGameplayHandler() {
   playerController.shipMechanics();
@@ -81,6 +107,17 @@ private void activeGameplayHandler() {
   collisionMechanics.checkUFOAttacksOnPlayer();
   //player collision mechanics
   collisionMechanics.checkPlayerCollision();
+}
+
+private void resetGame() {
+    ship = new Spacecraft();
+    asteroids.clear();
+    for (int i = 0; i < AsteroidConstants.INITIAL_ASTEROID_COUNT; i++) {
+        asteroids.add(new Asteroid(ship, AsteroidConstants.ASTEROID_SHIP_SAFE_DISTANCE));
+    }
+    level = 1;
+    respawnTimer = 0;
+    ufoController = new UFOController(explosions);
 }
 
 
