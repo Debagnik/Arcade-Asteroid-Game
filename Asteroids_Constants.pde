@@ -76,13 +76,26 @@ public static class AsteroidConstants {
 
     // Logger Constants
     public static enum GameModeEnum{
-        TEST,
+        ENDLESS,
         DEBUG,
         LOG,
-        PROD
+        CLASSIC,
+        TIME_PLAY
     };
-    public static GameModeEnum GAME_MODE = GameModeEnum.PROD;
+    public static GameModeEnum GAME_MODE = GameModeEnum.CLASSIC;
     public static int COLLECTION_LOGGING_LIMIT = 25;
     public static final String LOGGING_DIR = "./Logs";
+
+    // Game state enum.
+    public static enum GameState {
+        MENU_MAIN,
+        MENU_GAME_SELECT,
+        MENU_HIGH_SCORE,
+        MENU_CREDITS,
+        PLAYING,
+        MENU_EXIT
+    };
+
+    public static GameState INITIAL_GAME_STATE = GameState.MENU_MAIN;
 
 }
