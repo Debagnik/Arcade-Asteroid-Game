@@ -29,7 +29,7 @@ Take command of your spacecraft with these simple keyboard controls:
 ### Directory Structure
 Ensure your project directories are set up as follows:
 
-```
+```text
 Asteroids/
 ├── data/
 │   └── assets/
