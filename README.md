@@ -22,6 +22,56 @@ Take command of your spacecraft with these simple keyboard controls:
 | **Right Arrow** | Rotate Clockwise |
 | **Spacebar** | Fire Lasers |
 
+## Asset Setup
+
+**IMPORTANT**: This is an open-source project, but it requires specific licensed assets that are not included in this repository due to licensing restrictions. You must set them up manually before running the game.
+
+### Directory Structure
+Ensure your project directories are set up as follows:
+
+```text
+Asteroids/
+├── data/
+│   └── assets/
+│       └── fonts/
+│           └── Orbitron.ttf      <-- Required Font
+├── assets/
+│   └── data/
+│       └── credits/
+│           └── credits.txt       <-- Required Credits File
+```
+
+### Obtaining Assets
+
+#### 1. Orbitron Font
+- **Source**: [Google Fonts - Orbitron](https://fonts.google.com/specimen/Orbitron)
+- **Instructions**:
+  1. Download the font family.
+  2. Extract the `.ttf` file.
+  3. Rename it to `Orbitron.ttf`.
+  4. Place it in `data/assets/fonts/`.
+
+#### 2. Credits File
+- **Source**: Custom file.
+- **Instructions**:
+  1. Create a text file named `credits.txt`.
+  2. Add credits content (one entry per line).
+  3. Place it in `assets/data/credits/`.
+
+### Troubleshooting
+- **"Font not found"**: Check that the file is named exactly `Orbitron.ttf` and is in `data/assets/fonts/`.
+- **"Credits File Missing"**: Ensure `credits.txt` exists in `assets/data/credits/`.
+- **Game Crashes on Start**: Verify both files are present and readable.
+
+### Quick-Start Checklist
+- [ ] Clone the repository
+- [ ] Create directory `data/assets/fonts/`
+- [ ] Download and place `Orbitron.ttf`
+- [ ] Create directory `assets/data/credits/`
+- [ ] Create and place `credits.txt`
+- [ ] Open `Asteroids.pde` in Processing
+- [ ] Run the game
+
 ## Installation and Usage
 
 To run this game, you need the [Processing Environment](https://processing.org/download/).
@@ -36,15 +86,18 @@ git clone git@github.com:Debagnik/Arcade-Asteroid-Game.git ./Asteroids
 
 ## Project Structure
 
-- `Asteroids.pde`: Main game loop, setup, and input handling.
+- `Asteroids.pde`: Main entry point, setup, and game loop orchestration.
 - `Asteroids_Constants.pde`: Global game settings, balancing constants, and enums.
-- `Asteroids_PhysicsHelper.pde`: Core physics engine (collisions, wrapping, math).
-- `Player_SpaceCraft.pde`: Player ship logic and movement.
-- `Asteroid_Object.pde`: Asteroid behavior and splitting logic.
-- `UFO_Controller.pde` / `UFO_Object.pde`: Enemy AI and spawning logic.
-- `Explosion_Controller.pde` / `DebrisAnimation.pde`: Visual effects and particles.
-- `Lasers.pde` / `Weapons_Controller.pde`: Projectile mechanics.
-- `Loggers.pde`: Utility for game state logging.
+- `Title_Screen.pde`: Manages the main menu, game mode selection, and credits.
+- `Player_SpaceCraft.pde`: Player ship entity and physics.
+- `Player_Controller.pde`: Handles player input, ship movement logic, and respawn mechanics.
+- `Asteroid_Object.pde`: Asteroid entity behavior.
+- `Collision_Mechanics.pde`: Centralized collision detection logic (Player, Asteroids, Lasers, UFOs).
+- `Asteroids_PhysicsHelper.pde`: Core physics math (wrapping, distance checks).
+- `UFO_Controller.pde` / `UFO_Object.pde`: Enemy AI logic and spawning.
+- `Explosion_Controller.pde` / `DebrisAnimation.pde`: Visual effects, particles, and explosion animations.
+- `Lasers.pde` / `Weapons_Controller.pde`: Weapon systems and projectile management.
+- `Loggers.pde`: Debugging and game state logging utilities.
 
 ## License
 
@@ -52,4 +105,4 @@ This project is licensed under the **WTFPL (Do What The Fuck You Want To Public 
 
 ---
 **Author**: Rak Kingabed <debagnik@debagnik.in>
-Copyright (c) 2025
+Copyright (c) 2026

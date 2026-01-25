@@ -19,36 +19,45 @@ public class TitleScreen{
     public TitleScreen(PApplet parent){
         setParent(parent);
         final String fontPath = getParent().dataPath("assets/fonts/Orbitron.ttf");
-        File fontFile = new File(fontPath);
-        if(!fontFile.exists()){
-            throw new RuntimeException("ERROR: Font file not found at " + fontPath);
-        }
-
+        
         try{
-            setTFont(getParent().createFont(fontPath, 64));
-            setMFont(getParent().createFont(fontPath, 64));
+            File fontFile = new File(fontPath);
+            if(!fontFile.exists()){
+                throw new RuntimeException("ERROR: Font file not found at " + fontPath + "\n\nPlease refer to README.md for asset setup instructions.\n\n");
+            } else {
+                setTFont(getParent().createFont(fontPath, 64));
+                setMFont(getParent().createFont(fontPath, 64));
+            }
         } catch(Exception ex) {
-            throw new RuntimeException("ERROR: Could not load font format: " + ex.getMessage());
+            setTFont(getParent().createFont("Courier New", 64));
+            setMFont(getParent().createFont("Courier New", 64));
+            System.err.println("ERROR: Loading custom font failed\n" + ex.getMessage());
         }
-
-        try{
-            loadCredits();
-        } catch (Exception ex){
-            throw new RuntimeException("ERROR: Could't load Credits file, Find More Info in the stacktrace \n" + ex.getMessage());
-        }
+        
+        
+        loadCredits();
 
 
     }
 
     private void loadCredits(){
-        String creditsPath = "assets/data/credits/credits.txt";
-        setCredits(getParent().loadStrings(creditsPath));
-        if (Objects.isNull(getCredits()) || getCredits().length == 0){
-            System.err.println("ERROR: Credits file not found at " + creditsPath);
+        final String creditsRelPath = "assets/data/credits/credits.txt";
+        final String creditsPath = getParent().sketchPath(creditsRelPath);
+        String[] tmp = null;
+        try{
+            tmp = getParent().loadStrings(creditsPath);
+            if(Objects.isNull(tmp) || tmp.length == 0){
+                throw new RuntimeException("ERROR: Couldn't load credits file. See README.md for asset setup instructions.");
+            } else{
+                setCredits(tmp);
+            }
+        } catch (Exception ex){
             setCredits(new String[]{"CREDITS", "Created by Rak Kingabed", "Credits File Missing"});
+            System.err.println("ERROR: Credits file not found at " + creditsPath + "\n\n" + ex.getMessage());
         }
 
         setCreditsY(getParent().height);
+
     }
 
     public void display(AsteroidConstants.GameState currentState, ArrayList<Asteroid> backgroundAsteroids){
