@@ -41,12 +41,13 @@ public class TitleScreen{
     }
 
     private void loadCredits(){
-        final String creditsPath = "assets/data/credits/credits.txt";
+        final String creditsRelPath = "assets/data/credits/credits.txt";
+        final String creditsPath = getParent().sketchPath(creditsRelPath);
         String[] tmp = null;
         try{
             tmp = getParent().loadStrings(creditsPath);
             if(Objects.isNull(tmp) || tmp.length == 0){
-                throw new RuntimeException("ERROR: Could't load Credits file, Find More Info in README on how to get assets");
+                throw new RuntimeException("ERROR: Couldn't load credits file. See README.md for asset setup instructions.");
             } else{
                 setCredits(tmp);
             }
