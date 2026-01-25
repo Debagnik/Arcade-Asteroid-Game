@@ -86,15 +86,18 @@ git clone git@github.com:Debagnik/Arcade-Asteroid-Game.git ./Asteroids
 
 ## Project Structure
 
-- `Asteroids.pde`: Main game loop, setup, and input handling.
+- `Asteroids.pde`: Main entry point, setup, and game loop orchestration.
 - `Asteroids_Constants.pde`: Global game settings, balancing constants, and enums.
-- `Asteroids_PhysicsHelper.pde`: Core physics engine (collisions, wrapping, math).
-- `Player_SpaceCraft.pde`: Player ship logic and movement.
-- `Asteroid_Object.pde`: Asteroid behavior and splitting logic.
-- `UFO_Controller.pde` / `UFO_Object.pde`: Enemy AI and spawning logic.
-- `Explosion_Controller.pde` / `DebrisAnimation.pde`: Visual effects and particles.
-- `Lasers.pde` / `Weapons_Controller.pde`: Projectile mechanics.
-- `Loggers.pde`: Utility for game state logging.
+- `Title_Screen.pde`: Manages the main menu, game mode selection, and credits.
+- `Player_SpaceCraft.pde`: Player ship entity and physics.
+- `Player_Controller.pde`: Handles player input, ship movement logic, and respawn mechanics.
+- `Asteroid_Object.pde`: Asteroid entity behavior.
+- `Collision_Mechanics.pde`: Centralized collision detection logic (Player, Asteroids, Lasers, UFOs).
+- `Asteroids_PhysicsHelper.pde`: Core physics math (wrapping, distance checks).
+- `UFO_Controller.pde` / `UFO_Object.pde`: Enemy AI logic and spawning.
+- `Explosion_Controller.pde` / `DebrisAnimation.pde`: Visual effects, particles, and explosion animations.
+- `Lasers.pde` / `Weapons_Controller.pde`: Weapon systems and projectile management.
+- `Loggers.pde`: Debugging and game state logging utilities.
 
 ## License
 
@@ -102,4 +105,4 @@ This project is licensed under the **WTFPL (Do What The Fuck You Want To Public 
 
 ---
 **Author**: Rak Kingabed <debagnik@debagnik.in>
-Copyright (c) 2025
+Copyright (c) 2026
