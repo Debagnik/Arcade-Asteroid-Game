@@ -42,7 +42,7 @@ public class TitleScreen{
 
     private void loadCredits(){
         final String creditsRelPath = "assets/data/credits/credits.txt";
-        final String creditsPath = getParent().sketchPath(creditsRelPath);
+        final String creditsPath = getParent().dataPath(creditsRelPath);
         String[] tmp = null;
         try{
             tmp = getParent().loadStrings(creditsPath);
