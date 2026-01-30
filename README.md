@@ -34,11 +34,10 @@ Asteroids/
 ├── data/
 │   └── assets/
 │       └── fonts/
-│           └── Orbitron.ttf      <-- Required Font
-├── assets/
-│   └── data/
-│       └── credits/
-│           └── credits.txt       <-- Required Credits File
+│       │   └── Orbitron.ttf     <-- Required Font
+        └── data/
+            └── credits/
+                └── credits.txt  <-- Required Credits File
 ```
 
 ### Obtaining Assets
