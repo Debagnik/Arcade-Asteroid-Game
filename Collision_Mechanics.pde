@@ -69,6 +69,8 @@ public class CollisionMechanics {
 
   }
 
+
+
   // Asteroid Collision mechanics
   public void asteroidsMechanics() {
     for (Asteroid a : asteroids) {
