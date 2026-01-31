@@ -32,10 +32,11 @@ public static class AsteroidConstants {
     public static final float MIN_ASTEROID_SIZE = 10.0;
     public static final float MAX_ASTEROID_SIZE = 50.0;
     public static final float ASTEROID_SHIP_SAFE_DISTANCE = 200;
-    public static enum AsteroidExplosionTypeEnum {
-        BIG_EXPLOSION,
-        MEDIUM_EXPLOSION,
-        SMALL_EXPLOSION
+
+    public static enum AsteroidSizeEnum {
+        BIG,
+        MEDIUM,
+        SMALL
     };
 
     // LASER CONSTANTS
