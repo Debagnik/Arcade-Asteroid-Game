@@ -79,11 +79,11 @@ public static class AsteroidConstants {
     public static enum GameModeEnum{
         ENDLESS,
         DEBUG,
-        LOG,
         CLASSIC,
         TIME_PLAY
     };
     public static GameModeEnum GAME_MODE = GameModeEnum.CLASSIC;
+    public static boolean enableLogs = false;
     public static int COLLECTION_LOGGING_LIMIT = 25;
     public static final String LOGGING_DIR = "./Logs";
 

@@ -37,7 +37,7 @@ public static class Logger {
     }
 
     public static void log(Object obj, Integer playerLevel){
-        if(AsteroidConstants.GAME_MODE != AsteroidConstants.GameModeEnum.LOG){
+        if(!AsteroidConstants.enableLogs){
             return;
         }
 

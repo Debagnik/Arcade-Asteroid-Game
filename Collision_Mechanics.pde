@@ -15,16 +15,45 @@ public class CollisionMechanics {
       final boolean hit = PhysicsHelper.checkShip2AsteroidCollision(ship, a);
       if (hit) {
         despawnParentAsteroids.add(a);
+        float shipHullDamage = getShipHullDamage(a);
         if (a.getRadius() > AsteroidConstants.MIN_ASTEROID_SIZE) {
           spawnChildAsteroids.add(new Asteroid(a.getPosition(), a.getRadius()/2.0));
           spawnChildAsteroids.add(new Asteroid(a.getPosition(), a.getRadius()/2.0));
         }
-        playerController.animateShipDestroy(ship);
-        break;
+
+        boolean isDed = ship.takeDamage(shipHullDamage);
+        if(isDed){
+          playerController.animateShipDestroy(ship);
+          break;
+        }
+        
+        
       }
     }
     asteroids.removeAll(despawnParentAsteroids);
     asteroids.addAll(spawnChildAsteroids);
+  }
+
+  private float getShipHullDamage(Asteroid a){
+    float damage = 0;
+
+    switch(a.getAsteroidType()){
+      case BIG:
+        damage = AsteroidConstants.PLAYER_MAX_HP; //Insta kill
+        break;
+      case MEDIUM:
+        damage = 30f;
+        break;
+      case SMALL:
+        damage = 5f;
+        break;
+      default:
+        damage = 50f; // Author being an asshole, if player ever goes into this case then they deserve this punishment.
+        break;
+    }
+
+    return damage;
+
   }
 
   // Asteroid Collision mechanics
