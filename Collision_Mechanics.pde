@@ -14,6 +14,7 @@ public class CollisionMechanics {
     for (Asteroid a : asteroids) {
       final boolean hit = PhysicsHelper.checkShip2AsteroidCollision(ship, a);
       if (hit) {
+        explosions.animateAsteroidExplosion(a);
         despawnParentAsteroids.add(a);
         float shipHullDamage = getShipHullDamage(a);
         if (a.getRadius() > AsteroidConstants.MIN_ASTEROID_SIZE) {
