@@ -55,18 +55,18 @@ Asteroids/
 - **Instructions**:
   1. Create a text file named `credits.txt`.
   2. Add credits content (one entry per line).
-  3. Place it in `assets/data/credits/`.
+  3. Place it in `data/assets/data/credits/`.
 
 ### Troubleshooting
 - **"Font not found"**: Check that the file is named exactly `Orbitron.ttf` and is in `data/assets/fonts/`.
-- **"Credits File Missing"**: Ensure `credits.txt` exists in `assets/data/credits/`.
+- **"Credits File Missing"**: Ensure `credits.txt` exists in `data/assets/data/credits/`.
 - **Game Crashes on Start**: Verify both files are present and readable.
 
 ### Quick-Start Checklist
 - [ ] Clone the repository
 - [ ] Create directory `data/assets/fonts/`
 - [ ] Download and place `Orbitron.ttf`
-- [ ] Create directory `assets/data/credits/`
+- [ ] Create directory `data/assets/data/credits/`
 - [ ] Create and place `credits.txt`
 - [ ] Open `Asteroids.pde` in Processing
 - [ ] Run the game

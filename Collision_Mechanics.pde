@@ -58,6 +58,7 @@ public class CollisionMechanics {
         break;
       default:
         damage = 50f; // Author being an asshole, if player ever goes into this case then they deserve this punishment.
+        System.err.println("Undefined asteroid size");
         break;
     }
 
