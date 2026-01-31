@@ -32,13 +32,12 @@ Ensure your project directories are set up as follows:
 ```text
 Asteroids/
 ├── data/
-│   └── assets/
-│       └── fonts/
-│           └── Orbitron.ttf      <-- Required Font
-├── assets/
-│   └── data/
-│       └── credits/
-│           └── credits.txt       <-- Required Credits File
+    └── assets/
+        └── fonts/
+        │   └── Orbitron.ttf     <-- Required Font
+        └── data/
+            └── credits/
+                └── credits.txt  <-- Required Credits File
 ```
 
 ### Obtaining Assets
