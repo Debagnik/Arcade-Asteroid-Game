@@ -176,12 +176,14 @@ public class Asteroid {
   
   public void setRadius(float radius) {
     this.radius = radius;
+    this.mass = radius * radius;
     determineAsteroidType(radius);
   }
   
   public void setMass(float mass) {
     this.mass = mass;
-    determineAsteroidType((float) Math.sqrt(Math.abs((double) mass)));
+    this.radius = (float) Math.sqrt(Math.abs((double) mass));
+    determineAsteroidType(radius);
   }
 
   public AsteroidConstants.AsteroidSizeEnum getAsteroidType(){
