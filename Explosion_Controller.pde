@@ -63,18 +63,18 @@ private class AsteroidExplosionFacade {
     public void animateAsteroidExplosions(Asteroid asteroid){
         int particleCount = 0;
 
-        switch(asteroid.getExplosionType()){
-            case BIG_EXPLOSION:
+        switch(asteroid.getAsteroidType()){
+            case BIG:
                 particleCount = AsteroidConstants.PARTICLE_COUNT_BIG;
                 break;
-            case MEDIUM_EXPLOSION:
+            case MEDIUM:
                 particleCount = AsteroidConstants.PARTICLE_COUNT_MEDIUM;
                 break;
-            case SMALL_EXPLOSION:
+            case SMALL:
                 particleCount = AsteroidConstants.PARTICLE_COUNT_SMALL;
                 break;
             default:
-                System.err.println("WARNING: Unexpected explosion type: " + asteroid.getExplosionType());
+                System.err.println("WARNING: Unexpected explosion type: " + asteroid.getAsteroidType());
                 break;
         }
 

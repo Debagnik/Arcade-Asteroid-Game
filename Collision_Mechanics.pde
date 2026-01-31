@@ -7,6 +7,14 @@
 
 public class CollisionMechanics {
 
+  private Spacecraft ship;
+  private ArrayList<Asteroid> asteroids;
+
+  public CollisionMechanics(Spacecraft ship, ArrayList<Asteroid> asteroids){
+    setShip(ship);
+    setAsteroids(asteroids);
+  }
+
   public void checkPlayerCollision() {
     // Asteroid vs PlayerShip Collision
     HashSet<Asteroid> spawnChildAsteroids = new HashSet<Asteroid>();
@@ -14,17 +22,48 @@ public class CollisionMechanics {
     for (Asteroid a : asteroids) {
       final boolean hit = PhysicsHelper.checkShip2AsteroidCollision(ship, a);
       if (hit) {
+        explosions.animateAsteroidExplosion(a);
         despawnParentAsteroids.add(a);
+        float shipHullDamage = getShipHullDamage(a);
         if (a.getRadius() > AsteroidConstants.MIN_ASTEROID_SIZE) {
           spawnChildAsteroids.add(new Asteroid(a.getPosition(), a.getRadius()/2.0));
           spawnChildAsteroids.add(new Asteroid(a.getPosition(), a.getRadius()/2.0));
         }
-        playerController.animateShipDestroy(ship);
-        break;
+
+        boolean isDed = ship.takeDamage(shipHullDamage);
+        if(isDed){
+          playerController.animateShipDestroy(ship);
+          break;
+        }
+        
+        
       }
     }
     asteroids.removeAll(despawnParentAsteroids);
     asteroids.addAll(spawnChildAsteroids);
+  }
+
+  private float getShipHullDamage(Asteroid a){
+    float damage = 0;
+
+    switch(a.getAsteroidType()){
+      case BIG:
+        damage = AsteroidConstants.PLAYER_MAX_HP; //Insta kill
+        break;
+      case MEDIUM:
+        damage = 30f;
+        break;
+      case SMALL:
+        damage = 5f;
+        break;
+      default:
+        damage = 50f; // Author being an asshole, if player ever goes into this case then they deserve this punishment.
+        System.err.println("Undefined asteroid size");
+        break;
+    }
+
+    return damage;
+
   }
 
   // Asteroid Collision mechanics
@@ -143,4 +182,23 @@ public class CollisionMechanics {
       }
     }
   }
+
+  //Accessors and APIs
+  public Spacecraft getShip(){
+    return ship;
+  }
+
+  public ArrayList<Asteroid> getAsteroids(){
+    return asteroids;
+  }
+
+  public void setAsteroids(final ArrayList<Asteroid> asteroids){
+    this.asteroids = asteroids;
+  }
+
+  public void setShip(Spacecraft ship){
+    this.ship = ship;
+  }
+
+
 }

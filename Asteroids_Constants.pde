@@ -32,10 +32,11 @@ public static class AsteroidConstants {
     public static final float MIN_ASTEROID_SIZE = 10.0;
     public static final float MAX_ASTEROID_SIZE = 50.0;
     public static final float ASTEROID_SHIP_SAFE_DISTANCE = 200;
-    public static enum AsteroidExplosionTypeEnum {
-        BIG_EXPLOSION,
-        MEDIUM_EXPLOSION,
-        SMALL_EXPLOSION
+
+    public static enum AsteroidSizeEnum {
+        BIG,
+        MEDIUM,
+        SMALL
     };
 
     // LASER CONSTANTS
@@ -78,11 +79,11 @@ public static class AsteroidConstants {
     public static enum GameModeEnum{
         ENDLESS,
         DEBUG,
-        LOG,
         CLASSIC,
         TIME_PLAY
     };
     public static GameModeEnum GAME_MODE = GameModeEnum.CLASSIC;
+    public static boolean enableLogs = false;
     public static int COLLECTION_LOGGING_LIMIT = 25;
     public static final String LOGGING_DIR = "./Logs";
 

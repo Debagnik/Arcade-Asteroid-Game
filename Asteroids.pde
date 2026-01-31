@@ -56,7 +56,7 @@ void setup() {
   ufoController = new UFOController(explosions);
 
   // Init Collision Mechanics
-  collisionMechanics = new CollisionMechanics();
+  collisionMechanics = new CollisionMechanics(ship, asteroids);
 
   // Init Player Controller
   playerController = new PlayerController();
@@ -121,7 +121,7 @@ private void resetGame() {
     weapon = new WeaponsController();
     explosions.reset();
     ufoController = new UFOController(explosions);
-    collisionMechanics = new CollisionMechanics();
+    collisionMechanics = new CollisionMechanics(ship, asteroids);
     playerController = new PlayerController();
 }
 

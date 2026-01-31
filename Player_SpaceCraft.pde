@@ -174,6 +174,7 @@ public class Spacecraft {
             this.HP = 0;
             return true;
         }
+        //Logger.log(HP);
 
         return false;
 

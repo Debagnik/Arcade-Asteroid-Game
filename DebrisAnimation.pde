@@ -101,12 +101,12 @@ public class AsteroidDebris{
     public AsteroidDebris(Asteroid asteroid){
         this.position = asteroid.getPosition().copy();
         
-       if(asteroid.getExplosionType() == AsteroidConstants.AsteroidExplosionTypeEnum.BIG_EXPLOSION){
+       if(asteroid.getAsteroidType() == AsteroidConstants.AsteroidSizeEnum.BIG){
         final float spread = random(-PI/6 , PI/6); //Tight Cone, in direction of laser
         setVelocity(asteroid.getVelocity().normalize().rotate(spread).mult(random(1.0, 2.5)));
         setSize(random(3, 5));
         setMaxLifespan(40);
-       } else if(asteroid.getExplosionType() == AsteroidConstants.AsteroidExplosionTypeEnum.MEDIUM_EXPLOSION){
+       } else if(asteroid.getAsteroidType() == AsteroidConstants.AsteroidSizeEnum.MEDIUM){
         final float spread = random(-PI/2 , PI/2); //Loose Cone, in direction of laser
         setVelocity(asteroid.getVelocity().normalize().rotate(spread).mult(random(1.5, 3.5)));
         setSize(random(2, 4));
