@@ -54,6 +54,7 @@ public class ExplosionController{
 // Asteroid Explosion Facade
 private class AsteroidExplosionFacade {
     private ArrayList<AsteroidDebris> asteroidDebrisList;
+    private HashSet<AsteroidDebris> despawnDebrisSet = new HashSet<AsteroidDebris>();
 
     //default constructor
     public AsteroidExplosionFacade(){
@@ -84,7 +85,7 @@ private class AsteroidExplosionFacade {
     }
 
     public void updateAndDisplay(){
-        HashSet<AsteroidDebris> despawnDebrisSet = new HashSet<AsteroidDebris>();
+        despawnDebrisSet.clear();
         for(AsteroidDebris ad : asteroidDebrisList){
             ad.update();
             ad.display();
@@ -104,6 +105,7 @@ private class AsteroidExplosionFacade {
 private class ShipExplosionFacade{
     private ArrayList<ShipDebris> shipDebrisList;
     private final int SHIP_WRECKAGE_PARTS = 4;
+    private final HashSet<ShipDebris> despawnShipDebrisSet = new HashSet<ShipDebris>();
 
     // Default Constructor
     public ShipExplosionFacade(){
@@ -117,7 +119,7 @@ private class ShipExplosionFacade{
     }
 
     public void updateAndDisplay(){
-        final HashSet<ShipDebris> despawnShipDebrisSet = new HashSet<ShipDebris>();
+        despawnShipDebrisSet.clear();
         
         for(ShipDebris sd : shipDebrisList){
             sd.update();
@@ -140,7 +142,7 @@ private class ShipExplosionFacade{
 private class UFOExplosionFacade{
 
     private final int UFO_WRECKAGE_PARTS = 8;
-
+    private final HashSet<UFODebris> despawnUFODebrisSet = new HashSet<UFODebris>();
     private ArrayList<UFODebris> ufoDebrisList;
 
     public UFOExplosionFacade(){
@@ -159,7 +161,7 @@ private class UFOExplosionFacade{
     }
 
     public void updateAndDisplay(){
-        final HashSet<UFODebris> despawnUFODebrisSet = new HashSet<UFODebris>();
+        despawnUFODebrisSet.clear();
 
         for(UFODebris ud : getUfoDebrisList()){
             ud.update();

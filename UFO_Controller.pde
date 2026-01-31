@@ -5,11 +5,12 @@
  * FILE: UFO_Controller.pde
  */
 
-//import java.util.HashSet;
+import java.util.HashSet;
 
 public class UFOController{
     private ArrayList<UFO> activeUFOs;
     private ExplosionController fx;
+    private final HashSet<UFO> despawnUFOSet = new HashSet<UFO>();
 
     public UFOController(ExplosionController fx){
         setActiveUFOs(new ArrayList<UFO>());
@@ -48,7 +49,7 @@ public class UFOController{
         // spawns UFOs
         spawnUFOs(level);
 
-        final HashSet<UFO> despawnUFOSet = new HashSet<UFO>();
+        despawnUFOSet.clear();
         for(UFO ufo : activeUFOs){
             ufo.update(asteroids);
             ufo.display();
