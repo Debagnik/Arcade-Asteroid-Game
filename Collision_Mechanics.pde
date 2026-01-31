@@ -7,6 +7,14 @@
 
 public class CollisionMechanics {
 
+  private Spacecraft ship;
+  private ArrayList<Asteroid> asteroids;
+
+  public CollisionMechanics(Spacecraft ship, ArrayList<Asteroid> asteroids){
+    setShip(ship);
+    setAsteroids(asteroids);
+  }
+
   public void checkPlayerCollision() {
     // Asteroid vs PlayerShip Collision
     HashSet<Asteroid> spawnChildAsteroids = new HashSet<Asteroid>();
@@ -173,4 +181,23 @@ public class CollisionMechanics {
       }
     }
   }
+
+  //Accessors and APIs
+  public Spacecraft getShip(){
+    return ship;
+  }
+
+  public ArrayList<Asteroid> getAsteroids(){
+    return asteroids;
+  }
+
+  public void setAsteroids(final ArrayList<Asteroid> asteroids){
+    this.asteroids = asteroids;
+  }
+
+  public void setShip(Spacecraft ship){
+    this.ship = ship;
+  }
+
+
 }

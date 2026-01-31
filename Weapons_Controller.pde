@@ -35,7 +35,7 @@ public class WeaponsController{
     // Generic Getter
     public ArrayList<PlayerLaser> getPlayerLasers(){
         // Returning the Laser List in a new List (Defensive Programming).
-        return new ArrayList<PlayerLaser>(playerLasers);
+        return playerLasers;
     }
      
 }
