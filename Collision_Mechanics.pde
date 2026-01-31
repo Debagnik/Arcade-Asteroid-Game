@@ -9,16 +9,19 @@ public class CollisionMechanics {
 
   private Spacecraft ship;
   private ArrayList<Asteroid> asteroids;
+  private HashSet<Asteroid> spawnChildAsteroids = new HashSet<Asteroid>();
+  private HashSet<Asteroid> despawnParentAsteroids = new HashSet<Asteroid>();
+  private HashSet<PlayerLaser> deactivateLasers = new HashSet<PlayerLaser>();
 
   public CollisionMechanics(Spacecraft ship, ArrayList<Asteroid> asteroids){
-    setShip(ship);
-    setAsteroids(asteroids);
+    this.setShip(ship);
+    this.setAsteroids(asteroids);
   }
 
   public void checkPlayerCollision() {
     // Asteroid vs PlayerShip Collision
-    HashSet<Asteroid> spawnChildAsteroids = new HashSet<Asteroid>();
-    HashSet<Asteroid> despawnParentAsteroids = new HashSet<Asteroid>();
+    spawnChildAsteroids.clear();
+    despawnParentAsteroids.clear();
     for (Asteroid a : asteroids) {
       final boolean hit = PhysicsHelper.checkShip2AsteroidCollision(ship, a);
       if (hit) {
@@ -66,6 +69,8 @@ public class CollisionMechanics {
 
   }
 
+
+
   // Asteroid Collision mechanics
   public void asteroidsMechanics() {
     for (Asteroid a : asteroids) {
@@ -76,9 +81,9 @@ public class CollisionMechanics {
     // LASER VS ASTEROID COLLISION
     // Get all active lasers
     ArrayList<PlayerLaser> activeLasers = weapon.getPlayerLasers();
-    HashSet<Asteroid> spawnChildAsteroids = new HashSet<Asteroid>();
-    HashSet<Asteroid> despawnParentAsteroids = new HashSet<Asteroid>();
-    HashSet<PlayerLaser> deactivateLasers = new HashSet<PlayerLaser>();
+    spawnChildAsteroids.clear();
+    despawnParentAsteroids.clear();
+    deactivateLasers.clear();
 
     for (PlayerLaser l : activeLasers) {
       // Optimization: If this laser is already marked inactive (e.g. somehow hit twice), skip it
@@ -192,13 +197,14 @@ public class CollisionMechanics {
     return asteroids;
   }
 
+  public void setShip(final Spacecraft ship){
+    this.ship = ship;
+  }
+
   public void setAsteroids(final ArrayList<Asteroid> asteroids){
     this.asteroids = asteroids;
   }
 
-  public void setShip(Spacecraft ship){
-    this.ship = ship;
-  }
 
 
 }

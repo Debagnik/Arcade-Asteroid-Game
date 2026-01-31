@@ -19,6 +19,7 @@ public class UFO {
   private int fireTimer;
 
   private ArrayList<EnemyLaser> ufoLasers;
+  private final HashSet<EnemyLaser> lasersToRemove = new HashSet<EnemyLaser>();
 
   // Default Constructor
   public UFO(AsteroidConstants.UFOTypeEnum type) {
@@ -89,7 +90,7 @@ public class UFO {
       setFireTimer((int)AsteroidConstants.UFO_FIRE_RATE);
     }
 
-    final HashSet<EnemyLaser> lasersToRemove = new HashSet<EnemyLaser>();
+    lasersToRemove.clear();
     for (EnemyLaser el : getUFOLasers()) {
       el.update();
       if (!el.isActive()) {

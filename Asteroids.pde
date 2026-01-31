@@ -18,7 +18,7 @@ private CollisionMechanics collisionMechanics;
 private PlayerController playerController;
 private TitleScreen titleScreen;
 private AsteroidConstants.GameState gameState = AsteroidConstants.INITIAL_GAME_STATE; //game Starts with the title screen
-private int level = 1; // Never Set it 0 (Non-Zero value)
+private int level = AsteroidConstants.INITIAL_LEVEL; // Never Set it 0 (Non-Zero value)
 private int respawnTimer = 0;
 
 void setup() {
@@ -34,7 +34,7 @@ void setup() {
   //Turn off Anti-aliasing
   smooth();
 
-  //Init Title Screen 
+  //Init Title Screen
   titleScreen = new TitleScreen(this);
 
   //Init the player ship
@@ -115,7 +115,7 @@ private void resetGame() {
     for (int i = 0; i < AsteroidConstants.INITIAL_ASTEROID_COUNT; i++) {
         asteroids.add(new Asteroid(ship, AsteroidConstants.ASTEROID_SHIP_SAFE_DISTANCE));
     }
-    level = 1;
+    level = AsteroidConstants.INITIAL_LEVEL;
     respawnTimer = 0;
     ufoController = new UFOController(explosions);
     weapon = new WeaponsController();

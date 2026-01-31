@@ -23,7 +23,7 @@ public class PlayerController {
     //respawns
     if (respawnTimer == 0) {
       ship = new Spacecraft(true); //Uses the invincibility constructor
-
+      collisionMechanics.setShip(ship);
       // reset the inputs
       isLeft = false;
       isRight = false;

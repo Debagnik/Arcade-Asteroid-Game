@@ -10,6 +10,7 @@ public static class AsteroidConstants {
     // global Constants
     public static final float PLAYER_MAX_HP = 100.0;
     public static final float EPS = 1e-4f;
+    public static final int INITIAL_LEVEL = 1;
     // Enum for trigonometric functions
     public static enum TrigonometricFunctionEnum {
         SINE,

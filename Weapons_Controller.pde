@@ -8,6 +8,7 @@ import java.util.HashSet;
 
 public class WeaponsController{
     private ArrayList<PlayerLaser> playerLasers;
+    private HashSet<PlayerLaser> dedPlayerLasers = new HashSet<PlayerLaser>();
 
     // Default Constructor
     public WeaponsController(){
@@ -21,7 +22,7 @@ public class WeaponsController{
     // Core Weapon display logic
     public void displayAndUpdate(){
         // looping to remove dead lasers
-        HashSet<PlayerLaser> dedPlayerLasers = new HashSet<PlayerLaser>();
+        dedPlayerLasers.clear();
         for(PlayerLaser l : playerLasers){
             l.update();
             l.display();
