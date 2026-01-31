@@ -16,7 +16,7 @@ public class Asteroid {
   private float[] offset;
   private float mass; //Scaler Quantity, find explanation below comment
 
-  private AsteroidConstants.AsteroidExplosionTypeEnum explosionType;
+  private AsteroidConstants.AsteroidSizeEnum asteroidType;
 
   //Default constructor of the asteroids
   public Asteroid() {
@@ -30,7 +30,7 @@ public class Asteroid {
 
     // Set a random size
     radius = random(AsteroidConstants.MIN_ASTEROID_SIZE, AsteroidConstants.MAX_ASTEROID_SIZE);
-    determineExplosionType();
+    determineAsteroidType(radius);
 
     // Generate the jagged shape data
     generateShapeData();
@@ -41,7 +41,7 @@ public class Asteroid {
     position = parentPosition.copy(); //spawns where parent died
     position.add(PVector.random2D().mult(newRadius * 0.5)); //Add small random offset to prevent immediate collision with sibling
     radius = newRadius;
-    determineExplosionType();
+    determineAsteroidType(radius);
 
     // Smaller asteroids fly faster!
     velocity = PVector.random2D();
@@ -61,7 +61,7 @@ public class Asteroid {
     velocity.limit(AsteroidConstants.ASTEROID_MAX_SPEED + getLevel());
     radius = random(AsteroidConstants.MIN_ASTEROID_SIZE, AsteroidConstants.MAX_ASTEROID_SIZE);
 
-    determineExplosionType();
+    determineAsteroidType(radius);
 
     generateShapeData();
 
@@ -71,17 +71,6 @@ public class Asteroid {
       attempts++;
       // println(attempts);
     } while (PVector.dist(position, ship.getPosition()) < safeDist && attempts < 100);
-  }
-
-  private void determineExplosionType(){
-    final float ratio = getRadius() / AsteroidConstants.MAX_ASTEROID_SIZE;
-    if(ratio > 0.6){
-      this.explosionType = AsteroidConstants.AsteroidExplosionTypeEnum.BIG_EXPLOSION;
-    } else if (ratio > 0.4){
-      this.explosionType = AsteroidConstants.AsteroidExplosionTypeEnum.MEDIUM_EXPLOSION;
-    } else {
-      this.explosionType = AsteroidConstants.AsteroidExplosionTypeEnum.SMALL_EXPLOSION;
-    }
   }
 
   // Asteroid Movement Animation
@@ -130,7 +119,7 @@ public class Asteroid {
     endShape(CLOSE);
   }
 
-  // --- HELPER METHOD: Generates the random shape numbers ---
+  // HELPER METHOD: Generates the random shape numbers
   // This is used by BOTH constructors to ensure every asteroid (big or small) has a shape.
   private void generateShapeData() {
     //Set the random jaggedness and rockiness by picking a random points (between 5 and 15) around the asteroid to turn the ellipse into a polygon
@@ -146,6 +135,18 @@ public class Asteroid {
 
     //Mass Calculate
     mass = radius * radius;
+  }
+
+  private void determineAsteroidType(final float radius){
+    final float ratio = (AsteroidConstants.MAX_ASTEROID_SIZE - AsteroidConstants.MIN_ASTEROID_SIZE)/3.0f;
+    if(radius < (AsteroidConstants.MIN_ASTEROID_SIZE + ratio)){
+      setAsteroidType(AsteroidConstants.AsteroidSizeEnum.SMALL);
+    } else if(radius < (AsteroidConstants.MAX_ASTEROID_SIZE - ratio)){
+      setAsteroidType(AsteroidConstants.AsteroidSizeEnum.MEDIUM);
+    } else {
+      setAsteroidType(AsteroidConstants.AsteroidSizeEnum.BIG);
+    }
+
   }
 
   // Generic APIs (Getters/Setters)
@@ -175,20 +176,20 @@ public class Asteroid {
   
   public void setRadius(float radius) {
     this.radius = radius;
-    determineExplosionType();
+    determineAsteroidType(radius);
   }
   
   public void setMass(float mass) {
     this.mass = mass;
-    determineExplosionType();
+    determineAsteroidType((float) Math.sqrt(Math.abs((double) mass)));
   }
 
-  public AsteroidConstants.AsteroidExplosionTypeEnum getExplosionType(){
-    return explosionType;
+  public AsteroidConstants.AsteroidSizeEnum getAsteroidType(){
+    return asteroidType;
   }
 
-  public void setExplosionType(AsteroidConstants.AsteroidExplosionTypeEnum explosionType){
-    this.explosionType = explosionType;
+  public void setAsteroidType(final AsteroidConstants.AsteroidSizeEnum asteroidType){
+    this.asteroidType = asteroidType;
   }
     
 }
