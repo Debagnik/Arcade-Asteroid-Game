@@ -10,7 +10,7 @@ public static class AsteroidConstants {
     // global Constants
     public static final float PLAYER_MAX_HP = 100.0;
     public static final float EPS = 1e-4f;
-    public static final int INITIAL_LEVEL = 1;
+    public static final int INITIAL_LEVEL = 1; // Never Set it to values less or equals to 0 (Non-Zero value).
     // Enum for trigonometric functions
     public static enum TrigonometricFunctionEnum {
         SINE,
@@ -76,13 +76,19 @@ public static class AsteroidConstants {
     // UFO Asteroid Avoidance System Constant
     public static final float UFO_AVOIDANCE_RADIUS = 150.0;
 
-    // Logger Constants
+    // Game Mode Constants
     public static enum GameModeEnum{
         ENDLESS,
-        DEBUG,
         CLASSIC,
         TIME_PLAY
     };
+
+    public static Map<GameModeEnum, Integer> GAME_MODE_SETTINGS = Map.of(
+        GameModeEnum.ENDLESS, 1, //Number of lives
+        GameModeEnum.CLASSIC, 5, //Number of lives
+        GameModeEnum.TIME_PLAY, 300 //Number of seconds
+    );
+
     public static GameModeEnum GAME_MODE = GameModeEnum.CLASSIC;
     public static boolean enableLogs = false;
     public static int COLLECTION_LOGGING_LIMIT = 25;
@@ -95,9 +101,26 @@ public static class AsteroidConstants {
         MENU_HIGH_SCORE,
         MENU_CREDITS,
         PLAYING,
+        LEVEL_TRANSITION,
         MENU_EXIT
     };
 
     public static GameState INITIAL_GAME_STATE = GameState.MENU_MAIN;
+
+    // Scoring system constant
+    public static final Map<String, Integer> SCORE_SYSTEM = Map.ofEntries(
+        Map.entry("UFO_BIG", 800),
+        Map.entry("UFO_SMALL", 1000),
+        Map.entry("ASTEROID_BIG", 300),
+        Map.entry("ASTEROID_MEDIUM", 400),
+        Map.entry("ASTEROID_SMALL", 500),
+        Map.entry("UFO_LASER_HIT_PENALTY", -600),
+        Map.entry("UFO_SMALL_HIT_PENALTY", -800),
+        Map.entry("UFO_BIG_HIT_PENALTY", -700),
+        Map.entry("ASTEROID_BIG_HIT_PENALTY", -200),
+        Map.entry("ASTEROID_MEDIUM_HIT_PENALTY", -300),
+        Map.entry("ASTEROID_SMALL_HIT_PENALTY", -400)
+    );
+
 
 }
