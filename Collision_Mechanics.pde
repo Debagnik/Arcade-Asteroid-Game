@@ -170,7 +170,7 @@ public class CollisionMechanics {
 
     // Level Up and infinite gameplay logic
     if (asteroids.size() == 0) {
-      setLevel(getLevel() + 1);
+      getParent().onWaveCleared();
       for (int i = 0; i < AsteroidConstants.INITIAL_ASTEROID_COUNT; i++) {
         asteroids.add(new Asteroid(ship, AsteroidConstants.ASTEROID_SHIP_SAFE_DISTANCE));
       }
@@ -236,7 +236,6 @@ public class CollisionMechanics {
   private void setCurrentScore(final Integer score){
     this.playerCurrentScore = Math.max(0, playerCurrentScore + score);
     getParent().addScore(playerCurrentScore);
-    System.out.println("Current Score: " + playerCurrentScore.toString());
     //Logger.log(playerCurrentScore, getLevel());
   }
 

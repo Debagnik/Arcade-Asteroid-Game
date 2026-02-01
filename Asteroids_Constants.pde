@@ -11,6 +11,7 @@ public static class AsteroidConstants {
     public static final float PLAYER_MAX_HP = 100.0;
     public static final float EPS = 1e-4f;
     public static final int INITIAL_LEVEL = 1; // Never Set it to values less or equals to 0 (Non-Zero value).
+    public static final int INITIAL_LEVEL_TIME_BOUND = 5;
     // Enum for trigonometric functions
     public static enum TrigonometricFunctionEnum {
         SINE,
@@ -80,14 +81,15 @@ public static class AsteroidConstants {
     public static enum GameModeEnum{
         ENDLESS,
         CLASSIC,
-        TIME_PLAY
+        TIME_BOUND
     };
 
     public static Map<GameModeEnum, Integer> GAME_MODE_SETTINGS = Map.of(
         GameModeEnum.ENDLESS, 1, //Number of lives
         GameModeEnum.CLASSIC, 5, //Number of lives
-        GameModeEnum.TIME_PLAY, 300 //Number of seconds
+        GameModeEnum.TIME_BOUND, 300 //Number of seconds
     );
+
 
     public static GameModeEnum GAME_MODE = GameModeEnum.CLASSIC;
     public static boolean enableLogs = false;

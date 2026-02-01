@@ -100,7 +100,7 @@ public void mousePressed() {
 }
 
 private void runGame(){
-  if (AsteroidConstants.GAME_MODE == AsteroidConstants.GameModeEnum.TIME_PLAY) {
+  if (AsteroidConstants.GAME_MODE == AsteroidConstants.GameModeEnum.TIME_BOUND) {
       gameTimer--;
       if (gameTimer <= 0) {
           gameState = AsteroidConstants.GameState.MENU_MAIN;
@@ -131,7 +131,7 @@ private void runLevelTransition() {
     textAlign(CENTER, CENTER);
     fill(255);
     textSize(40);
-    text("LEVEL CLEARED", width/2, height/2 - 50);
+    text("LEVEL " + getLevel() + " CLEARED", width/2, height/2 - 50);
     
     textSize(60);
     int secondsLeft = ceil(levelCountdownTimer / 60.0f);
@@ -167,9 +167,9 @@ private void resetGame() {
     score = 0;
     respawnTimer = 0;
 
-    if (AsteroidConstants.GAME_MODE == AsteroidConstants.GameModeEnum.TIME_PLAY) {
-      level = 10;
-      int seconds = AsteroidConstants.GAME_MODE_SETTINGS.get(AsteroidConstants.GameModeEnum.TIME_PLAY);
+    if (AsteroidConstants.GAME_MODE == AsteroidConstants.GameModeEnum.TIME_BOUND) {
+      level = AsteroidConstants.INITIAL_LEVEL_TIME_BOUND;
+      int seconds = AsteroidConstants.GAME_MODE_SETTINGS.get(AsteroidConstants.GameModeEnum.TIME_BOUND);
       gameTimer = seconds * 60;
       lives = -1; //Infinity
     } else {
@@ -179,6 +179,7 @@ private void resetGame() {
     ship = new Spacecraft();
     asteroids.clear();
     int count = PhysicsHelper.getAsteroidsCountBasedOnCurrentLevel(level);
+    //Logger.log(count, level);
     for (int i = 0; i < count; i++) {
         asteroids.add(new Asteroid(ship, AsteroidConstants.ASTEROID_SHIP_SAFE_DISTANCE));
     }

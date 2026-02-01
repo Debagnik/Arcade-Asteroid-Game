@@ -37,6 +37,8 @@ public static class Logger {
     }
 
     public static void log(Object obj, Integer playerLevel){
+        //System.out.println("Logging Path: " + logDirectoryPath);
+        //System.out.println("IsLoggingEnabled?:" + AsteroidConstants.enableLogs);
         if(!AsteroidConstants.enableLogs){
             return;
         }
