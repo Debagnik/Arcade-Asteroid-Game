@@ -12,6 +12,7 @@ public static class AsteroidConstants {
     public static final float EPS = 1e-4f;
     public static final int INITIAL_LEVEL = 1; // Never Set it to values less or equals to 0 (Non-Zero value).
     public static final int INITIAL_LEVEL_TIME_BOUND = 5;
+    public static final Integer INFINITE_LIVES = Integer.MAX_VALUE;
     // Enum for trigonometric functions
     public static enum TrigonometricFunctionEnum {
         SINE,

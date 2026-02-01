@@ -168,7 +168,7 @@ private void resetGame() {
       level = AsteroidConstants.INITIAL_LEVEL_TIME_BOUND;
       int seconds = AsteroidConstants.GAME_MODE_SETTINGS.get(AsteroidConstants.GameModeEnum.TIME_BOUND);
       gameTimer = seconds * 60;
-      lives = -1; //Infinity
+      lives = AsteroidConstants.INFINITE_LIVES; //Infinite Lives (Not actually, just a very large number)
     } else {
       level = AsteroidConstants.INITIAL_LEVEL;
       lives = AsteroidConstants.GAME_MODE_SETTINGS.get(AsteroidConstants.GAME_MODE);
@@ -188,7 +188,7 @@ private void resetGame() {
     playerController = new PlayerController();
 }
 
-public void addScore(Integer s) {
+public void syncScore(Integer s) {
     setScore(s);
 }
 

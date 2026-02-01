@@ -16,9 +16,6 @@ public class CollisionMechanics {
   private Integer playerCurrentScore = 0;
 
   public CollisionMechanics(Spacecraft ship, ArrayList<Asteroid> asteroids, Asteroids parent){
-    if (Objects.isNull(parent)) {
-        throw new IllegalArgumentException("CollisionMechanics initialized with null Parent (Asteroids instance).");
-    }
     this.setShip(ship);
     this.setAsteroids(asteroids);
     this.setParent(parent);
@@ -235,7 +232,7 @@ public class CollisionMechanics {
 
   private void setCurrentScore(final Integer score){
     this.playerCurrentScore = Math.max(0, playerCurrentScore + score);
-    getParent().addScore(playerCurrentScore);
+    getParent().syncScore(playerCurrentScore);
     //Logger.log(playerCurrentScore, getLevel());
   }
 
@@ -261,6 +258,9 @@ public class CollisionMechanics {
   }
 
   public void setParent(Asteroids parent){
+    if (Objects.isNull(parent)) {
+        throw new IllegalArgumentException("CollisionMechanics initialized with null Parent (Asteroids instance).");
+    }
     this.parent = parent;
   }
 
