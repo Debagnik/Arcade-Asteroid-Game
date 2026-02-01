@@ -16,6 +16,9 @@ public class CollisionMechanics {
   private Integer playerCurrentScore = 0;
 
   public CollisionMechanics(Spacecraft ship, ArrayList<Asteroid> asteroids, Asteroids parent){
+    if (Objects.isNull(parent)) {
+        throw new IllegalArgumentException("CollisionMechanics initialized with null Parent (Asteroids instance).");
+    }
     this.setShip(ship);
     this.setAsteroids(asteroids);
     this.setParent(parent);

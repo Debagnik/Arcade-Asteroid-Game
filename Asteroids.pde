@@ -89,7 +89,7 @@ public void mousePressed() {
   if (gameState != AsteroidConstants.GameState.PLAYING && gameState != AsteroidConstants.GameState.LEVEL_TRANSITION) {
       AsteroidConstants.GameState newState = titleScreen.handleTitleScreenClick(gameState);
       
-      if (newState == AsteroidConstants.GameState.PLAYING && gameState != AsteroidConstants.GameState.PLAYING && gameState != AsteroidConstants.GameState.PLAYING) {
+      if (newState == AsteroidConstants.GameState.PLAYING && gameState != AsteroidConstants.GameState.PLAYING) {
           resetGame();
       }
       gameState = newState;
