@@ -12,10 +12,13 @@ public class CollisionMechanics {
   private HashSet<Asteroid> spawnChildAsteroids = new HashSet<Asteroid>();
   private HashSet<Asteroid> despawnParentAsteroids = new HashSet<Asteroid>();
   private HashSet<PlayerLaser> deactivateLasers = new HashSet<PlayerLaser>();
+  private Asteroids parent;
+  private Integer playerCurrentScore = 0;
 
-  public CollisionMechanics(Spacecraft ship, ArrayList<Asteroid> asteroids){
+  public CollisionMechanics(Spacecraft ship, ArrayList<Asteroid> asteroids, Asteroids parent){
     this.setShip(ship);
     this.setAsteroids(asteroids);
+    this.setParent(parent);
   }
 
   public void checkPlayerCollision() {
@@ -36,6 +39,7 @@ public class CollisionMechanics {
         boolean isDed = ship.takeDamage(shipHullDamage);
         if(isDed){
           playerController.animateShipDestroy(ship);
+          getParent().onPlayerDeath();
           break;
         }
         
@@ -52,21 +56,43 @@ public class CollisionMechanics {
     switch(a.getAsteroidType()){
       case BIG:
         damage = AsteroidConstants.PLAYER_MAX_HP; //Insta kill
+        setCurrentScore(AsteroidConstants.SCORE_SYSTEM.get("ASTEROID_BIG_HIT_PENALTY"));
         break;
       case MEDIUM:
         damage = 30f;
+        setCurrentScore(AsteroidConstants.SCORE_SYSTEM.get("ASTEROID_MEDIUM_HIT_PENALTY"));
         break;
       case SMALL:
         damage = 5f;
+        setCurrentScore(AsteroidConstants.SCORE_SYSTEM.get("ASTEROID_SMALL_HIT_PENALTY"));
         break;
       default:
         damage = 50f; // Author being an asshole, if player ever goes into this case then they deserve this punishment.
+        setCurrentScore(Integer.MIN_VALUE); // Again fuck you player, if you ever traversed here.
         System.err.println("Undefined asteroid size");
         break;
     }
 
     return damage;
 
+  }
+
+  private void addScoreForAsteroidKill(Asteroid a){
+    switch(a.getAsteroidType()){
+      case BIG:
+        setCurrentScore(AsteroidConstants.SCORE_SYSTEM.get("ASTEROID_BIG"));
+        break;
+      case MEDIUM:
+        setCurrentScore(AsteroidConstants.SCORE_SYSTEM.get("ASTEROID_MEDIUM"));
+        break;
+      case SMALL:
+        setCurrentScore(AsteroidConstants.SCORE_SYSTEM.get("ASTEROID_SMALL"));
+        break;
+      default:
+        setCurrentScore(Integer.MAX_VALUE); //Author Taketh, Author Giveth away, also fuck you user
+        System.err.println("Undefined Asteroid size");
+        break;
+    }
   }
 
 
@@ -78,7 +104,7 @@ public class CollisionMechanics {
       a.display();
     }
 
-    // LASER VS ASTEROID COLLISION
+    // PLAYER_LASER VS ASTEROID COLLISION
     // Get all active lasers
     ArrayList<PlayerLaser> activeLasers = weapon.getPlayerLasers();
     spawnChildAsteroids.clear();
@@ -102,6 +128,7 @@ public class CollisionMechanics {
         // Check Hit collision
         if (PhysicsHelper.checkLaserCollision(l, a)) {
           explosions.animateAsteroidExplosion(a); //Asteroid explosion Animation
+          addScoreForAsteroidKill(a);
 
           if (a.getRadius() > AsteroidConstants.MIN_ASTEROID_SIZE) {
             // Asteroid Split logic and spawning logic
@@ -143,10 +170,21 @@ public class CollisionMechanics {
 
     // Level Up and infinite gameplay logic
     if (asteroids.size() == 0) {
-      setLevel(getLevel() + 1);
-      for (int i = 0; i < AsteroidConstants.INITIAL_ASTEROID_COUNT; i++) {
-        asteroids.add(new Asteroid(ship, AsteroidConstants.ASTEROID_SHIP_SAFE_DISTANCE));
-      }
+      getParent().onWaveCleared();
+    }
+  }
+
+  private void scorePenaltyForUfoCrash(UFO ufo){
+    switch(ufo.getType()){
+      case BIG:
+        setCurrentScore(AsteroidConstants.SCORE_SYSTEM.get("UFO_BIG_HIT_PENALTY"));
+        break;
+      case SMALL:
+        setCurrentScore(AsteroidConstants.SCORE_SYSTEM.get("UFO_SMALL_HIT_PENALTY"));
+        break;
+      default:
+        setCurrentScore(0);
+        break;
     }
   }
 
@@ -159,7 +197,9 @@ public class CollisionMechanics {
       if (distBody < (ufo.getRadius() + AsteroidConstants.SHIP_SIZE)) {
         if (ship.takeDamage(AsteroidConstants.PLAYER_MAX_HP)) {
           playerController.animateShipDestroy(ship);
+          getParent().onPlayerDeath();
         }
+        scorePenaltyForUfoCrash(ufo);
         explosions.animateUFOExplosion(ufo);
         ufoController.despawnUFO(ufo);
         continue;
@@ -178,14 +218,22 @@ public class CollisionMechanics {
           // Deals with Ship Damage
           boolean isDed = ship.takeDamage(el.getDamage());
           el.setActive(false);
+          setCurrentScore(AsteroidConstants.SCORE_SYSTEM.get("UFO_LASER_HIT_PENALTY"));
 
           if (isDed) {
             playerController.animateShipDestroy(ship);
+            getParent().onPlayerDeath();
             break;
           }
         }
       }
     }
+  }
+
+  private void setCurrentScore(final Integer score){
+    this.playerCurrentScore = Math.max(0, playerCurrentScore + score);
+    getParent().syncScore(playerCurrentScore);
+    //Logger.log(playerCurrentScore, getLevel());
   }
 
   //Accessors and APIs
@@ -203,6 +251,17 @@ public class CollisionMechanics {
 
   public void setAsteroids(final ArrayList<Asteroid> asteroids){
     this.asteroids = asteroids;
+  }
+
+  public Asteroids getParent(){
+    return parent;
+  }
+
+  public void setParent(Asteroids parent){
+    if (Objects.isNull(parent)) {
+        throw new IllegalArgumentException("CollisionMechanics initialized with null Parent (Asteroids instance).");
+    }
+    this.parent = parent;
   }
 
 

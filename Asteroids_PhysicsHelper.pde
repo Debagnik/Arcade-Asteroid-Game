@@ -201,5 +201,45 @@ public static class PhysicsHelper {
       return dist < (ufo.getRadius() + (AsteroidConstants.LASER_SIZE / 2.0f));
     }
 
+    /**
+     * Calculates the number of asteroids to spawn based on the current level.
+     * It's not like we're doing anything complicated here... b-baka!
+     * 
+     * This method uses a logarithmic scaling formula to determine asteroid count,
+     * so the difficulty increases smoothly without becoming absurdly impossible.
+     * The formula is: count = INITIAL_ASTEROID_COUNT + 4 * ln(level)
+     * 
+     * <p><b>How it works:</b>
+     * The level is raised to the 4th power, then we take its natural logarithm.
+     * This creates a smooth, diminishing increase in asteroid count as levels progress.
+     * It's designed to keep the game challenging but fair... not that we care or anything.
+     * 
+     * <p><b>Examples:</b>
+     * <ul>
+     *   <li>Level 1:  count ≈ 5 + ln(1) = 5</li>
+     *   <li>Level 10: count ≈ 5 + ln(10,000) ≈ 14</li>
+     *   <li>Level 50: count ≈ 5 + ln(6,250,000) ≈ 21</li>
+     *   <li>Level 100: count ≈ 5 + ln(100,000,000) ≈ 23</li>
+     * </ul>
+     * 
+     * <p><b>Assumptions:</b>
+     * The level parameter is expected to be in the range: 1 ≤ level ≤ 100
+     * 
+     * @param level the current game level (must be >= 1)
+     * @return the number of asteroids to spawn, rounded to the nearest integer
+     * @throws RuntimeException if level is less than 1
+     */
+    public static int getAsteroidsCountBasedOnCurrentLevel(final int level){
+      if(level < 1){
+        throw new RuntimeException("Ayo, code will not work if level is set to anything less than 1");
+      }
+      // Autor's Note: With the current implimentation, a 1220 x 1080 px monitor will display 23*4 = 92 asteroids in the worst case when at level 100,
+      //I have some concerns with this, at the worst case at level 100, the time complexity of each asteroids v asteriods is O(N^2) ie. for 60 fps, there are 507,840 calculation/sec at the worst case.
+      //TBH, I think a modern CPU can handle that much without lagging, I am also thinking of maybe implimenting a Quad Tree in the future, I am more concerned on the fact that 92 asteroids will be very crowded on the screen
+      //And for that I honestly have no answers. looking for solutions. but first Players has to reach that high of a level
+      final double incrementedNumber = AsteroidConstants.INITIAL_ASTEROID_COUNT + Math.log(Math.pow(level, 4));
+      return (int) Math.round(incrementedNumber);
+    }
+
 
 }

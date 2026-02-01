@@ -257,7 +257,7 @@ public class TitleScreen{
                 return AsteroidConstants.GameState.PLAYING;
             }
             if (isMouseOverBtn(getParent().height/1.52f, getParent().width/20)) {
-                AsteroidConstants.GAME_MODE = AsteroidConstants.GameModeEnum.TIME_PLAY;
+                AsteroidConstants.GAME_MODE = AsteroidConstants.GameModeEnum.TIME_BOUND;
                 return AsteroidConstants.GameState.PLAYING;
             }
             if (isMouseOverBtn(getParent().height/1.35f, getParent().width/20)) {
