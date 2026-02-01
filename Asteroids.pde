@@ -153,9 +153,6 @@ public Integer getScore() {
   return gameManager.getScore();
 }
 
-public void setScore(Integer score) {
-  gameManager.setScore(score);
-}
 
 public int getLives() {
   return gameManager.getLives();
