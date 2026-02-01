@@ -171,9 +171,6 @@ public class CollisionMechanics {
     // Level Up and infinite gameplay logic
     if (asteroids.size() == 0) {
       getParent().onWaveCleared();
-      for (int i = 0; i < AsteroidConstants.INITIAL_ASTEROID_COUNT; i++) {
-        asteroids.add(new Asteroid(ship, AsteroidConstants.ASTEROID_SHIP_SAFE_DISTANCE));
-      }
     }
   }
 

@@ -71,9 +71,6 @@ void setup() {
 }
 
 public void draw() {
-  //Set BG to a a dark color with RGB values
-  background(20, 20, 30);
-
   if (gameState != AsteroidConstants.GameState.LEVEL_TRANSITION) {
       background(20, 20, 30);
   }
@@ -208,7 +205,14 @@ public void onPlayerDeath() {
 }
 
 public void onWaveCleared() {
-    if (AsteroidConstants.GAME_MODE == AsteroidConstants.GameModeEnum.CLASSIC) {
+  
+  // CollisionMechanics runs during the transition delay. 
+  // If we are already transitioning, ignore repeated calls.
+  if (gameState == AsteroidConstants.GameState.LEVEL_TRANSITION) {
+      return;
+  }
+
+  if (AsteroidConstants.GAME_MODE == AsteroidConstants.GameModeEnum.CLASSIC) {
         gameState = AsteroidConstants.GameState.LEVEL_TRANSITION;
         transitionDelayTimer = 6; // ~100ms at 60fps
         
