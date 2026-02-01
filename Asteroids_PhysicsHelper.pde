@@ -210,7 +210,7 @@ public static class PhysicsHelper {
      * The formula is: count = INITIAL_ASTEROID_COUNT + 4 * ln(level)
      * 
      * <p><b>How it works:</b>
-     * The level is raised to the 5th power, then we take its natural logarithm.
+     * The level is raised to the 4th power, then we take its natural logarithm.
      * This creates a smooth, diminishing increase in asteroid count as levels progress.
      * It's designed to keep the game challenging but fair... not that we care or anything.
      * 
