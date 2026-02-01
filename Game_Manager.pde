@@ -1,7 +1,8 @@
 /*
  * Asteroids Game
- * File: Game_Manager.pde
- * Description: Manages the game state, level transitions, and high-level game logic.
+ * License DWTFYWTPL <https://www.wtfpl.net/about/>
+ * Copyright 2026 Rak Kingabed <debagnik@debagnik.in>
+ * FILE: Game_Manager.pde
  */
 
 import java.util.ArrayList;
