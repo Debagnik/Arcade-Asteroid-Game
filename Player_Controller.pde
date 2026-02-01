@@ -14,7 +14,7 @@ public class PlayerController {
   private boolean enableControls = true;
 
   public void activateRespawnMechanics() {
-    respawnTimer--;
+    getGameManager().setRespawnTimer(getGameManager().getRespawnTimer() - 1);
     //Animate Debris
     explosions.displayAndUpdate();
 
@@ -23,7 +23,7 @@ public class PlayerController {
     weapon.displayAndUpdate();
 
     //respawns
-    if (respawnTimer == 0) {
+    if (getGameManager().getRespawnTimer() == 0) {
       ship = new Spacecraft(true); //Uses the invincibility constructor
       collisionMechanics.setShip(ship);
       // reset the inputs
@@ -35,7 +35,7 @@ public class PlayerController {
 
   public void shipMechanics() {
 
-    if(!enableControls){
+    if (!enableControls) {
       setLeft(false);
       setUp(false);
       setRight(false);
@@ -56,7 +56,7 @@ public class PlayerController {
   }
 
   public void animateShipDestroy(Spacecraft playerShip) {
-    respawnTimer = AsteroidConstants.RESPAWN_TIMER;
+    getGameManager().setRespawnTimer(AsteroidConstants.RESPAWN_TIMER);
     explosions.animateShipExplosion(playerShip);
 
     //Reseting the inputs for extra safety
@@ -66,7 +66,7 @@ public class PlayerController {
   }
 
   public void keyPressed() {
-    if(!enableControls) return; //Exit code
+    if (!enableControls) return; //Exit code
 
     if (keyCode == LEFT) isLeft = true;
     if (keyCode == RIGHT) isRight = true;
@@ -74,7 +74,7 @@ public class PlayerController {
     // Firing Logic:
     // We check for Spacebar HERE instead of using a boolean flag.
     // This ensures 1 press = 1 bullet.
-    if (enableControls && key == ' ' && respawnTimer == 0) {
+    if (enableControls && key == ' ' && getGameManager().getRespawnTimer() == 0) {
       weapon.fire(ship, getLevel());
     }
   }
@@ -110,17 +110,16 @@ public class PlayerController {
     this.isUp = isUp;
   }
 
-  public boolean isEnableControls(){
+  public boolean isEnableControls() {
     return enableControls;
   }
 
-  public void setEnableControls(final boolean enableControls){
+  public void setEnableControls(final boolean enableControls) {
     this.enableControls = enableControls;
-    if(!enableControls){
+    if (!enableControls) {
       setUp(false);
       setRight(false);
       setLeft(false);
     }
-
   }
 }

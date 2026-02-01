@@ -16,18 +16,7 @@ private ExplosionController explosions;  //Explosion Particle controller
 private UFOController ufoController;
 private CollisionMechanics collisionMechanics;
 private PlayerController playerController;
-private TitleScreen titleScreen;
-private AsteroidConstants.GameState gameState = AsteroidConstants.INITIAL_GAME_STATE; //game Starts with the title screen
-private int level = AsteroidConstants.INITIAL_LEVEL;
-private int respawnTimer = 0;
-
-private Integer score = 0;
-private int lives = 0;
-private int gameTimer = 0; // In Frames
-
-// Transition Timer Variables
-private int transitionDelayTimer = 0;
-private int levelCountdownTimer = 0;
+private GameManager gameManager;
 
 void setup() {
   //create a window
@@ -42,8 +31,8 @@ void setup() {
   //Turn off Anti-aliasing
   smooth();
 
-  //Init Title Screen
-  titleScreen = new TitleScreen(this);
+  // Init Game Manager
+  gameManager = new GameManager(this);
 
   //Init the player ship
   ship = new Spacecraft();
@@ -71,178 +60,33 @@ void setup() {
 }
 
 public void draw() {
-  if (gameState != AsteroidConstants.GameState.LEVEL_TRANSITION) {
-      background(20, 20, 30);
-  }
-
-  if(gameState == AsteroidConstants.GameState.PLAYING){
-    runGame();
-  } else if (gameState == AsteroidConstants.GameState.LEVEL_TRANSITION) {
-    runLevelTransition();
-  } else {
-    titleScreen.display(gameState, asteroids);
-  }
-
+  gameManager.update();
 }
 
 public void mousePressed() {
-  if (gameState != AsteroidConstants.GameState.PLAYING && gameState != AsteroidConstants.GameState.LEVEL_TRANSITION) {
-      AsteroidConstants.GameState newState = titleScreen.handleTitleScreenClick(gameState);
-      
-      if (newState == AsteroidConstants.GameState.PLAYING && gameState != AsteroidConstants.GameState.PLAYING) {
-          resetGame();
-      }
-      gameState = newState;
-  }
-}
-
-private void runGame(){
-  if (AsteroidConstants.GAME_MODE == AsteroidConstants.GameModeEnum.TIME_BOUND) {
-      gameTimer--;
-      if (gameTimer <= 0) {
-          gameState = AsteroidConstants.GameState.MENU_MAIN;
-          return;
-      }
-  }
-
-  if (respawnTimer > 0) {
-    playerController.activateRespawnMechanics();
-  } else {
-    activeGameplayHandler();
-  }
-}
-
-private void runLevelTransition() {
-    if (transitionDelayTimer > 0) {
-        transitionDelayTimer--;
-        background(20, 20, 30); 
-        activeGameplayHandler();
-        
-        if (transitionDelayTimer <= 0) {
-            levelCountdownTimer = 5 * 60; // 5 seconds
-        }
-        return;
-    }
-
-    background(0);
-    textAlign(CENTER, CENTER);
-    fill(255);
-    textSize(40);
-    text("LEVEL " + getLevel() + " CLEARED", width/2, height/2 - 50);
-    
-    textSize(60);
-    int secondsLeft = ceil(levelCountdownTimer / 60.0f);
-    text(secondsLeft, width/2, height/2 + 20);
-
-    levelCountdownTimer--;
-    
-    if (levelCountdownTimer <= 0) {
-        startNextWave();
-        gameState = AsteroidConstants.GameState.PLAYING;
-        // Unlock controls (Assuming PlayerController has setEnableControls added)
-        playerController.setEnableControls(true);
-    }
-}
-
-private void activeGameplayHandler() {
-  playerController.shipMechanics();
-  // Weapons Handling
-  weapon.displayAndUpdate();
-  //Explosion handling
-  explosions.displayAndUpdate();
-  //UFO Mechanics
-  ufoController.update(getLevel(), asteroids, weapon.getPlayerLasers());
-  //Asteroid mechanics
-  collisionMechanics.asteroidsMechanics();
-  //UFO Hits mechanism
-  collisionMechanics.checkUFOAttacksOnPlayer();
-  //player collision mechanics
-  collisionMechanics.checkPlayerCollision();
-}
-
-private void resetGame() {
-    score = 0;
-    respawnTimer = 0;
-
-    if (AsteroidConstants.GAME_MODE == AsteroidConstants.GameModeEnum.TIME_BOUND) {
-      level = AsteroidConstants.INITIAL_LEVEL_TIME_BOUND;
-      int seconds = AsteroidConstants.GAME_MODE_SETTINGS.get(AsteroidConstants.GameModeEnum.TIME_BOUND);
-      gameTimer = seconds * 60;
-      lives = AsteroidConstants.INFINITE_LIVES; //Infinite Lives (Not actually, just a very large number)
-    } else {
-      level = AsteroidConstants.INITIAL_LEVEL;
-      lives = AsteroidConstants.GAME_MODE_SETTINGS.get(AsteroidConstants.GAME_MODE);
-    }
-    ship = new Spacecraft();
-    asteroids.clear();
-    int count = PhysicsHelper.getAsteroidsCountBasedOnCurrentLevel(level);
-    //Logger.log(count, level);
-    for (int i = 0; i < count; i++) {
-        asteroids.add(new Asteroid(ship, AsteroidConstants.ASTEROID_SHIP_SAFE_DISTANCE));
-    }
-    respawnTimer = 0;
-    weapon = new WeaponsController();
-    explosions.reset();
-    ufoController = new UFOController(explosions);
-    collisionMechanics = new CollisionMechanics(ship, asteroids, this);
-    playerController = new PlayerController();
+  gameManager.handleMousePressed();
 }
 
 public void syncScore(Integer s) {
-    setScore(s);
+  gameManager.setScore(s);
 }
 
 public void onPlayerDeath() {
-    if (AsteroidConstants.GAME_MODE == AsteroidConstants.GameModeEnum.ENDLESS) {
-        gameState = AsteroidConstants.GameState.MENU_MAIN;
-    }
-    else if (AsteroidConstants.GAME_MODE == AsteroidConstants.GameModeEnum.CLASSIC) {
-        lives--;
-        if (lives <= 0) {
-            gameState = AsteroidConstants.GameState.MENU_MAIN;
-        }
-    }
+  gameManager.onPlayerDeath();
 }
 
 public void onWaveCleared() {
-  
-  // CollisionMechanics runs during the transition delay. 
-  // If we are already transitioning, ignore repeated calls.
-  if (gameState == AsteroidConstants.GameState.LEVEL_TRANSITION) {
-      return;
-  }
-
-  if (AsteroidConstants.GAME_MODE == AsteroidConstants.GameModeEnum.CLASSIC) {
-        gameState = AsteroidConstants.GameState.LEVEL_TRANSITION;
-        transitionDelayTimer = 6; // ~100ms at 60fps
-        
-        playerController.setEnableControls(false);
-        for(UFO u : ufoController.getActiveUFOs()){
-             explosions.animateUFOExplosion(u);
-        }
-        ufoController.setActiveUFOs(new ArrayList<UFO>());
-    } else {
-        startNextWave();
-    }
-}
-
-private void startNextWave() {
-    level++;
-    asteroids.clear();
-    int count = PhysicsHelper.getAsteroidsCountBasedOnCurrentLevel(level);
-    for (int i = 0; i < count; i++) {
-        asteroids.add(new Asteroid(ship, AsteroidConstants.ASTEROID_SHIP_SAFE_DISTANCE));
-    }
+  gameManager.onWaveCleared();
 }
 
 
 // Generic Main APIs (Getters/Setters)
 public int getLevel() {
-  return level;
+  return gameManager.getLevel();
 }
 
 public void setLevel(int level) {
-  this.level = level;
+  gameManager.setLevel(level);
 }
 
 public ArrayList<Asteroid> getAsteroids() {
@@ -269,6 +113,34 @@ public void setWeapon(WeaponsController weapon) {
   this.weapon = weapon;
 }
 
+public ExplosionController getExplosionController() {
+  return explosions;
+}
+
+public UFOController getUFOController() {
+  return ufoController;
+}
+
+public void setUFOController(UFOController ufoController) {
+  this.ufoController = ufoController;
+}
+
+public CollisionMechanics getCollisionMechanics() {
+  return collisionMechanics;
+}
+
+public void setCollisionMechanics(CollisionMechanics collisionMechanics) {
+  this.collisionMechanics = collisionMechanics;
+}
+
+public PlayerController getPlayerController() {
+  return playerController;
+}
+
+public void setPlayerController(PlayerController playerController) {
+  this.playerController = playerController;
+}
+
 public void keyPressed() {
   playerController.keyPressed();
 }
@@ -278,45 +150,43 @@ public void keyReleased() {
 }
 
 public Integer getScore() {
-    return score;
+  return gameManager.getScore();
 }
 
-public void setScore(Integer score) {
-    this.score = Math.max(0, score);
-}
 
 public int getLives() {
-    return lives;
+  return gameManager.getLives();
 }
 
 public void setLives(int lives) {
-    this.lives = Math.max(0, lives);
+  gameManager.setLives(lives);
 }
 
 public int getGameTimer() {
-    return gameTimer;
+  return gameManager.getGameTimer();
 }
 
 public void setGameTimer(int gameTimer) {
-    this.gameTimer = gameTimer;
+  gameManager.setGameTimer(gameTimer);
 }
 
-// Transition Timer
-
+// Transition Timer Delegate
 public int getTransitionDelayTimer() {
-    return transitionDelayTimer;
+  return gameManager.getTransitionDelayTimer();
 }
 
 public void setTransitionDelayTimer(int transitionDelayTimer) {
-    this.transitionDelayTimer = transitionDelayTimer;
+  gameManager.setTransitionDelayTimer(transitionDelayTimer);
 }
 
 public int getLevelCountdownTimer() {
-    return levelCountdownTimer;
+  return gameManager.getLevelCountdownTimer();
 }
 
 public void setLevelCountdownTimer(int levelCountdownTimer) {
-    this.levelCountdownTimer = levelCountdownTimer;
+  gameManager.setLevelCountdownTimer(levelCountdownTimer);
 }
 
-
+public GameManager getGameManager() {
+  return gameManager;
+}
