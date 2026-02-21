@@ -12,6 +12,7 @@ public class GameManager {
 
   // Game Elements managed by GameManager (or referenced)
   private TitleScreen titleScreen;
+  private HUD hud; //Hud mechanics
 
   // Game State Variables
   private AsteroidConstants.GameState gameState = AsteroidConstants.INITIAL_GAME_STATE;
@@ -28,6 +29,7 @@ public class GameManager {
   public GameManager(Asteroids parent) {
     this.parent = parent;
     this.titleScreen = new TitleScreen(parent);
+    this.hud = new HUD(parent);
   }
 
   public void update() {
@@ -64,7 +66,9 @@ public class GameManager {
       }
     }
 
-
+    if (AsteroidConstants.GAME_MODE == AsteroidConstants.GameModeEnum.CLASSIC) {
+      hud.displayClassic(score, lives, level, parent.getShip().getHP());
+    }
 
     if (respawnTimer > 0) {
       parent.getPlayerController().activateRespawnMechanics();
@@ -77,6 +81,7 @@ public class GameManager {
     if (transitionDelayTimer > 0) {
       transitionDelayTimer--;
       parent.background(20, 20, 30);
+      parent.getShip().setHP(100); // The hull integrity should reset after each level.
       activeGameplayHandler();
 
       if (transitionDelayTimer <= 0) {
@@ -261,5 +266,12 @@ public class GameManager {
 
   public void setLevelCountdownTimer(int levelCountdownTimer) {
     this.levelCountdownTimer = levelCountdownTimer;
+  }
+
+  public void setHud(final HUD hud){
+    this.hud = hud;
+  }
+  public HUD getHud(){
+    return hud;
   }
 }

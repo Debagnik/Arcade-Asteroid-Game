@@ -126,10 +126,35 @@ public class Spacecraft {
         vertex(size, 0);
         vertex(-size, size);
         vertex(-size * 0.5, 0);
-        endShape(CLOSE);
+        endShape(PConstants.CLOSE);
 
         line(-size/2, -size * 0.75, -size/2, size * 0.75);
 
+    }
+
+    /**
+     * Draws the visual shape of the ship.
+     * Can be called by the HUD to draw life icons without affecting physics.
+     * @param p The PApplet instance to draw onto.
+     */
+    public void drawSpaceShipVisuals(PApplet p) {
+        p.pushStyle();
+        p.noFill();
+        p.stroke(255); 
+        p.strokeWeight(2);
+        
+        p.beginShape();
+        // Use local coordinates relative to (0,0)
+        p.vertex(-size, -size);
+        p.vertex(size, 0);
+        p.vertex(-size, size);
+        p.vertex(-size * 0.5f, 0);
+        p.endShape(PConstants.CLOSE);
+        
+        // Inner line detail
+        p.line(-size/2, -size * 0.75f, -size/2, size * 0.75f);
+        
+        p.popStyle();
     }
 
     public void thrust(){
