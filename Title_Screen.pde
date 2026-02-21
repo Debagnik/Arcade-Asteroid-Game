@@ -18,7 +18,7 @@ public class TitleScreen{
     // Default Constructor
     public TitleScreen(PApplet parent){
         setParent(parent);
-        final String fontPath = getParent().dataPath("assets/fonts/Orbitron.ttf");
+        final String fontPath = getParent().dataPath(AsteroidConstants.FONT_PATH);
         
         try{
             File fontFile = new File(fontPath);

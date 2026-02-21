@@ -4,11 +4,21 @@ A modern, physics-based recreation of the classic arcade hit "Asteroids," built 
 
 ## Features
 
-- **Realistic Physics**: Implements conservation of momentum for asteroid-to-asteroid elastic collisions and Arcade-style screen wrapping.
-- **Challenging UFOs**: Two types of UFOs (Big and Small) that track the player, fire lasers, and even attempt suicide runs.
-- **Dynamic Leveling System**: Infinite gameplay where the difficulty scales as you clear asteroid waves.
+- **Realistic Physics**: Implements conservation of momentum for asteroid-to-asteroid elastic collisions, friction mechanics, and Arcade-style screen wrapping.
+- **Game Modes**: Three distinct ways to play:
+  - **Classic**: Start with 5 lives and progress through increasingly difficult waves.
+  - **Endless**: Ultra-hardcore mode with only 1 life. Surviving is the only goal.
+  - **Time Bound**: A 5-minute challenge with infinite lives. Score as high as possible before the clock runs out (Starts at Level 5).
+- **Challenging UFOs**: Two types of UFOs that track the player and fire lasers:
+  - **Big UFO**: Slower, easier to hit, spawns at Level 5.
+  - **Small UFO**: Fast, agile, hard to hit, deadlier aim, spawns at Level 10.
+- **Dynamic Leveling System**: Infinite gameplay where asteroid counts increase as you clear waves.
+- **Scoring & Penalties**:
+  - Earn points for destroying Asteroids (Small > Medium > Big).
+  - High-value rewards for destroying UFOs.
+  - **Score Penalties** for taking damage from collisions or enemy fire.
 - **Visual Effects**: Custom particle-based explosion system for asteroids, ships, and UFOs.
-- **Logging System**: Built-in logging for debugging and performance monitoring.
+- **Logging System**: Built-in logging for debugging and performance monitoring in `./Logs`.
 - **Invincibility Frames**: Temporary protection after respawning to ensure fair gameplay.
 
 ## Controls
@@ -96,6 +106,7 @@ git clone git@github.com:Debagnik/Arcade-Asteroid-Game.git ./Asteroids
 - `Explosion_Controller.pde` / `DebrisAnimation.pde`: Visual effects, particles, and explosion animations.
 - `Lasers.pde` / `Weapons_Controller.pde`: Weapon systems and projectile management.
 - `Loggers.pde`: Debugging and game state logging utilities.
+- `Game_Manager.pde`: Central Game State manager (Levels, Scoring, Lives, Game Over Logic).
 
 ## License
 
