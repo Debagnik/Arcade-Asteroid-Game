@@ -15,7 +15,7 @@ A modern, physics-based recreation of the classic arcade hit "Asteroids," built 
 - **Dynamic Leveling System**: Infinite gameplay where asteroid counts increase as you clear waves.
 - **Scoring & Penalties**:
   - Earn points for destroying Asteroids (Small > Medium > Big).
-  - High value rewards for destroying UFOs.
+  - High-value rewards for destroying UFOs.
   - **Score Penalties** for taking damage from collisions or enemy fire.
 - **Visual Effects**: Custom particle-based explosion system for asteroids, ships, and UFOs.
 - **Logging System**: Built-in logging for debugging and performance monitoring in `./Logs`.
