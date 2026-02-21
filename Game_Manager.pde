@@ -81,7 +81,6 @@ public class GameManager {
     if (transitionDelayTimer > 0) {
       transitionDelayTimer--;
       parent.background(20, 20, 30);
-      parent.getShip().setHP(100); // The hull integrity should reset after each level.
       activeGameplayHandler();
 
       if (transitionDelayTimer <= 0) {
@@ -194,6 +193,7 @@ public class GameManager {
       transitionDelayTimer = 6; // ~100ms at 60fps
 
       parent.getPlayerController().setEnableControls(false);
+      parent.getShip().setHP(100); // The hull integrity should reset after each level.
       for (UFO u : parent.getUFOController().getActiveUFOs()) {
         parent.getExplosionController().animateUFOExplosion(u);
       }

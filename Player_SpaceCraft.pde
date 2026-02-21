@@ -142,18 +142,7 @@ public class Spacecraft {
         p.noFill();
         p.stroke(255); 
         p.strokeWeight(2);
-        
-        p.beginShape();
-        // Use local coordinates relative to (0,0)
-        p.vertex(-size, -size);
-        p.vertex(size, 0);
-        p.vertex(-size, size);
-        p.vertex(-size * 0.5f, 0);
-        p.endShape(PConstants.CLOSE);
-        
-        // Inner line detail
-        p.line(-size/2, -size * 0.75f, -size/2, size * 0.75f);
-        
+        drawSpaceShip();
         p.popStyle();
     }
 

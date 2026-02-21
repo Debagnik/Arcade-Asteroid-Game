@@ -2,7 +2,7 @@
  * Asteroids Game
  * License DWTFYWTPL <https://www.wtfpl.net/about/>
  * Copyright 2026 Rak Kingabed <debagnik@debagnik.in>
- * FILE:HUB.pde
+ * FILE: hud.pde
  */
 
  import java.io.File;
@@ -11,12 +11,13 @@
     private PApplet parent;
     private PFont hudFont;
     private Spacecraft dummyShip;
-    private final String CLASSIC_GAME_MODE = "Game Mode: Classic";
-    private final String TIMEBOUND_GAME_MODE = "Game Mode: Time Bound";
-    private final String ENDLESS_GAME_MODE = "Game Mode: Endless";
-    private final String LEVEL = "Level: ";
-    private final String HP_TEXT = "Ship Hull Integrity: ";
-    private final String PERCENT_SYMBOL = " %";
+    private static final String CLASSIC_GAME_MODE = "Game Mode: Classic";
+    private static final String TIMEBOUND_GAME_MODE = "Game Mode: Time Bound";  //For Future use
+    private static final String ENDLESS_GAME_MODE = "Game Mode: Endless";  //For Future use
+    private static final String LEVEL = "Level: ";
+    private static final String HP_TEXT = "Ship Hull Integrity: ";
+    private static final String PERCENT_SYMBOL = " %";
+
 
     public HUD(PApplet parent){
         setParent(parent);
@@ -33,7 +34,7 @@
             System.err.println("ERROR: Loading custom font failed\n" + ex.getMessage());
         }
         
-        setDummyShip(new Spacecraft()); //Slightly smaller ship
+        setDummyShip(new Spacecraft(false)); //Slightly smaller ship
 
     }
 
@@ -45,9 +46,9 @@
         getParent().fill(255);
 
         //Display score.
-        getParent().textAlign(PConstants.TOP, PConstants.LEFT);
+        getParent().textAlign(PConstants.LEFT, PConstants.TOP);
         getParent().textSize(24);
-        //Padding 9 zeros tyo the left.
+        //Padding 9 zeros to the left.
         String displayScore = PApplet.nf(score, 9);
         getParent().text(displayScore, 20, 20);
 
@@ -85,6 +86,8 @@
 
         getParent().popStyle();
     }
+
+    //TODO: Write HUD for other Game Modes.
 
     
 
