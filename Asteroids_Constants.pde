@@ -94,7 +94,7 @@ public static class AsteroidConstants {
 
 
     public static GameModeEnum GAME_MODE = GameModeEnum.CLASSIC;
-    public static boolean enableLogs = false;
+    public static boolean enableLogs = false; //Only on logging perpose set this flag to true, else there may be significant performance issues. YOU HAVE BEEN WARNED
     public static int COLLECTION_LOGGING_LIMIT = 25;
     public static final String LOGGING_DIR = "./Logs";
 

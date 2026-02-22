@@ -183,7 +183,21 @@ public class CollisionMechanics {
         setCurrentScore(AsteroidConstants.SCORE_SYSTEM.get("UFO_SMALL_HIT_PENALTY"));
         break;
       default:
-        setCurrentScore(0);
+        setCurrentScore(0); // if this ever happens, then the player is an asshole, and must be subjected to prison for 10 years in solitary
+        break;
+    }
+  }
+
+  private void addScoreForUFOKill(UFO ufo){
+    switch(ufo.getType()){
+      case BIG:
+        setCurrentScore(AsteroidConstants.SCORE_SYSTEM.get("UFO_BIG"));
+        break;
+      case SMALL:
+        setCurrentScore(AsteroidConstants.SCORE_SYSTEM.get("UFO_SMALL"));
+        break;
+      default:
+        setCurrentScore(0); // if this ever happens, then the player is an asshole, and must be subjected to prison for 10 years in solitary
         break;
     }
   }
@@ -228,6 +242,20 @@ public class CollisionMechanics {
         }
       }
     }
+  }
+
+  public boolean handleUFODestructionByPlayerLaser(UFO ufo, ArrayList<PlayerLaser> playerLasers){
+    for(PlayerLaser pl : playerLasers){
+        if (!pl.isActive()){
+            continue;
+        }
+        if(PhysicsHelper.checkPlayerLaser2UFOCollision(pl, ufo)){
+            pl.setActive(false);
+            addScoreForUFOKill(ufo);
+            return true;
+        }
+    }
+    return false;
   }
 
   private void setCurrentScore(final Integer score){

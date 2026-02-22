@@ -49,11 +49,11 @@ void setup() {
   //Init Explosion Controller
   explosions = new ExplosionController();
 
-  // Init ufo controller
-  ufoController = new UFOController(explosions);
-
   // Init Collision Mechanics
   collisionMechanics = new CollisionMechanics(ship, asteroids, this);
+
+  // Init ufo controller
+  ufoController = new UFOController(explosions, collisionMechanics);
 
   // Init Player Controller
   playerController = new PlayerController();

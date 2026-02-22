@@ -10,12 +10,13 @@ import java.util.HashSet;
 public class UFOController{
     private ArrayList<UFO> activeUFOs;
     private ExplosionController fx;
+    private CollisionMechanics cm;
     private final HashSet<UFO> despawnUFOSet = new HashSet<UFO>();
 
-    public UFOController(ExplosionController fx){
+    public UFOController(ExplosionController fx, CollisionMechanics cm){
         setActiveUFOs(new ArrayList<UFO>());
         setExplosionController(fx);
-
+        setCm(cm);
     }
 
     private void spawnUFOs(int level){
@@ -53,7 +54,7 @@ public class UFOController{
         for(UFO ufo : activeUFOs){
             ufo.update(asteroids);
             ufo.display();
-            if(handleUFOCollisions(ufo, playerLasers)){
+            if(cm.handleUFODestructionByPlayerLaser(ufo, playerLasers)){
                 getExplosionController().animateUFOExplosion(ufo);
                 despawnUFOSet.add(ufo);
             }
@@ -66,18 +67,6 @@ public class UFOController{
         activeUFOs.remove(ufo);
     }
 
-    private boolean handleUFOCollisions(UFO ufo, ArrayList<PlayerLaser> playerLasers){
-        for(PlayerLaser pl : playerLasers){
-            if (!pl.isActive()){
-                continue;
-            }
-            if(PhysicsHelper.checkPlayerLaser2UFOCollision(pl, ufo)){
-                pl.setActive(false);
-                return true;
-            }
-        }
-        return false;
-    }
 
     public void setActiveUFOs(ArrayList<UFO> activeUFOs){
         this.activeUFOs = (activeUFOs == null) ? new ArrayList<UFO>() : new ArrayList<UFO>(activeUFOs);
@@ -93,6 +82,16 @@ public class UFOController{
     }
     public ArrayList<UFO> getActiveUFOs(){
         return new ArrayList<UFO>(activeUFOs);
+    }
+    public CollisionMechanics getCm(){
+        return cm;
+    }
+    
+    public void setCm(CollisionMechanics cm){
+        if (cm == null){
+            throw new IllegalArgumentException("CollisionMechanics is required");
+        }
+        this.cm = cm;
     }
 
 

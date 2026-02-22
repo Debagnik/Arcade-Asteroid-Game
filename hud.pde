@@ -18,6 +18,8 @@
     private static final String HP_TEXT = "Ship Hull Integrity: ";
     private static final String PERCENT_SYMBOL = " %";
     private static final String TIME_LEFT = "Time Left: ";
+    private static final String TIMER_SEPARATOR = "mins : ";
+    private static final String SECONDS_SHORTHAND = " secs";
 
 
     public HUD(PApplet parent){
@@ -141,7 +143,12 @@
         //Display time left
         getParent().textAlign(PConstants.RIGHT, PConstants.TOP);
         getParent().textSize(20);
-        getParent().text(TIME_LEFT + PApplet.nf(timer, 6), getParent().width - 20, 20);
+        //Logger.log(timer);
+        int totalSeconds = Math.max(0, timer) / 60;
+        int mins = totalSeconds / 60;
+        int secs = totalSeconds % 60;
+
+        getParent().text(TIME_LEFT + PApplet.nf(mins, 2) + TIMER_SEPARATOR + PApplet.nf(secs, 2) + SECONDS_SHORTHAND, getParent().width - 20, 20);
 
         getParent().popStyle();
     }
