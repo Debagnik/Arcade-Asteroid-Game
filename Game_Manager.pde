@@ -65,13 +65,9 @@ public class GameManager {
         gameState = AsteroidConstants.GameState.MENU_MAIN;
         return;
       }
-    }
-
-    if (AsteroidConstants.GAME_MODE == AsteroidConstants.GameModeEnum.CLASSIC) {
+    } else if (AsteroidConstants.GAME_MODE == AsteroidConstants.GameModeEnum.CLASSIC) {
       hud.displayClassic(score, lives, level, parent.getShip().getHP());
-    }
-
-    if (AsteroidConstants.GAME_MODE == AsteroidConstants.GameModeEnum.ENDLESS) {
+    } else if (AsteroidConstants.GAME_MODE == AsteroidConstants.GameModeEnum.ENDLESS) {
       hud.displayEndless(score, level, parent.getShip().getHP());
     }
 
