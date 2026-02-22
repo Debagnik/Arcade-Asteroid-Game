@@ -60,6 +60,7 @@ public class GameManager {
   private void runGame() {
     if (AsteroidConstants.GAME_MODE == AsteroidConstants.GameModeEnum.TIME_BOUND) {
       gameTimer--;
+      hud.displayTimeBound(score, gameTimer);
       if (gameTimer <= 0) {
         gameState = AsteroidConstants.GameState.MENU_MAIN;
         return;
@@ -68,6 +69,10 @@ public class GameManager {
 
     if (AsteroidConstants.GAME_MODE == AsteroidConstants.GameModeEnum.CLASSIC) {
       hud.displayClassic(score, lives, level, parent.getShip().getHP());
+    }
+
+    if (AsteroidConstants.GAME_MODE == AsteroidConstants.GameModeEnum.ENDLESS) {
+      hud.displayEndless(score, level, parent.getShip().getHP());
     }
 
     if (respawnTimer > 0) {

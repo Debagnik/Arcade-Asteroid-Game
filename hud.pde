@@ -12,11 +12,12 @@
     private PFont hudFont;
     private Spacecraft dummyShip;
     private static final String CLASSIC_GAME_MODE = "Game Mode: Classic";
-    private static final String TIMEBOUND_GAME_MODE = "Game Mode: Time Bound";  //For Future use
-    private static final String ENDLESS_GAME_MODE = "Game Mode: Endless";  //For Future use
+    private static final String TIMEBOUND_GAME_MODE = "Game Mode: Time Bound";
+    private static final String ENDLESS_GAME_MODE = "Game Mode: Endless";
     private static final String LEVEL = "Level: ";
     private static final String HP_TEXT = "Ship Hull Integrity: ";
     private static final String PERCENT_SYMBOL = " %";
+    private static final String TIME_LEFT = "Time Left: ";
 
 
     public HUD(PApplet parent){
@@ -87,15 +88,63 @@
         getParent().popStyle();
     }
 
-    //TODO: Write HUD for other Game Modes.
+    public void displayEndless(int score, int level, float hp) {
+        getParent().pushStyle();
+        getParent().textFont(getHudFont());
+        getParent().noStroke();
+        getParent().fill(255);
 
-    
+        //Display score.
+        getParent().textAlign(PConstants.LEFT, PConstants.TOP);
+        getParent().textSize(24);
+        //Padding 9 zeros to the left.
+        String displayScore = PApplet.nf(score, 9);
+        getParent().text(displayScore, 20, 20);
 
+        //Display gamemode
+        getParent().textAlign(PConstants.CENTER, PConstants.TOP);
+        getParent().textSize(20);
+        getParent().text(ENDLESS_GAME_MODE, getParent().width/2, 20);
 
+        //Display Levels
+        getParent().textAlign(PConstants.RIGHT, PConstants.TOP);
+        getParent().textSize(20);
+        getParent().text(LEVEL + PApplet.nf(level, 3), getParent().width - 20, 20);
+        
+        //Display HP
+        int displayHP = (int) Math.max(0, hp);
+        getParent().textAlign(PConstants.LEFT, PConstants.BOTTOM);
+        getParent().textSize(20);
+        getParent().text(HP_TEXT + displayHP + PERCENT_SYMBOL, 20, getParent().height - 20);
 
+        getParent().popStyle();
+    }
 
+    public void displayTimeBound(int score, int timer) {
+        getParent().pushStyle();
+        getParent().textFont(getHudFont());
+        getParent().noStroke();
+        getParent().fill(255);
 
+        //Display score.
+        getParent().textAlign(PConstants.LEFT, PConstants.TOP);
+        getParent().textSize(24);
+        //Padding 9 zeros to the left.
+        String displayScore = PApplet.nf(score, 9);
+        getParent().text(displayScore, 20, 20);
 
+        //Display gamemode
+        getParent().textAlign(PConstants.CENTER, PConstants.TOP);
+        getParent().textSize(20);
+        getParent().text(TIMEBOUND_GAME_MODE, getParent().width/2, 20);
+
+        //Display time left
+        getParent().textAlign(PConstants.RIGHT, PConstants.TOP);
+        getParent().textSize(20);
+        getParent().text(TIME_LEFT + PApplet.nf(timer, 6), getParent().width - 20, 20);
+
+        getParent().popStyle();
+    }
 
     public PApplet getParent(){
         return parent;
