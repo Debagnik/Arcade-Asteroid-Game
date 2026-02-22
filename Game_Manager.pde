@@ -60,14 +60,15 @@ public class GameManager {
   private void runGame() {
     if (AsteroidConstants.GAME_MODE == AsteroidConstants.GameModeEnum.TIME_BOUND) {
       gameTimer--;
+      hud.displayTimeBound(score, gameTimer);
       if (gameTimer <= 0) {
         gameState = AsteroidConstants.GameState.MENU_MAIN;
         return;
       }
-    }
-
-    if (AsteroidConstants.GAME_MODE == AsteroidConstants.GameModeEnum.CLASSIC) {
+    } else if (AsteroidConstants.GAME_MODE == AsteroidConstants.GameModeEnum.CLASSIC) {
       hud.displayClassic(score, lives, level, parent.getShip().getHP());
+    } else if (AsteroidConstants.GAME_MODE == AsteroidConstants.GameModeEnum.ENDLESS) {
+      hud.displayEndless(score, level, parent.getShip().getHP());
     }
 
     if (respawnTimer > 0) {
@@ -138,7 +139,7 @@ public class GameManager {
     if (AsteroidConstants.GAME_MODE == AsteroidConstants.GameModeEnum.TIME_BOUND) {
       level = AsteroidConstants.INITIAL_LEVEL_TIME_BOUND;
       int seconds = AsteroidConstants.GAME_MODE_SETTINGS.get(AsteroidConstants.GameModeEnum.TIME_BOUND);
-      gameTimer = seconds * 60;
+      gameTimer = seconds * 60; //for 60 frames per second. not a magic number
       lives = AsteroidConstants.INFINITE_LIVES;
     } else {
       level = AsteroidConstants.INITIAL_LEVEL;
@@ -156,8 +157,8 @@ public class GameManager {
     respawnTimer = 0;
     parent.setWeapon(new WeaponsController());
     parent.getExplosionController().reset();
-    parent.setUFOController(new UFOController(parent.getExplosionController()));
     parent.setCollisionMechanics(new CollisionMechanics(parent.getShip(), parent.getAsteroids(), parent));
+    parent.setUFOController(new UFOController(parent.getExplosionController(), parent.getCollisionMechanics()));
     parent.setPlayerController(new PlayerController());
   }
 
