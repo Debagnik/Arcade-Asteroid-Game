@@ -161,8 +161,8 @@ public class GameManager {
     respawnTimer = 0;
     parent.setWeapon(new WeaponsController());
     parent.getExplosionController().reset();
-    parent.setUFOController(new UFOController(parent.getExplosionController(), parent.getCollisionMechanics()));
     parent.setCollisionMechanics(new CollisionMechanics(parent.getShip(), parent.getAsteroids(), parent));
+    parent.setUFOController(new UFOController(parent.getExplosionController(), parent.getCollisionMechanics()));
     parent.setPlayerController(new PlayerController());
   }
 

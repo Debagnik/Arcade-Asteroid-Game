@@ -18,7 +18,7 @@
     private static final String HP_TEXT = "Ship Hull Integrity: ";
     private static final String PERCENT_SYMBOL = " %";
     private static final String TIME_LEFT = "Time Left: ";
-    private static final String TIMER_SEPARATOR = "mins : ";
+    private static final String TIMER_SEPARATOR = " mins : ";
     private static final String SECONDS_SHORTHAND = " secs";
 
 
