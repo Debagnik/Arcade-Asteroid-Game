@@ -21,6 +21,7 @@ public class GameManager {
   private Integer score = 0;
   private int lives = 0;
   private int gameTimer = 0; // In Frames
+  private int sessionFramesPlayed = 0; //in frames
 
   // Transition Timer Variables
   private int transitionDelayTimer = 0;
@@ -58,10 +59,12 @@ public class GameManager {
   }
 
   private void runGame() {
+    sessionFramesPlayed++;
     if (AsteroidConstants.GAME_MODE == AsteroidConstants.GameModeEnum.TIME_BOUND) {
       gameTimer--;
       hud.displayTimeBound(score, gameTimer);
       if (gameTimer <= 0) {
+        endGameAndSave();
         gameState = AsteroidConstants.GameState.MENU_MAIN;
         return;
       }
@@ -134,6 +137,7 @@ public class GameManager {
 
   public void resetGame() {
     score = 0;
+    sessionFramesPlayed = 0;
     respawnTimer = 0; // Note: this field is locally tracked now
 
     if (AsteroidConstants.GAME_MODE == AsteroidConstants.GameModeEnum.TIME_BOUND) {
@@ -173,10 +177,12 @@ public class GameManager {
 
   public void onPlayerDeath() {
     if (AsteroidConstants.GAME_MODE == AsteroidConstants.GameModeEnum.ENDLESS) {
+      endGameAndSave();
       gameState = AsteroidConstants.GameState.MENU_MAIN;
     } else if (AsteroidConstants.GAME_MODE == AsteroidConstants.GameModeEnum.CLASSIC) {
       lives--;
       if (lives <= 0) {
+        endGameAndSave();
         gameState = AsteroidConstants.GameState.MENU_MAIN;
       }
     }
@@ -202,6 +208,17 @@ public class GameManager {
     } else {
       startNextWave();
     }
+  }
+
+  private void endGameAndSave(){
+    final int timePlayedSeconds = sessionFramesPlayed / 60;
+    SaveGameManager.saveGameSession(
+        parent, 
+        AsteroidConstants.GAME_MODE.name(), 
+        score, 
+        timePlayedSeconds, 
+        "John Doe" // Hardcoded for now
+    );
   }
 
   // Getters and Setters
