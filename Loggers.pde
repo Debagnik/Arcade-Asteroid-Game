@@ -36,7 +36,7 @@ public static class Logger {
         logDirectoryPath = StringUtils.isNotBlank(path) ? path : new File(System.getProperty("user.home"), FALLBACK_LOGGING_DIRECTORY).getAbsolutePath();
     }
 
-    public static void log(Object obj, Integer playerLevel){
+    public static void log(Object obj, String message, Integer playerLevel){
         //System.out.println("Logging Path: " + logDirectoryPath);
         //System.out.println("IsLoggingEnabled?:" + AsteroidConstants.enableLogs);
         if(!AsteroidConstants.enableLogs){
@@ -47,16 +47,13 @@ public static class Logger {
             playerLevel = -1; //The player level can be set to -1 or any negative number, if the Logger outputs a Negative interger it is to be assumed that the Logger called is sharing a null player level. 
         }
         
-        StackTraceElement caller = Thread.currentThread().getStackTrace()[2];
-        String callSite = caller.getFileName() + ":" + caller.getLineNumber();
-        String methodName = caller.getMethodName();
         JSONObject root = new JSONObject();
 
         SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss.SSS");
         root.setString("timestamp", timeFormat.format(new Date()));
         root.setString("gameMode", AsteroidConstants.GAME_MODE.toString());
-        root.setString("source", callSite + " -> " + methodName + "()");
         root.setInt("playerLevel", playerLevel);
+        root.setString("message", message);
         
         if (Objects.isNull(obj)) {
            root.setString("objectType", NULL_VALUE);
@@ -127,7 +124,12 @@ public static class Logger {
 
     // Second Static Log method with different method signature.
     public static void log(Object obj){
-        log(obj, null);
+        log(obj, null, null);
+    }
+
+    // Third Static log method
+    public static void log(Object obj, String message){
+        log(obj, message, null);
     }
 
     private static JSONObject serializeObject(Object obj){
