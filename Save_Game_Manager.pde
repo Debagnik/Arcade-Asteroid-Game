@@ -80,7 +80,7 @@ public static class SaveGameManager {
         final long timestamp = System.currentTimeMillis();
         final StringBuilder sessionSeed = new StringBuilder();
         sessionSeed.append(username).append(SEED_SEPARATOR).append(mode).append(SEED_SEPARATOR).append(score).append(SEED_SEPARATOR).append(timePlayed).append(SEED_SEPARATOR).append(timestamp);
-        final UUID sessionUUID = UUID.nameUUIDFromBytes(sessionSeed.toString().getBytes());
+        final UUID sessionUUID = UUID.nameUUIDFromBytes(sessionSeed.toString().getBytes(StandardCharsets.UTF_8));
         currentSession.setString("sessionId", sessionUUID.toString());
 
         //Update high score
@@ -140,7 +140,7 @@ public static class SaveGameManager {
         newModeHighScore.setLong("timestamp", timeStamp);
         final StringBuilder hsSeed = new StringBuilder();
         hsSeed.append(playerUsername).append(SEED_SEPARATOR).append(score).append(SEED_SEPARATOR).append(sessionId).append(SEED_SEPARATOR).append(timeStamp);
-        final UUID hsId = UUID.nameUUIDFromBytes(hsSeed.toString().getBytes());
+        final UUID hsId = UUID.nameUUIDFromBytes(hsSeed.toString().getBytes(StandardCharsets.UTF_8));
         newModeHighScore.setString("highScoreId", hsId.toString());
 
         if(Objects.nonNull(modeHighScore) && modeHighScore.getLong("score", Long.MIN_VALUE) < score){
@@ -178,7 +178,7 @@ public static class SaveGameManager {
     public static JSONObject generateEmptyScore(){
         JSONObject empty = new JSONObject();
         empty.setLong("score", Long.MIN_VALUE); // Impossible value
-        empty.setString("scoredBy", "Jane Doe"); //Made up name yes I am intentially hardcoding this.
+        empty.setString("scoredBy", "Jane Doe"); //Made up name yes I am intentionally hardcoding this.
         empty.setString("sessionId", "1234-5678-9012-3456");
         empty.setLong("timestamp", 0);
         empty.setString("highScoreId", "0987-6543-2109-8765");
