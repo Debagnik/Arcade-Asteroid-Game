@@ -64,6 +64,11 @@ public static class SaveGameManager {
 
         //Update Metadata very rudimentary
         JSONObject metadata = root.getJSONObject("metadata");
+        if(Objects.isNull(metadata)){
+            metadata = new JSONObject();
+            metadata.setLong("totalTimePlayed", 0);
+            root.setJSONObject("metadata", metadata);
+        }
         metadata.setLong("totalTimePlayed", metadata.getLong("totalTimePlayed") + timePlayed);
 
         //create curreent sessions
@@ -79,7 +84,15 @@ public static class SaveGameManager {
         currentSession.setString("sessionId", sessionUUID.toString());
 
         //Update high score
-        root.setJSONObject("highScores", updateHighScore(root.getJSONObject("highScores"), score, mode, sessionUUID.toString(), username, timestamp));
+        JSONObject currentHighScores = root.getJSONObject("highScores");
+        if(Objects.isNull(currentHighScores)){
+            currentHighScores = new JSONObject();
+            currentHighScores.setJSONObject("CLASSIC", generateEmptyScore());
+            currentHighScores.setJSONObject("ENDLESS", generateEmptyScore());
+            currentHighScores.setJSONObject("TIME_BOUND", generateEmptyScore());
+            root.setJSONObject("highScores", currentHighScores);
+        }
+        root.setJSONObject("highScores", updateHighScore(currentHighScores, score, mode, sessionUUID.toString(), username, timestamp));
 
         //Update the session history
         JSONArray sessionHistory = root.getJSONArray("sessionHistory");
@@ -248,8 +261,8 @@ public static class SaveGameManager {
 
         //Verify CheckSum
         final String expectedChecksum = generateChecksum(protectedData);
-        Logger.log(providedChecksum, "Provided Checksum");
-        Logger.log(expectedChecksum, "Expected Checksum");
+        //Logger.log(providedChecksum, "Provided Checksum");
+        //Logger.log(expectedChecksum, "Expected Checksum");
         if(StringUtils.isBlank(providedChecksum) || !StringUtils.equals(expectedChecksum, providedChecksum)){
             throw new RuntimeException("CheckSum mismatch");
         }
