@@ -22,8 +22,22 @@ public static class SaveGameManager {
     private static final String CHECKSUM_SEPARATOR = "(>w<)";
 
     public static void saveGameSession(PApplet p, String mode, int score, int timePlayed, String username) {
-        String fullPath = p.dataPath(SAVE_FILE_NAME);
+        
+        final String dirPath = getOSSpecificSaveDirectory();
+        File saveDirObj = new File(dirPath);
+        //Logger.log(dirPath, "OS Specific save path");
+
+        if (!saveDirObj.exists()) {
+            saveDirObj.mkdirs(); 
+        }
+        
+        final String fullPath = dirPath + File.separator + SAVE_FILE_NAME;
         File saveFileObj = new File(fullPath);
+
+        File parentDir = saveFileObj.getParentFile();
+        if (parentDir != null && !parentDir.exists()) {
+            parentDir.mkdirs();
+        }
 
         JSONObject root;
 
@@ -105,16 +119,20 @@ public static class SaveGameManager {
 
     private static JSONObject updateHighScore(final JSONObject currentHighScores, final long score, final String mode, final String sessionId, final String playerUsername, final long timeStamp){
         JSONObject modeHighScore = currentHighScores.getJSONObject(mode);
-        if(Objects.nonNull(modeHighScore) || modeHighScore.getLong("score", Long.MIN_VALUE) < score){
-            JSONObject newModeHighScore = new JSONObject();
-            newModeHighScore.setLong("score", score);
-            newModeHighScore.setString("scoredBy", playerUsername);
-            newModeHighScore.setString("sessionId", sessionId);
-            newModeHighScore.setLong("timestamp", timeStamp);
-            final StringBuilder hsSeed = new StringBuilder();
-            hsSeed.append(playerUsername).append(SEED_SEPARATOR).append(score).append(SEED_SEPARATOR).append(sessionId).append(SEED_SEPARATOR).append(timeStamp);
-            final UUID hsId = UUID.nameUUIDFromBytes(hsSeed.toString().getBytes());
-            newModeHighScore.setString("highScoreId", hsId.toString());
+
+        JSONObject newModeHighScore = new JSONObject();
+        newModeHighScore.setLong("score", score);
+        newModeHighScore.setString("scoredBy", playerUsername);
+        newModeHighScore.setString("sessionId", sessionId);
+        newModeHighScore.setLong("timestamp", timeStamp);
+        final StringBuilder hsSeed = new StringBuilder();
+        hsSeed.append(playerUsername).append(SEED_SEPARATOR).append(score).append(SEED_SEPARATOR).append(sessionId).append(SEED_SEPARATOR).append(timeStamp);
+        final UUID hsId = UUID.nameUUIDFromBytes(hsSeed.toString().getBytes());
+        newModeHighScore.setString("highScoreId", hsId.toString());
+
+        if(Objects.nonNull(modeHighScore) && modeHighScore.getLong("score", Long.MIN_VALUE) < score){
+            currentHighScores.setJSONObject(mode, newModeHighScore);
+        } else if(Objects.isNull(modeHighScore)){
             currentHighScores.setJSONObject(mode, newModeHighScore);
         }
         
@@ -266,6 +284,30 @@ public static class SaveGameManager {
 
         return new String(outputBytes, StandardCharsets.UTF_8);
 
+    }
+
+    private static String getOSSpecificSaveDirectory() {
+        String os = System.getProperty("os.name").toLowerCase();
+        String userHome = System.getProperty("user.home");
+        String appFolderName = "ArcadeAsteroids"; // Folder name for your game
+
+        if (os.contains("win")) {
+            String appData = System.getenv("APPDATA");
+            if (appData != null) {
+                return appData + File.separator + appFolderName;
+            }
+            return userHome + File.separator + "AppData" + File.separator + "Roaming" + File.separator + appFolderName;
+            
+        } else if (os.contains("mac")) {
+            return userHome + File.separator + "Library" + File.separator + "Application Support" + File.separator + appFolderName;
+            
+        } else {
+            String xdgDataHome = System.getenv("XDG_DATA_HOME");
+            if (xdgDataHome != null) {
+                return xdgDataHome + File.separator + appFolderName;
+            }
+            return userHome + File.separator + ".local" + File.separator + "share" + File.separator + appFolderName;
+        }
     }
 
 
