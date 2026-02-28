@@ -71,7 +71,7 @@ public static class SaveGameManager {
         }
         metadata.setLong("totalTimePlayed", metadata.getLong("totalTimePlayed") + timePlayed);
 
-        //create curreent sessions
+        //create current session
         JSONObject currentSession = new JSONObject();
         currentSession.setLong("score", score);
         currentSession.setString("mode", mode);
