@@ -25,6 +25,7 @@ public static class SaveGameManager {
     private static final String SALT = "privacy-apron-privacy-eternal-dominoes-approach";
     private static final String XOR_KEY = "B4Y&%!*wZ5b!WRgVo^9EUB78";
     private static final String CHECKSUM_SEPARATOR = "(>w<)";
+    private static final int MAX_DECOMPRESSED_BYTES = 5 * 1024 * 1024;
 
     public static void saveGameSession(PApplet p, String mode, int score, int timePlayed, String username) {
         
@@ -219,7 +220,7 @@ public static class SaveGameManager {
 
             return signedProtectedData.toString();
         } catch (Exception ex)  {
-            throw new RuntimeException("Compression failed");
+            throw new RuntimeException("Compression failed" + ex.getMessage());
         }
 
     }
@@ -298,7 +299,7 @@ public static class SaveGameManager {
             return decodedJsonString;
         } catch (Exception ex){
             System.err.println("Data failed to decode and decompressed" + ex.getMessage());
-            throw new RuntimeException("Data deCompression failed");
+            throw new RuntimeException("Data deCompression failed" + ex.getMessage());
             
         }
 
@@ -358,7 +359,14 @@ public static class SaveGameManager {
         
         byte[] buffer = new byte[8192];
         int len;
+        int totalDecompressed = 0; // Track total decompressed bytes
+        
         while ((len = xzIn.read(buffer)) > 0) {
+            totalDecompressed += len;
+            if (totalDecompressed > MAX_DECOMPRESSED_BYTES) {
+                xzIn.close();
+                throw new RuntimeException("Decompression failed: Maximum allowed size exceeded (" + MAX_DECOMPRESSED_BYTES + " bytes). Potential zip bomb.");
+            }
             baos.write(buffer, 0, len);
         }
         xzIn.close();
