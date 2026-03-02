@@ -12,13 +12,18 @@ import java.util.UUID;
 import java.util.Base64;
 import java.security.MessageDigest;
 import java.nio.charset.StandardCharsets;
+import org.tukaani.xz.LZMA2Options;
+import org.tukaani.xz.XZOutputStream;
+import org.tukaani.xz.XZInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.ByteArrayInputStream;
 
 public static class SaveGameManager {
     private static final String SAVE_FILE_NAME = "game.data";
     private static final int MAX_SESSIONS_HISTORY = 100;
     private static final String SEED_SEPARATOR = "@@@";
     private static final String SALT = "privacy-apron-privacy-eternal-dominoes-approach";
-    private static final String XOR_KEY = "B4Y&%!*wZ5b!WRgVo#9EUB78";
+    private static final String XOR_KEY = "B4Y&%!*wZ5b!WRgVo^9EUB78";
     private static final String CHECKSUM_SEPARATOR = "(>w<)";
 
     public static void saveGameSession(PApplet p, String mode, int score, int timePlayed, String username) {
@@ -79,6 +84,7 @@ public static class SaveGameManager {
         currentSession.setLong("timePlayed", timePlayed);
         final long timestamp = System.currentTimeMillis();
         final StringBuilder sessionSeed = new StringBuilder();
+        currentSession.setLong("timestamp", timestamp);
         sessionSeed.append(username).append(SEED_SEPARATOR).append(mode).append(SEED_SEPARATOR).append(score).append(SEED_SEPARATOR).append(timePlayed).append(SEED_SEPARATOR).append(timestamp);
         final UUID sessionUUID = UUID.nameUUIDFromBytes(sessionSeed.toString().getBytes(StandardCharsets.UTF_8));
         currentSession.setString("sessionId", sessionUUID.toString());
@@ -186,29 +192,35 @@ public static class SaveGameManager {
     }
 
     private static String encodeAndSign(final String rawString){
-        //encode once
-        final String base64Encoded = Base64.getEncoder().encodeToString(rawString.getBytes(StandardCharsets.UTF_8));
-        //Logger.log(base64Encoded);
-        //add Salt
-        final StringBuilder saltedBase64Encoded = new StringBuilder();
-        saltedBase64Encoded.append(base64Encoded).append(SALT);
-        //Logger.log(saltedBase64Encoded.toString());
+        try{
+            //Compress
+            final byte[] compressedBytes = compressData(rawString);
+            //encode once
+            final String base64Encoded = Base64.getEncoder().encodeToString(compressedBytes);
 
-        //TODO: Add pepper
+            //add Salt
+            final StringBuilder saltedBase64Encoded = new StringBuilder();
+            saltedBase64Encoded.append(base64Encoded).append(SALT);
+            //Logger.log(saltedBase64Encoded.toString());
 
-        //Apply XOR-Mask
-        final String protectedData = maskInXOR(saltedBase64Encoded.toString(), XOR_KEY);
-        //Logger.log(protectedData);
-        //generate checksum
-        final String checksum = generateChecksum(protectedData);
-        //Logger.log(checksum);
+            //TODO: Add pepper
 
-        final StringBuilder signedProtectedData = new StringBuilder();
+            //Apply XOR-Mask
+            final String protectedData = maskInXOR(saltedBase64Encoded.toString(), XOR_KEY);
+            //Logger.log(protectedData);
+            //generate checksum
+            final String checksum = generateChecksum(protectedData);
+            //Logger.log(checksum);
 
-        signedProtectedData.append(protectedData).append(CHECKSUM_SEPARATOR).append(checksum);
-        //Logger.log(signedProtectedData.toString());
+            final StringBuilder signedProtectedData = new StringBuilder();
 
-        return signedProtectedData.toString();
+            signedProtectedData.append(protectedData).append(CHECKSUM_SEPARATOR).append(checksum);
+            //Logger.log(signedProtectedData.toString());
+
+            return signedProtectedData.toString();
+        } catch (Exception ex)  {
+            throw new RuntimeException("Compression failed");
+        }
 
     }
 
@@ -267,21 +279,28 @@ public static class SaveGameManager {
             throw new RuntimeException("CheckSum mismatch");
         }
 
-        //Undo XOR Masking
-        final String saltedBase64Encoded = demaskXOR(protectedData, XOR_KEY);
+        try {
+            //Undo XOR Masking
+            final String saltedBase64Encoded = demaskXOR(protectedData, XOR_KEY);
 
-        if(!StringUtils.endsWith(saltedBase64Encoded, SALT)){
-            throw new RuntimeException("Salt not found, Data tampered or corrupted");
+            if(!StringUtils.endsWith(saltedBase64Encoded, SALT)){
+                throw new RuntimeException("Salt not found, Data tampered or corrupted");
+            }
+
+            //Desalting
+            final String b64encoded = saltedBase64Encoded.substring(0, saltedBase64Encoded.length() - SALT.length());
+
+            //final decoding to compressed data
+            final byte[] compressedData = Base64.getDecoder().decode(b64encoded);
+            //decompressing to original json string
+            final String decodedJsonString = decompressData(compressedData);
+
+            return decodedJsonString;
+        } catch (Exception ex){
+            System.err.println("Data failed to decode and decompressed" + ex.getMessage());
+            throw new RuntimeException("Data deCompression failed");
+            
         }
-
-        //Desalting
-        final String b64encoded = saltedBase64Encoded.substring(0, saltedBase64Encoded.length() - SALT.length());
-
-        //Final Decoding
-        final byte[] decodedData = Base64.getDecoder().decode(b64encoded);
-        final String decodedJsonString = new String(decodedData, StandardCharsets.UTF_8);
-
-        return decodedJsonString;
 
     }
 
@@ -321,6 +340,29 @@ public static class SaveGameManager {
             }
             return userHome + File.separator + ".local" + File.separator + "share" + File.separator + appFolderName;
         }
+    }
+
+    private static byte[] compressData(final String data) throws Exception{
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        LZMA2Options options = new LZMA2Options(LZMA2Options.PRESET_MAX); //Maximum Compression
+        XZOutputStream xzOut = new XZOutputStream(baos, options);
+        xzOut.write(data.getBytes(StandardCharsets.UTF_8));
+        xzOut.close();
+        return baos.toByteArray();
+    }
+
+    private static String decompressData(final byte[] compressed) throws Exception{
+        ByteArrayInputStream bais = new ByteArrayInputStream(compressed);
+        XZInputStream xzIn = new XZInputStream(bais);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        
+        byte[] buffer = new byte[8192];
+        int len;
+        while ((len = xzIn.read(buffer)) > 0) {
+            baos.write(buffer, 0, len);
+        }
+        xzIn.close();
+        return new String(baos.toByteArray(), StandardCharsets.UTF_8);
     }
 
 
