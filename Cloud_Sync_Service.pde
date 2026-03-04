@@ -161,8 +161,6 @@ public static class CloudSyncService {
                 if(isPeppered && StringUtils.isNotBlank(pepperVersion)){
                     syncUri += "?version=" + pepperVersion;
                 }
-                Logger.log(syncUri, "The URL Endpoint for Score Sync");
-                Logger.log(syncPayload.toString(), "Payload for ScoreSync API");
 
                 boolean syncSuccess = false;
                 int maxSyncRetry = AsteroidConstants.INTREGRATION_MAX_RETRIES;
