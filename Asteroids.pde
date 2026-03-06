@@ -57,6 +57,9 @@ void setup() {
 
   // Init Player Controller
   playerController = new PlayerController();
+
+  //Setup Properties
+  Env.init(this);
 }
 
 public void draw() {

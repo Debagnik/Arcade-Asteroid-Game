@@ -20,7 +20,7 @@ import org.apache.commons.lang3.StringUtils;
 
 public static class CloudSyncService {
 
-    private static final String BASE_URL = "http://localhost:3000";
+    private static final String BASE_URL = Env.get("game.server.base.uri");
     private static String sessionJwtToken = null;
 
     //Crypto configs
