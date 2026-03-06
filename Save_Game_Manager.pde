@@ -105,7 +105,6 @@ public static class SaveGameManager {
             System.out.println("Game saved successfully to: " + fullPath);
         }
 
-        //TODO: Uncomment the below line: Trigger Cloud Sync Service to attempt Phase 2 Upgrade and Sync
         CloudSyncService.triggerSync(p);
     }
 
