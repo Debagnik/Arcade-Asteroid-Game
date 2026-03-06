@@ -26,8 +26,7 @@ public static class NetworkManager {
             .build();
 
     public static String post(String url, String jsonBody, String token) throws IOException {
-        // Ensure we don't pass a null body for a POST request
-        String safeBody = (jsonBody != null && !jsonBody.isEmpty()) ? jsonBody : "{}";
+        String safeBody = StringUtils.isNotBlank(jsonBody) ? jsonBody : "{}";
         RequestBody body = RequestBody.create(safeBody, JSON);
 
         Request.Builder requestBuilder = new Request.Builder()
@@ -35,7 +34,7 @@ public static class NetworkManager {
                 .post(body);
 
         // Inject the Authorization header if a token is provided
-        if (token != null && !token.isEmpty()) {
+        if (StringUtils.isNotBlank(token)) {
             requestBuilder.addHeader("Authorization", "Bearer " + token);
         }
 
@@ -44,7 +43,7 @@ public static class NetworkManager {
             if (!response.isSuccessful()) {
                 throw new IOException("Unexpected HTTP code: " + response.code() + " - " + response.message());
             }
-            return response.body().string();
+            return Objects.nonNull(response.body()) ? response.body().string() : StringUtils.EMPTY;
         }
     }
 
@@ -54,7 +53,7 @@ public static class NetworkManager {
                 .get();
 
         // Inject the Authorization header if a token is provided
-        if (token != null && !token.isEmpty()) {
+        if (StringUtils.isNotBlank(token)) {
             requestBuilder.addHeader("Authorization", "Bearer " + token);
         }
 
@@ -63,7 +62,7 @@ public static class NetworkManager {
             if (!response.isSuccessful()) {
                 throw new IOException("Unexpected HTTP code: " + response.code() + " - " + response.message());
             }
-            return response.body().string();
+            return Objects.nonNull(response.body()) ? response.body().string() : StringUtils.EMPTY;
         }
     }
 }

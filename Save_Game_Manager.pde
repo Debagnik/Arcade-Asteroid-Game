@@ -130,7 +130,7 @@ public static class SaveGameManager {
         return currentHighScores;
     }
 
-    private static JSONObject createInitialSaveStructure() {
+    public static JSONObject createInitialSaveStructure() {
         JSONObject root = new JSONObject();
 
         //Create new metadata.
@@ -384,8 +384,12 @@ public static class SaveGameManager {
         return new String(baos.toByteArray(), StandardCharsets.UTF_8);
     }
 
-    //Read the Save file
     public static JSONObject loadRawSaveData(PApplet p){
+        return loadRawSaveData(p, false);
+    }
+
+    //Read the Save file
+    public static JSONObject loadRawSaveData(PApplet p, final boolean checkPepper){
         final StringBuilder fullSaveDataFilePath = new StringBuilder();
         fullSaveDataFilePath.append(getOSSpecificSaveDirectory()).append(File.separator).append(SAVE_FILE_NAME);
         final String fullPath = fullSaveDataFilePath.toString();
@@ -404,7 +408,7 @@ public static class SaveGameManager {
             String pepperVersion = isPeppered ? wrapper.getString("pepperVersion", null) : null;
             
             //Fetching Pepper String using API
-            if(StringUtils.isNotBlank(pepperVersion)){
+            if(checkPepper && StringUtils.isNotBlank(pepperVersion)){
 
                 final String fetchedPepper = CloudSyncService.getPepperStringFromVersion(pepperVersion);
                 if(StringUtils.isNotBlank(fetchedPepper)){
@@ -438,7 +442,7 @@ public static class SaveGameManager {
         }
     }
 
-    public static JSONObject getHighScore(final PApplet p){
+    public static JSONObject getLocalHighScore(final PApplet p){
         JSONObject root = loadRawSaveData(p);
         if(Objects.nonNull(root) && Objects.nonNull(root.getJSONObject("highScores"))){
             return root.getJSONObject("highScores");

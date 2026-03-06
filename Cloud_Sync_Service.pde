@@ -19,20 +19,23 @@ import java.nio.charset.StandardCharsets;
 import org.apache.commons.lang3.StringUtils;
 
 public static class CloudSyncService {
-
-    private static final String BASE_URL = Env.get("game.server.base.uri");
     private static String sessionJwtToken = null;
+    private static Long tokenExpirationTime = null;
 
     //Crypto configs
     private static final String RSA_ALGO = "RSA";
     private static final String RSA_TRANSFORM = "RSA/ECB/OAEPWithSHA-1AndMGF1Padding";
     private static final String AES_TRANSFORM = "AES/CBC/PKCS5Padding";
+
+    private static String getBaseUrl() {
+        return Env.get("game.server.base.uri", "http://localhost:3000");
+    }
     
     // Called when the game loads the Title Screen
     public static String getPepperStringFromVersion(String pepperVersion) {
         try{
             ensureAuthenticated();
-            String url = BASE_URL + "/api/system/pepper?version=" + pepperVersion;
+            String url = getBaseUrl() + "/api/system/pepper?version=" + pepperVersion;
             String responseStr = NetworkManager.get(url, sessionJwtToken);
             JSONObject responseJson = processing.data.JSONObject.parse(responseStr);
             return responseJson.getString("pepper");
@@ -57,7 +60,22 @@ public static class CloudSyncService {
                     return;
                 }
                 String[] fileContent = p.loadStrings(fullPath);
-                JSONObject diskWrapper = p.parseJSONObject(String.join("\n", fileContent));
+                if(Objects.isNull(fileContent) || fileContent.length == 0){
+                    System.err.println("CloudSyncService: File is empty or locked. Aborting sync");
+                    return;
+                }
+                JSONObject diskWrapper = null;
+                try{
+                    diskWrapper = p.parseJSONObject(String.join("\n", fileContent));
+                    if(Objects.isNull(diskWrapper)){
+                        throw new RuntimeException("Null save file, Probably tampered");
+                    }
+                } catch (Exception ex){
+                    System.err.println("Corrupted Save file" + ex.getMessage());
+                    ex.printStackTrace();
+                    return;
+                }
+                
 
                 boolean isPeppered = diskWrapper.getBoolean("isPeppered", false);
                 String pepperVersion = isPeppered && StringUtils.isNotBlank(diskWrapper.getString("pepperVersion")) ? diskWrapper.getString("pepperVersion") : null;
@@ -106,7 +124,7 @@ public static class CloudSyncService {
 
                     while(decryptAttempt < maxRetry && aesKey == null){
                         try {
-                            String getKeyApiEndpointUri = BASE_URL + "/api/getEncryptionKey";
+                            String getKeyApiEndpointUri = getBaseUrl() + "/api/getEncryptionKey";
                             String keyRes = NetworkManager.post(getKeyApiEndpointUri, keyReq.toString(), sessionJwtToken);
                             JSONObject aesKeyObj = processing.data.JSONObject.parse(keyRes);
                             String encryptedAesBase64 = aesKeyObj.getString("encryptedAesKey");
@@ -157,7 +175,7 @@ public static class CloudSyncService {
                 syncPayload.setBoolean("isEncrypted", isEncrypted);
                 syncPayload.setString("gameScore", finalPayloadScore);
 
-                String syncUri = BASE_URL + "/api/scores";
+                String syncUri = getBaseUrl() + "/api/scores";
                 if(isPeppered && StringUtils.isNotBlank(pepperVersion)){
                     syncUri += "?version=" + pepperVersion;
                 }
@@ -187,11 +205,18 @@ public static class CloudSyncService {
     }
 
     private static void ensureAuthenticated() throws Exception {
-        if (AsteroidConstants.enableLogs) System.out.println("CloudSyncService: Fetching new Auth Token...");
-        
-        String authRes = NetworkManager.post(BASE_URL + "/api/auth", "{}", null);
+        if(StringUtils.isNotBlank(sessionJwtToken) && Objects.nonNull(tokenExpirationTime) && System.currentTimeMillis() < tokenExpirationTime){
+            System.out.println("current time: " + System.currentTimeMillis());
+            return;
+        }
+
+        System.out.println("CloudSyncService: Fetching new Auth Token...");
+        String authRes = NetworkManager.post(getBaseUrl() + "/api/auth", "{}", null);
         JSONObject authObj = processing.data.JSONObject.parse(authRes);
         sessionJwtToken = authObj.getString("token");
+        System.out.println(authObj.getLong("expiresIn"));
+        tokenExpirationTime = System.currentTimeMillis() + (authObj.getLong("expiresIn") * 1000L) - 1000L;
+        System.out.println("Expires in: " + tokenExpirationTime.toString());
     }
 
     public static JSONObject fetchLeaderboard() {
@@ -199,7 +224,7 @@ public static class CloudSyncService {
             // We must authenticate first since the token is no longer cached
             ensureAuthenticated();
             
-            String url = BASE_URL + "/api/leaderboard";
+            String url = getBaseUrl() + "/api/leaderboard";
             String responseStr = NetworkManager.get(url, sessionJwtToken);
             
             return processing.data.JSONObject.parse(responseStr);
