@@ -126,5 +126,9 @@ public static class AsteroidConstants {
         Map.entry("ASTEROID_SMALL_HIT_PENALTY", -400)
     );
 
+    //External API Integration Constants
+    public static final int INTREGRATION_MAX_RETRIES = 5;
+    public static final String GAME_SAVE_FILE_NAME = "game.data";
+
 
 }
