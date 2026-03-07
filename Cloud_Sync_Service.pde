@@ -221,7 +221,6 @@ public static class CloudSyncService {
 
     private static synchronized String ensureAuthenticated() throws Exception {
         if(StringUtils.isNotBlank(sessionJwtToken) && Objects.nonNull(tokenExpirationTime) && System.currentTimeMillis() < tokenExpirationTime){
-            System.out.println("current time: " + System.currentTimeMillis());
             return sessionJwtToken;
         }
 
