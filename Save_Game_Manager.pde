@@ -171,35 +171,37 @@ public static class SaveGameManager {
     public static void addPepperToSaveFile(final PApplet p, final String pepperString, final String pepperVersion){
         // read the save file again
         final String fullPath = getOSSpecificSaveDirectory() + File.separator + SAVE_FILE_NAME;
-        File saveFileObj = new File(fullPath);
-        if (!saveFileObj.exists()) return;
-        
-        try{
-            String[] fileLines = p.loadStrings(fullPath);
-            String wrapperJsonStr = String.join("\n", fileLines);
-            JSONObject wrapper = p.parseJSONObject(wrapperJsonStr);
-            //get the local save
-            String localSaveStr = wrapper.getString("localSave");
-
-            // Decode to get raw JSON
-            String rawJson = verifySignAndDecode(localSaveStr, null);
-
-            // Re-encode with pepper
-            String pepperedGameScore = encodeAndSign(rawJson, pepperString);
-
-            // Update wrapper
-            wrapper.setString("gameScore", pepperedGameScore);
-            wrapper.setBoolean("isPeppered", true);
-            wrapper.setString("pepperVersion", pepperVersion);
-
-            // Write back to disk
-            p.saveStrings(fullPath, new String[] { wrapper.format(-1) });
-
-            if (AsteroidConstants.enableLogs) {
-                System.out.println("Phase 2 Disk Upgrade complete: save is now peppered.");
+        synchronized(SAVE_LOCK) {
+            File saveFileObj = new File(fullPath);
+            if (!saveFileObj.exists()) return;
+            
+            try{
+                String[] fileLines = p.loadStrings(fullPath);
+                String wrapperJsonStr = String.join("\n", fileLines);
+                JSONObject wrapper = p.parseJSONObject(wrapperJsonStr);
+                //get the local save
+                String localSaveStr = wrapper.getString("localSave");
+            
+                // Decode to get raw JSON
+                String rawJson = verifySignAndDecode(localSaveStr, null);
+            
+                // Re-encode with pepper
+                String pepperedGameScore = encodeAndSign(rawJson, pepperString);
+            
+                // Update wrapper
+                wrapper.setString("gameScore", pepperedGameScore);
+                wrapper.setBoolean("isPeppered", true);
+                wrapper.setString("pepperVersion", pepperVersion);
+            
+                // Write back to disk
+                p.saveStrings(fullPath, new String[] { wrapper.format(-1) });
+            
+                if (AsteroidConstants.enableLogs) {
+                    System.out.println("Phase 2 Disk Upgrade complete: save is now peppered.");
+                }
+            } catch (Exception e) {
+                System.err.println("Failed to upgrade disk save to peppered state: " + e.getMessage());
             }
-        } catch (Exception e) {
-            System.err.println("Failed to upgrade disk save to peppered state: " + e.getMessage());
         }
     }
 
