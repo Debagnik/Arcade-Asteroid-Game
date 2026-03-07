@@ -17,10 +17,14 @@ import javax.crypto.spec.PSource;
 import java.util.Base64;
 import java.nio.charset.StandardCharsets;
 import org.apache.commons.lang3.StringUtils;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public static class CloudSyncService {
     private static String sessionJwtToken = null;
     private static Long tokenExpirationTime = null;
+
+    //IDK, what to comment here, something-something prevents race conditions
+    private static final AtomicBoolean syncInFlight = new AtomicBoolean(false);
 
     //Crypto configs
     private static final String RSA_ALGO = "RSA";
@@ -34,9 +38,9 @@ public static class CloudSyncService {
     // Called when the game loads the Title Screen
     public static String getPepperStringFromVersion(String pepperVersion) {
         try{
-            ensureAuthenticated();
+            String token = ensureAuthenticated();
             String url = getBaseUrl() + "/api/system/pepper?version=" + pepperVersion;
-            String responseStr = NetworkManager.get(url, sessionJwtToken);
+            String responseStr = NetworkManager.get(url, token);
             JSONObject responseJson = processing.data.JSONObject.parse(responseStr);
             return responseJson.getString("pepper");
         } catch (Exception ex){
@@ -48,6 +52,10 @@ public static class CloudSyncService {
     
     // Called silently in the background when Player Dies
     public static void triggerSync(PApplet p) {
+        if (!syncInFlight.compareAndSet(false, true)) {
+            System.out.println("CloudSyncService: Sync already in progress, skipping.");
+            return;  // drop duplicate trigger
+        }
         new Thread(() -> {
             try {
                 if (AsteroidConstants.enableLogs) {
@@ -80,7 +88,7 @@ public static class CloudSyncService {
                 boolean isPeppered = diskWrapper.getBoolean("isPeppered", false);
                 String pepperVersion = isPeppered && StringUtils.isNotBlank(diskWrapper.getString("pepperVersion")) ? diskWrapper.getString("pepperVersion") : null;
 
-                ensureAuthenticated();
+                String token = ensureAuthenticated();
                 if(!isPeppered){
                     String newVersion = "v" + (int)(Math.random() * 10);
                     String fetchedPepper = getPepperStringFromVersion(newVersion);
@@ -125,7 +133,7 @@ public static class CloudSyncService {
                     while(decryptAttempt < maxRetry && aesKey == null){
                         try {
                             String getKeyApiEndpointUri = getBaseUrl() + "/api/getEncryptionKey";
-                            String keyRes = NetworkManager.post(getKeyApiEndpointUri, keyReq.toString(), sessionJwtToken);
+                            String keyRes = NetworkManager.post(getKeyApiEndpointUri, keyReq.toString(), token);
                             JSONObject aesKeyObj = processing.data.JSONObject.parse(keyRes);
                             String encryptedAesBase64 = aesKeyObj.getString("encryptedAesKey");
                             Cipher rsaCipher = Cipher.getInstance(RSA_TRANSFORM);
@@ -184,13 +192,17 @@ public static class CloudSyncService {
                 int maxSyncRetry = AsteroidConstants.INTREGRATION_MAX_RETRIES;
                 for(int i = 0; i < maxSyncRetry; i++){
                     try{
-                        String syncRes = NetworkManager.post(syncUri, syncPayload.toString(), sessionJwtToken);
+                        String syncRes = NetworkManager.post(syncUri, syncPayload.toString(), token);
                         System.out.println("CloudSyncService: Sync Successful! Server says: " + syncRes);
                         syncSuccess = true;
                         break;
                     }catch (Exception e){
                         System.err.println("CloudSyncService: Sync attempt " + (i+1) + " failed: " + e.getMessage());
-                        try { Thread.sleep(2000); } catch (InterruptedException ie) {}
+                        try { 
+                            Thread.sleep(2000); 
+                        } catch (InterruptedException ie) {
+                            //Do Nothing
+                        }
                     }
                 }
                 if(!syncSuccess){
@@ -200,32 +212,37 @@ public static class CloudSyncService {
             }catch (Exception e){
                 System.err.println("CloudSyncService: Fatal Error in background sync: " + e.getMessage());
                 e.printStackTrace();
+            } finally {
+                syncInFlight.set(false);
+                System.out.println("CloudSyncService: Sync thread finished, lock released.");
             }
         }).start();
     }
 
-    private static void ensureAuthenticated() throws Exception {
+    private static synchronized String ensureAuthenticated() throws Exception {
         if(StringUtils.isNotBlank(sessionJwtToken) && Objects.nonNull(tokenExpirationTime) && System.currentTimeMillis() < tokenExpirationTime){
             System.out.println("current time: " + System.currentTimeMillis());
-            return;
+            return sessionJwtToken;
         }
 
         System.out.println("CloudSyncService: Fetching new Auth Token...");
         String authRes = NetworkManager.post(getBaseUrl() + "/api/auth", "{}", null);
         JSONObject authObj = processing.data.JSONObject.parse(authRes);
         sessionJwtToken = authObj.getString("token");
-        System.out.println(authObj.getLong("expiresIn"));
+
         tokenExpirationTime = System.currentTimeMillis() + (authObj.getLong("expiresIn") * 1000L) - 1000L;
-        System.out.println("Expires in: " + tokenExpirationTime.toString());
+
+        return sessionJwtToken;
+
     }
 
     public static JSONObject fetchLeaderboard() {
         try {
             // We must authenticate first since the token is no longer cached
-            ensureAuthenticated();
+            String token = ensureAuthenticated();
             
             String url = getBaseUrl() + "/api/leaderboard";
-            String responseStr = NetworkManager.get(url, sessionJwtToken);
+            String responseStr = NetworkManager.get(url, token);
             
             return processing.data.JSONObject.parse(responseStr);
         } catch (Exception e) {

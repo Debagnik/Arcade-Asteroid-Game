@@ -27,82 +27,87 @@ public static class SaveGameManager {
     private static final String CHECKSUM_SEPARATOR = "(>w<)";
     private static final int MAX_DECOMPRESSED_BYTES = 5 * 1024 * 1024;
 
+    private static final Object SAVE_LOCK = new Object();
+
     public static void saveGameSession(PApplet p, String mode, int score, int timePlayed, String username) {
         //Read Raw file from disk
         final String dirPath = getOSSpecificSaveDirectory();
         File saveDirObj = new File(dirPath);
         if (!saveDirObj.exists()) saveDirObj.mkdirs();
         final String fullPath = dirPath + File.separator + SAVE_FILE_NAME;
-        JSONObject root = loadRawSaveData(p);
-
-        //Update Metadata very rudimentary
-        JSONObject metadata = root.getJSONObject("metadata");
-        if(Objects.isNull(metadata)){
-            metadata = new JSONObject();
-            metadata.setLong("totalTimePlayed", 0);
-            root.setJSONObject("metadata", metadata);
-        }
-        metadata.setLong("totalTimePlayed", metadata.getLong("totalTimePlayed") + timePlayed);
-
-        //create current session
-        JSONObject currentSession = new JSONObject();
-        currentSession.setLong("score", score);
-        currentSession.setString("mode", mode);
-        currentSession.setString("playerUsername", username);
-        currentSession.setLong("timePlayed", timePlayed);
-        final long timestamp = System.currentTimeMillis();
-        final StringBuilder sessionSeed = new StringBuilder();
-        currentSession.setLong("timestamp", timestamp);
-        sessionSeed.append(username).append(SEED_SEPARATOR).append(mode).append(SEED_SEPARATOR).append(score).append(SEED_SEPARATOR).append(timePlayed).append(SEED_SEPARATOR).append(timestamp);
-        final UUID sessionUUID = UUID.nameUUIDFromBytes(sessionSeed.toString().getBytes(StandardCharsets.UTF_8));
-        currentSession.setString("sessionId", sessionUUID.toString());
-
-        //Update high score
-        JSONObject currentHighScores = root.getJSONObject("highScores");
-        if(Objects.isNull(currentHighScores)){
-            currentHighScores = new JSONObject();
-            currentHighScores.setJSONObject("CLASSIC", generateEmptyScore());
-            currentHighScores.setJSONObject("ENDLESS", generateEmptyScore());
-            currentHighScores.setJSONObject("TIME_BOUND", generateEmptyScore());
-            root.setJSONObject("highScores", currentHighScores);
-        }
-        root.setJSONObject("highScores", updateHighScore(currentHighScores, score, mode, sessionUUID.toString(), username, timestamp));
-
-        //Update the session history
-        JSONArray sessionHistory = root.getJSONArray("sessionHistory");
-        if(Objects.isNull(sessionHistory)){
-            sessionHistory = new JSONArray();
-        }
-
-        JSONArray updatedSessions = new JSONArray();
-        updatedSessions.setJSONObject(0, currentSession);
-
-        int priorHistoryIndex = 1;
-        for(int i = 0; i < sessionHistory.size() && priorHistoryIndex < MAX_SESSIONS_HISTORY; i++){
-            updatedSessions.setJSONObject(priorHistoryIndex, sessionHistory.getJSONObject(i));
-            priorHistoryIndex++;
-        }
-
-        root.setJSONArray("sessionHistory", updatedSessions);
-
-        String finalJsonString;
-        if(AsteroidConstants.enableLogs){
-            finalJsonString = root.format(2); //Prettfied Json String
-        } else {
-            finalJsonString = root.format(-1); //Minified raw Json String.
-        }
-        //Logger.log(finalJsonString, "This is the final Json String");
-
-        final String encodedAndSignedPayload = encodeAndSign(finalJsonString, null);
-        final JSONObject saveWrapper = new JSONObject();
-        saveWrapper.setString("gameScore", encodedAndSignedPayload);
-        saveWrapper.setString("localSave", encodedAndSignedPayload);
-        saveWrapper.setString("pepperVersion", null);
-        saveWrapper.setBoolean("isPeppered", false);
-        p.saveStrings(fullPath, new String[] { saveWrapper.format(-1) });
-
-        if(AsteroidConstants.enableLogs){
-            System.out.println("Game saved successfully to: " + fullPath);
+        
+        synchronized(SAVE_LOCK) {
+            JSONObject root = loadRawSaveData(p);
+            
+            //Update Metadata very rudimentary
+            JSONObject metadata = root.getJSONObject("metadata");
+            if(Objects.isNull(metadata)){
+                metadata = new JSONObject();
+                metadata.setLong("totalTimePlayed", 0);
+                root.setJSONObject("metadata", metadata);
+            }
+            metadata.setLong("totalTimePlayed", metadata.getLong("totalTimePlayed") + timePlayed);
+        
+            //create current session
+            JSONObject currentSession = new JSONObject();
+            currentSession.setLong("score", score);
+            currentSession.setString("mode", mode);
+            currentSession.setString("playerUsername", username);
+            currentSession.setLong("timePlayed", timePlayed);
+            final long timestamp = System.currentTimeMillis();
+            final StringBuilder sessionSeed = new StringBuilder();
+            currentSession.setLong("timestamp", timestamp);
+            sessionSeed.append(username).append(SEED_SEPARATOR).append(mode).append(SEED_SEPARATOR).append(score).append(SEED_SEPARATOR).append(timePlayed).append(SEED_SEPARATOR).append(timestamp);
+            final UUID sessionUUID = UUID.nameUUIDFromBytes(sessionSeed.toString().getBytes(StandardCharsets.UTF_8));
+            currentSession.setString("sessionId", sessionUUID.toString());
+        
+            //Update high score
+            JSONObject currentHighScores = root.getJSONObject("highScores");
+            if(Objects.isNull(currentHighScores)){
+                currentHighScores = new JSONObject();
+                currentHighScores.setJSONObject("CLASSIC", generateEmptyScore());
+                currentHighScores.setJSONObject("ENDLESS", generateEmptyScore());
+                currentHighScores.setJSONObject("TIME_BOUND", generateEmptyScore());
+                root.setJSONObject("highScores", currentHighScores);
+            }
+            root.setJSONObject("highScores", updateHighScore(currentHighScores, score, mode, sessionUUID.toString(), username, timestamp));
+        
+            //Update the session history
+            JSONArray sessionHistory = root.getJSONArray("sessionHistory");
+            if(Objects.isNull(sessionHistory)){
+                sessionHistory = new JSONArray();
+            }
+        
+            JSONArray updatedSessions = new JSONArray();
+            updatedSessions.setJSONObject(0, currentSession);
+        
+            int priorHistoryIndex = 1;
+            for(int i = 0; i < sessionHistory.size() && priorHistoryIndex < MAX_SESSIONS_HISTORY; i++){
+                updatedSessions.setJSONObject(priorHistoryIndex, sessionHistory.getJSONObject(i));
+                priorHistoryIndex++;
+            }
+        
+            root.setJSONArray("sessionHistory", updatedSessions);
+        
+            String finalJsonString;
+            if(AsteroidConstants.enableLogs){
+                finalJsonString = root.format(2); //Prettfied Json String
+            } else {
+                finalJsonString = root.format(-1); //Minified raw Json String.
+            }
+            //Logger.log(finalJsonString, "This is the final Json String");
+        
+            final String encodedAndSignedPayload = encodeAndSign(finalJsonString, null);
+            final JSONObject saveWrapper = new JSONObject();
+            saveWrapper.setString("gameScore", encodedAndSignedPayload);
+            saveWrapper.setString("localSave", encodedAndSignedPayload);
+            saveWrapper.setString("pepperVersion", null);
+            saveWrapper.setBoolean("isPeppered", false);
+            p.saveStrings(fullPath, new String[] { saveWrapper.format(-1) });
+        
+            if(AsteroidConstants.enableLogs){
+                System.out.println("Game saved successfully to: " + fullPath);
+            }
         }
 
         CloudSyncService.triggerSync(p);
