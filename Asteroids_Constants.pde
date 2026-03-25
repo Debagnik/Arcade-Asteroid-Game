@@ -29,6 +29,7 @@ public static class AsteroidConstants {
     public static final float SHIP_FRICTION = 0.99;
     public static final int RESPAWN_TIMER = 90;
     public static final int INVINCIBLE_TIMER = 150;
+    public static final int PLAYER_USERNAME_CHAR_LIMIT = 100;
 
     // Asteroids constants
     public static final int INITIAL_ASTEROID_COUNT = 5; //This is a non-zero value
@@ -106,7 +107,8 @@ public static class AsteroidConstants {
         MENU_CREDITS,
         PLAYING,
         LEVEL_TRANSITION,
-        MENU_EXIT
+        MENU_EXIT,
+        GAME_OVER
     };
 
     public static GameState INITIAL_GAME_STATE = GameState.MENU_MAIN;

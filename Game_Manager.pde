@@ -8,6 +8,13 @@
 import java.util.ArrayList;
 
 public class GameManager {
+  private static final String GAME_OVER_TEXT = "Game Over";
+  private static final String YOUR_SCORE_TEXT = "Your Score: ";
+  private static final String HIGHSCORE_TEXT = "Highest Score: ";
+  private static final String ENTER_USERNAME_TEXT = "Enter a psuedo name";
+  private static final String SAVE_N_RETURN = "Save & Return";
+
+  
   private Asteroids parent;
 
   // Game Elements managed by GameManager (or referenced)
@@ -27,6 +34,12 @@ public class GameManager {
   private int transitionDelayTimer = 0;
   private int levelCountdownTimer = 0;
 
+  //Init GameOver UI Elements and Texts
+  private String playerNameInput = "";
+  private String currentHighScoreDisplay = "000000000";
+  private int cursorIndex = 0;
+
+
   public GameManager(Asteroids parent) {
     this.parent = parent;
     this.titleScreen = new TitleScreen(parent);
@@ -34,7 +47,7 @@ public class GameManager {
   }
 
   public void update() {
-    if (gameState != AsteroidConstants.GameState.LEVEL_TRANSITION) {
+    if (gameState != AsteroidConstants.GameState.LEVEL_TRANSITION && gameState != AsteroidConstants.GameState.GAME_OVER) {
       parent.background(20, 20, 30);
     }
 
@@ -42,12 +55,18 @@ public class GameManager {
       runGame();
     } else if (gameState == AsteroidConstants.GameState.LEVEL_TRANSITION) {
       runLevelTransition();
+    } else if (gameState == AsteroidConstants.GameState.GAME_OVER){
+      runGameOverScreen();
     } else {
       titleScreen.display(gameState, parent.getAsteroids());
     }
   }
 
   public void handleMousePressed() {
+    if(gameState == AsteroidConstants.GameState.GAME_OVER) {
+      handleGameOverClick();
+      return;
+    }
     if (gameState != AsteroidConstants.GameState.PLAYING && gameState != AsteroidConstants.GameState.LEVEL_TRANSITION) {
       AsteroidConstants.GameState newState = titleScreen.handleTitleScreenClick(gameState);
 
@@ -64,8 +83,7 @@ public class GameManager {
       gameTimer--;
       hud.displayTimeBound(score, gameTimer);
       if (gameTimer <= 0) {
-        endGameAndSave();
-        gameState = AsteroidConstants.GameState.MENU_MAIN;
+        transitionToGameOver();
         return;
       }
     } else if (AsteroidConstants.GAME_MODE == AsteroidConstants.GameModeEnum.CLASSIC) {
@@ -140,6 +158,8 @@ public class GameManager {
     sessionFramesPlayed = 0;
     respawnTimer = 0; // Note: this field is locally tracked now
 
+    playerNameInput = ""; //reset player name during reset
+
     if (AsteroidConstants.GAME_MODE == AsteroidConstants.GameModeEnum.TIME_BOUND) {
       level = AsteroidConstants.INITIAL_LEVEL_TIME_BOUND;
       int seconds = AsteroidConstants.GAME_MODE_SETTINGS.get(AsteroidConstants.GameModeEnum.TIME_BOUND);
@@ -177,13 +197,11 @@ public class GameManager {
 
   public void onPlayerDeath() {
     if (AsteroidConstants.GAME_MODE == AsteroidConstants.GameModeEnum.ENDLESS) {
-      endGameAndSave();
-      gameState = AsteroidConstants.GameState.MENU_MAIN;
+      transitionToGameOver();
     } else if (AsteroidConstants.GAME_MODE == AsteroidConstants.GameModeEnum.CLASSIC) {
       lives--;
       if (lives <= 0) {
-        endGameAndSave();
-        gameState = AsteroidConstants.GameState.MENU_MAIN;
+        transitionToGameOver();
       }
     }
   }
@@ -210,15 +228,135 @@ public class GameManager {
     }
   }
 
-  private void endGameAndSave(){
+  private void runGameOverScreen(){
+    parent.background(0);
+    parent.textAlign(PConstants.CENTER, PConstants.CENTER);
+
+    parent.fill(255,255,255);
+    parent.textSize(60);
+    parent.text(GAME_OVER_TEXT, parent.width / 2, parent.height / 2 - 150);
+    String currentScore = PApplet.nf((int) score, 9);
+
+    parent.fill(255);
+    parent.textSize(30);
+    parent.text(YOUR_SCORE_TEXT + currentScore, parent.width / 2, parent.height / 2 - 80);
+    parent.text(HIGHSCORE_TEXT + currentHighScoreDisplay, parent.width / 2, parent.height / 2 - 40);
+
+    parent.fill(255);
+    parent.textSize(20);
+    parent.text(ENTER_USERNAME_TEXT, parent.width / 2, parent.height / 2 + 10);
+
+    //Constructing Text Box for name entry
+    parent.text(playerNameInput, parent.width / 2, parent.height / 2 + 48);
+    if (parent.frameCount % 60 < 30) {
+        float totalTextWidth = parent.textWidth(playerNameInput);
+        
+        // Calculate the exact starting X coordinate of the centered string
+        float startX = (parent.width / 2) - (totalTextWidth / 2);
+        
+        // Calculate the width of the string up to where the cursor is currently positioned
+        float cursorOffsetX = parent.textWidth(playerNameInput.substring(0, cursorIndex));
+        
+        parent.stroke(255);
+        // Draw a solid vertical line right where the cursor should be
+        parent.line(startX + cursorOffsetX, parent.height / 2 + 35, startX + cursorOffsetX, parent.height / 2 + 61);
+    }
+
+
+
+    // Save & Return Button
+    parent.rectMode(PConstants.CORNER); 
+    int btnW = 200;
+    int btnH = 50;
+    int btnX = parent.width / 2 - btnW / 2;
+    int btnY = parent.height / 2 + 120;
+    
+    if (parent.mouseX > btnX && parent.mouseX < btnX + btnW && parent.mouseY > btnY && parent.mouseY < btnY + btnH) {
+        parent.fill(100);
+    } else {
+        parent.fill(50);
+    }
+    parent.stroke(255);
+    parent.rect(btnX, btnY, btnW, btnH);
+    
+    parent.fill(255);
+    parent.textSize(20);
+    parent.textAlign(PConstants.CENTER, PConstants.CENTER);
+    parent.text(SAVE_N_RETURN, parent.width / 2, btnY + btnH / 2 - 2);
+
+  }
+
+  private void handleGameOverClick() {
+    int btnW = 200;
+    int btnH = 50;
+    int btnX = parent.width / 2 - btnW / 2;
+    int btnY = parent.height / 2 + 120;
+    
+    // If user clicked inside the button area
+    if (parent.mouseX > btnX && parent.mouseX < btnX + btnW && parent.mouseY > btnY && parent.mouseY < btnY + btnH) {
+        saveAndReturn();
+    }
+  }
+
+  public void handleGameOverKey(char k, int code){
+    if (code == PConstants.LEFT) {
+        if (cursorIndex > 0) cursorIndex--;
+    } else if (code == PConstants.RIGHT) {
+        if (cursorIndex < playerNameInput.length()) cursorIndex++;
+    } else if (k == PConstants.BACKSPACE || code == 8) {
+        if (cursorIndex > 0) {
+            // Remove the character exactly behind the cursor
+            playerNameInput = playerNameInput.substring(0, cursorIndex - 1) + playerNameInput.substring(cursorIndex);
+            cursorIndex--;
+        }
+    } else if (code == PConstants.DELETE || k == 127) { 
+        // Support for the Delete key (removes character in front of cursor)
+        if (cursorIndex < playerNameInput.length()) {
+            playerNameInput = playerNameInput.substring(0, cursorIndex) + playerNameInput.substring(cursorIndex + 1);
+        }
+    } else if (k == PConstants.ENTER || k == PConstants.RETURN || code == 10) {
+        saveAndReturn();
+    } else if (k >= 32 && k <= 126 && playerNameInput.length() < 100) {
+        // Standard typing: Insert the character exactly where the cursor is!
+        playerNameInput = playerNameInput.substring(0, cursorIndex) + k + playerNameInput.substring(cursorIndex);
+        cursorIndex++;
+    }
+  }
+
+  private void saveAndReturn() {
+    String finalName = playerNameInput.trim();
+    if (finalName.isEmpty()) {
+        finalName = "Anonymous";
+    }
+    
     final int timePlayedSeconds = sessionFramesPlayed / 60;
+    
+    // Trigger Save with dynamically entered name!
     SaveGameManager.saveGameSession(
         parent, 
         AsteroidConstants.GAME_MODE.name(), 
         score, 
         timePlayedSeconds, 
-        "John Doe" // Hardcoded for now
+        finalName 
     );
+    
+    gameState = AsteroidConstants.GameState.MENU_MAIN;
+  }
+
+
+
+  private String fetchHighScore(final int currentScore){
+    JSONObject highScoreObject = SaveGameManager.getLocalHighScore(parent, AsteroidConstants.GAME_MODE.name());
+    long highScore = Objects.nonNull(highScoreObject) ? Math.max(currentScore, highScoreObject.getLong("score")) : 0;
+    return PApplet.nf((int) highScore, 9);
+  }
+
+  private void transitionToGameOver(){
+    gameState = AsteroidConstants.GameState.GAME_OVER;
+    playerNameInput = ""; //reset name again
+    cursorIndex = 0; //reset cursor index
+
+    currentHighScoreDisplay = fetchHighScore(score);
   }
 
   // Getters and Setters

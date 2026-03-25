@@ -88,14 +88,10 @@ public static class SaveGameManager {
             }
         
             root.setJSONArray("sessionHistory", updatedSessions);
-        
-            String finalJsonString;
-            if(AsteroidConstants.enableLogs){
-                finalJsonString = root.format(2); //Prettfied Json String
-            } else {
-                finalJsonString = root.format(-1); //Minified raw Json String.
-            }
-            //Logger.log(finalJsonString, "This is the final Json String");
+            
+            String finalJsonString = root.format(-1);
+            
+            Logger.log(finalJsonString, "This is the final Json String");
         
             final String encodedAndSignedPayload = encodeAndSign(finalJsonString, null);
             final JSONObject saveWrapper = new JSONObject();
@@ -455,6 +451,10 @@ public static class SaveGameManager {
             return root.getJSONObject("highScores");
         }
         return createInitialSaveStructure().getJSONObject("highScores");
+    }
+
+    public static JSONObject getLocalHighScore(final PApplet p, final String gamemode){
+        return getLocalHighScore(p).getJSONObject(gamemode);
     }
 
 }
