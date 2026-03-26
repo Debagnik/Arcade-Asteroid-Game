@@ -145,7 +145,11 @@ public void setPlayerController(PlayerController playerController) {
 }
 
 public void keyPressed() {
-  playerController.keyPressed();
+  if(gameManager.getGameState() == AsteroidConstants.GameState.GAME_OVER){
+    gameManager.handleGameOverKey(key, keyCode);
+  } else {
+    playerController.keyPressed();
+  }
 }
 
 public void keyReleased() {
