@@ -11,7 +11,7 @@ public class GameManager {
   private static final String GAME_OVER_TEXT = "Game Over";
   private static final String YOUR_SCORE_TEXT = "Your Score: ";
   private static final String HIGHSCORE_TEXT = "Highest Score: ";
-  private static final String ENTER_USERNAME_TEXT = "Enter a psuedo name";
+  private static final String ENTER_USERNAME_TEXT = "Enter a pseudo name";
   private static final String SAVE_N_RETURN = "Save & Return";
 
   
@@ -347,7 +347,7 @@ public class GameManager {
 
   private String fetchHighScore(final int currentScore){
     JSONObject highScoreObject = SaveGameManager.getLocalHighScore(parent, AsteroidConstants.GAME_MODE.name());
-    long highScore = Objects.nonNull(highScoreObject) ? Math.max(currentScore, highScoreObject.getLong("score")) : 0;
+    long highScore = Objects.nonNull(highScoreObject) ? Math.max(currentScore, highScoreObject.getLong("score")) : currentScore;
     return PApplet.nf((int) highScore, 9);
   }
 
