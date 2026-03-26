@@ -18,18 +18,20 @@ private CollisionMechanics collisionMechanics;
 private PlayerController playerController;
 private GameManager gameManager;
 
-void setup() {
-  //create a window
+void settings(){
   //Using P2D renderer
   size(1080, 608, P2D);
-  //fullscreen(P2D);
+  //create a window
   pixelDensity(1);
-
-  // setup current logger
-  Logger.setLogDir(savePath(AsteroidConstants.LOGGING_DIR));
-
   //Turn off Anti-aliasing
   smooth();
+  //add icons
+  PJOGL.setIcon(AsteroidConstants.ICON_PATH);
+}
+
+void setup() {
+  // setup current logger
+  Logger.setLogDir(savePath(AsteroidConstants.LOGGING_DIR));
 
   // Init Game Manager
   gameManager = new GameManager(this);

@@ -14,6 +14,7 @@ public static class AsteroidConstants {
     public static final int INITIAL_LEVEL_TIME_BOUND = 5;
     public static final Integer INFINITE_LIVES = Integer.MAX_VALUE;
     public static final String FONT_PATH = "assets/fonts/Orbitron.ttf";
+    public static final String ICON_PATH = "assets/images/icon.png";
     // Enum for trigonometric functions
     public static enum TrigonometricFunctionEnum {
         SINE,
