@@ -111,7 +111,7 @@ public class GameManager {
       return;
     }
 
-    parent.background(0);
+    parent.background(20, 20, 30);
     parent.textAlign(PConstants.CENTER, PConstants.CENTER); // PConstants for static access
     parent.fill(255);
     parent.textSize(40);
@@ -229,7 +229,7 @@ public class GameManager {
   }
 
   private void runGameOverScreen(){
-    parent.background(0);
+    parent.background(20, 20, 30);
     parent.textAlign(PConstants.CENTER, PConstants.CENTER);
 
     parent.fill(255,255,255);
@@ -316,7 +316,7 @@ public class GameManager {
         }
     } else if (k == PConstants.ENTER || k == PConstants.RETURN || code == 10) {
         saveAndReturn();
-    } else if (k >= 32 && k <= 126 && playerNameInput.length() < 100) {
+    } else if (k >= 32 && k <= 126 && playerNameInput.length() < AsteroidConstants.PLAYER_USERNAME_CHAR_LIMIT) {
         // Standard typing: Insert the character exactly where the cursor is!
         playerNameInput = playerNameInput.substring(0, cursorIndex) + k + playerNameInput.substring(cursorIndex);
         cursorIndex++;

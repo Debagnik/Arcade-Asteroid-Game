@@ -91,7 +91,7 @@ public static class SaveGameManager {
             
             String finalJsonString = root.format(-1);
             
-            Logger.log(finalJsonString, "This is the final Json String");
+            //Logger.log(finalJsonString, "This is the final Json String");
         
             final String encodedAndSignedPayload = encodeAndSign(finalJsonString, null);
             final JSONObject saveWrapper = new JSONObject();
