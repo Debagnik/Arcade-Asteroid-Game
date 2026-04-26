@@ -79,6 +79,12 @@ public class GameManager {
     }
   }
 
+  public void handleMouseWheel(processing.event.MouseEvent event) {
+    if (gameState == AsteroidConstants.GameState.MENU_HIGH_SCORE) {
+      titleScreen.handleMouseWheel(event);
+    }
+  }
+
   private void runGame() {
     sessionFramesPlayed++;
     if (AsteroidConstants.GAME_MODE == AsteroidConstants.GameModeEnum.TIME_BOUND) {

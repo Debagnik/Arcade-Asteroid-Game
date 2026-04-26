@@ -199,3 +199,7 @@ public void setLevelCountdownTimer(int levelCountdownTimer) {
 public GameManager getGameManager() {
   return gameManager;
 }
+
+public void mouseWheel(MouseEvent event) {
+  gameManager.handleMouseWheel(event);
+}

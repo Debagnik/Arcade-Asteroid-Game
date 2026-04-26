@@ -15,6 +15,14 @@ public class TitleScreen{
     private String[] credits;
     private float creditsY;
 
+    // High Score UI States
+    private float scrollOffset = 0;
+    private processing.data.JSONObject localScores = null;
+    private processing.data.JSONObject globalScores = null;
+    private boolean isFetchingGlobal = false;
+    private boolean globalFetchError = false;
+    private boolean localDataCorrupted = false;
+
     private static final String FALLBACK_CREDITS = "\"CREDITS\", \"Created by Rak Kingabed\", \"Credits File Missing\"";
     private static final String ASTEROIDS = "ASTEROIDS";
     private static final String NEW_GAME = "NEW GAME";
@@ -195,22 +203,151 @@ public class TitleScreen{
      * resurrect long-dead bugs, or demand further sacrifices.
      * You have been warned.
      */
+    private void resetHighScoresState() {
+        scrollOffset = 0;
+        localScores = null;
+        globalScores = null;
+        isFetchingGlobal = false;
+        globalFetchError = false;
+        localDataCorrupted = false;
+    }
+
+    public void handleMouseWheel(processing.event.MouseEvent event) {
+        scrollOffset += event.getCount() * 30;
+        if (scrollOffset < 0) scrollOffset = 0;
+        if (scrollOffset > 800) scrollOffset = 800; // clamp to reasonable max
+    }
+
+    /* AUTHOR`S NOTE — READ AND OBEY:
+     * These numbers were obtained through forbidden means.
+     * They are the culmination of arcane rituals performed at ungodly hours,
+     * powered by dark magic, handwritten sigils, and the symbolic sacrifice
+     * of a perfectly sane human mind (mine).
+     * Do NOT ask how they were derived.
+     * Do NOT attempt to reproduce the ritual.
+     * Altering these values may undo the binding circle,
+     * resurrect long-dead bugs, or demand further sacrifices.
+     * You have been warned.
+     */
     private void drawHighScores() {
+        // 1. Draw static header
         getParent().textFont(tFont);
         getParent().textSize(getParent().width/10);
-        getParent().text(ASTEROIDS, getParent().width/2, getParent().height/4.05);
+        getParent().text(ASTEROIDS, getParent().width/2, getParent().height/4.05f);
 
         getParent().textSize(getParent().width/20);
-        getParent().text(HIGH_SCORE, getParent().width/2, getParent().height/2.70);
+        getParent().text(HIGH_SCORE, getParent().width/2, getParent().height/2.70f);
+
+        // 2. Draw scrollable content
+        getParent().pushMatrix();
+        getParent().translate(0, -scrollOffset);
 
         getParent().textFont(getMFont());
-        getParent().textSize(getParent().width/30);
-        getParent().text("WORK IN PROGRESS", getParent().width/2, getParent().height/2.21);
+        getParent().textSize(getParent().width/30f - 4);
+        
+        float currentY = getParent().height/2.21f;
+        float spacing = 60;
 
+        // ---- LOCAL SCORES ----
+        getParent().fill(200, 200, 255);
+        getParent().text("LOCAL SCORES", getParent().width/2, currentY);
+        currentY += spacing * 1.2f;
 
+        if (localScores == null && !localDataCorrupted) {
+            try {
+                localScores = SaveGameManager.getLocalHighScore(getParent());
+                if (localScores != null) {
+                    processing.data.JSONObject classic = localScores.getJSONObject("CLASSIC");
+                    if (classic != null && classic.getLong("timestamp", 0) == 0) {
+                        localDataCorrupted = true;
+                    }
+                }
+            } catch (Exception e) {
+                localDataCorrupted = true;
+            }
+        }
+
+        getParent().fill(255);
+        if (localDataCorrupted) {
+            getParent().fill(255, 100, 100);
+            getParent().textSize(getParent().width/45f);
+            getParent().text("Local save file missing or corrupted. Overwriting with a new save file.", getParent().width/2, currentY);
+            getParent().textSize(getParent().width/30f - 4);
+            currentY += spacing;
+        } else if (localScores != null) {
+            String[] modes = {"CLASSIC", "ENDLESS", "TIME_BOUND"};
+            for (String m : modes) {
+                processing.data.JSONObject mScore = localScores.getJSONObject(m);
+                String name = (mScore != null) ? mScore.getString("scoredBy", "???") : "???";
+                long val = (mScore != null) ? mScore.getLong("score", 0) : 0;
+                if(val == Long.MIN_VALUE) val = 0;
+                
+                String displayMode = m.replace("_", " ");
+                getParent().text(displayMode + ": " + val + " by " + name, getParent().width/2, currentY);
+                currentY += spacing;
+            }
+        }
+
+        currentY += spacing * 1.5f;
+        float globalStartY = currentY;
+
+        // ---- GLOBAL SCORES ----
+        getParent().fill(200, 200, 255);
+        getParent().text("GLOBAL SCORES", getParent().width/2, currentY);
+        currentY += spacing * 1.2f;
+
+        // Lazy load check
+        boolean isGlobalVisible = (globalStartY - scrollOffset) < getParent().height;
+        if (isGlobalVisible && globalScores == null && !isFetchingGlobal && !globalFetchError) {
+            isFetchingGlobal = true;
+            new Thread(() -> {
+                try {
+                    globalScores = CloudSyncService.fetchLeaderboard();
+                    if (globalScores == null) globalFetchError = true;
+                } catch (Exception e) {
+                    globalFetchError = true;
+                } finally {
+                    isFetchingGlobal = false;
+                }
+            }).start();
+        }
+
+        getParent().fill(255);
+        if (isFetchingGlobal) {
+            getParent().text("Loading...", getParent().width/2, currentY);
+            currentY += spacing;
+        } else if (globalFetchError) {
+            getParent().fill(255, 100, 100);
+            getParent().text("Network Error. Cannot fetch global scores.", getParent().width/2, currentY);
+            currentY += spacing;
+        } else if (globalScores != null) {
+            String[] globalModes = {"CLASSIC", "ENDLESS", "TIME_BOUND"};
+            for (String mode : globalModes) {
+                String displayMode = mode.replace("_", " ");
+                if (!globalScores.isNull(mode)) {
+                    processing.data.JSONObject gModeScore = globalScores.getJSONObject(mode);
+                    String pName = gModeScore.getString("username", "???");
+                    long val = gModeScore.getLong("highestScore", 0);
+                    getParent().text(displayMode + ": " + val + " by " + pName, getParent().width/2, currentY);
+                } else {
+                    getParent().text(displayMode + ": --", getParent().width/2, currentY);
+                }
+                currentY += spacing;
+            }
+        }
+
+        getParent().popMatrix();
+
+        // 3. Draw instruction message instead of button
+        getParent().fill(20, 20, 30, 240); // semi-transparent background for readability
+        getParent().rectMode(processing.core.PConstants.CENTER);
+        getParent().noStroke();
+        getParent().rect(getParent().width/2, getParent().height - 40, getParent().width, 80);
+
+        getParent().fill(200);
+        getParent().textFont(getMFont());
         getParent().textSize(18);
-        drawButton(MAINMENU, getParent().width/2, getParent().height/1.35f, getParent().width/50);
-
+        getParent().text("Click anywhere to return to Main Menu. Scroll down to load Global Scores.", getParent().width/2, getParent().height - 40);
     }
 
 
@@ -252,6 +389,7 @@ public class TitleScreen{
                 return AsteroidConstants.GameState.MENU_GAME_SELECT;
             }
             if(isMouseOverBtn(getParent().height/1.74f, getParent().width/20)){
+                resetHighScoresState();
                 return AsteroidConstants.GameState.MENU_HIGH_SCORE;
             }
             if(isMouseOverBtn(getParent().height/1.52f, getParent().width/20)){
