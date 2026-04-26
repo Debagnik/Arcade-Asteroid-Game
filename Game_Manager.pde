@@ -13,6 +13,8 @@ public class GameManager {
   private static final String HIGHSCORE_TEXT = "Highest Score: ";
   private static final String ENTER_USERNAME_TEXT = "Enter a pseudo name";
   private static final String SAVE_N_RETURN = "Save & Return";
+  private static final String LEVEL = "LEVEL ";
+  private static final String CLEARED = " CLEARED";
 
   
   private Asteroids parent;
@@ -77,6 +79,12 @@ public class GameManager {
     }
   }
 
+  public void handleMouseWheel(processing.event.MouseEvent event) {
+    if (gameState == AsteroidConstants.GameState.MENU_HIGH_SCORE) {
+      titleScreen.handleMouseWheel(event);
+    }
+  }
+
   private void runGame() {
     sessionFramesPlayed++;
     if (AsteroidConstants.GAME_MODE == AsteroidConstants.GameModeEnum.TIME_BOUND) {
@@ -115,7 +123,7 @@ public class GameManager {
     parent.textAlign(PConstants.CENTER, PConstants.CENTER); // PConstants for static access
     parent.fill(255);
     parent.textSize(40);
-    parent.text("LEVEL " + level + " CLEARED", parent.width / 2, parent.height / 2 - 50);
+    parent.text(LEVEL + level + CLEARED, parent.width / 2, parent.height / 2 - 50);
 
     parent.textSize(60);
     int secondsLeft = PApplet.ceil(levelCountdownTimer / 60.0f);
