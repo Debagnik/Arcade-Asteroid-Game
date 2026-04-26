@@ -15,6 +15,20 @@ public class TitleScreen{
     private String[] credits;
     private float creditsY;
 
+    private static final String FALLBACK_CREDITS = "\"CREDITS\", \"Created by Rak Kingabed\", \"Credits File Missing\"";
+    private static final String ASTEROIDS = "ASTEROIDS";
+    private static final String NEW_GAME = "NEW GAME";
+    private static final String HIGH_SCORE = "HIGH SCORES";
+    private static final String CREDITS = "CREDITS";
+    private static final String EXIT_GAME = "EXIT GAME";
+
+    private static final String GAME_MODE = "SELECT GAME MODE";
+    private static final String ENDLESS = "ENDLESS";
+    private static final String CLASSIC = "CLASSIC";
+    private static final String TIMEBOUND = "TIME BOUND";
+    private static final String MAINMENU = "MAIN MENU";
+
+
     // Default Constructor
     public TitleScreen(PApplet parent){
         setParent(parent);
@@ -52,7 +66,7 @@ public class TitleScreen{
                 setCredits(tmp);
             }
         } catch (Exception ex){
-            setCredits(new String[]{"CREDITS", "Created by Rak Kingabed", "Credits File Missing"});
+            setCredits(new String[]{FALLBACK_CREDITS});
             System.err.println("ERROR: Credits file not found at " + creditsPath + "\n\n" + ex.getMessage());
         }
 
@@ -106,14 +120,14 @@ public class TitleScreen{
         getParent().textFont(getTFont());
         getParent().fill(255);
         getParent().textSize(getParent().width/10);
-        getParent().text("ASTEROIDS", getParent().width/2, getParent().height/4.05);
+        getParent().text(ASTEROIDS, getParent().width/2, getParent().height/4.05);
 
         getParent().textFont(getMFont());
         
-        drawButton("NEW GAME", getParent().width/2, getParent().height/2.03, getParent().width/20);
-        drawButton("HIGH SCORE", getParent().width/2, getParent().height/1.74, getParent().width/20);
-        drawButton("CREDITS", getParent().width/2, getParent().height/1.52, getParent().width/20);
-        drawButton("EXIT GAME", getParent().width/2, getParent().height/1.35, getParent().width/20);
+        drawButton(NEW_GAME, getParent().width/2, getParent().height/2.03, getParent().width/20);
+        drawButton(HIGH_SCORE, getParent().width/2, getParent().height/1.74, getParent().width/20);
+        drawButton(CREDITS, getParent().width/2, getParent().height/1.52, getParent().width/20);
+        drawButton(EXIT_GAME, getParent().width/2, getParent().height/1.35, getParent().width/20);
     }
 
     /* AUTHOR`S NOTE — READ AND OBEY:
@@ -156,17 +170,17 @@ public class TitleScreen{
     private void drawGameModeSelect() {
         getParent().textFont(getTFont());
         getParent().textSize(getParent().width/10);
-        getParent().text("ASTEROIDS", getParent().width/2, getParent().height/4.05);
+        getParent().text(ASTEROIDS, getParent().width/2, getParent().height/4.05);
 
         getParent().textSize(getParent().width/15);
-        getParent().text("SELECT GAME TYPE", getParent().width/2, getParent().height/2.70);
+        getParent().text(GAME_MODE, getParent().width/2, getParent().height/2.70);
 
         getParent().textFont(getMFont());
-        drawButton("CLASSIC", getParent().width/2, getParent().height/2.03, getParent().width/20);
-        drawButton("ENDLESS", getParent().width/2, getParent().height/1.74, getParent().width/20);
-        drawButton("TIME BOUND", getParent().width/2, getParent().height/1.52, getParent().width/20);
-        drawButton("MAIN MENU", getParent().width/2, getParent().height/1.35, getParent().width/20);
-        drawButton("EXIT GAME", getParent().width/2, getParent().height/1.22, getParent().width/20);
+        drawButton(CLASSIC, getParent().width/2, getParent().height/2.03, getParent().width/20);
+        drawButton(ENDLESS, getParent().width/2, getParent().height/1.74, getParent().width/20);
+        drawButton(TIMEBOUND, getParent().width/2, getParent().height/1.52, getParent().width/20);
+        drawButton(MAINMENU, getParent().width/2, getParent().height/1.35, getParent().width/20);
+        drawButton(EXIT_GAME, getParent().width/2, getParent().height/1.22, getParent().width/20);
     }
 
 
@@ -184,10 +198,10 @@ public class TitleScreen{
     private void drawHighScores() {
         getParent().textFont(tFont);
         getParent().textSize(getParent().width/10);
-        getParent().text("ASTEROIDS", getParent().width/2, getParent().height/4.05);
+        getParent().text(ASTEROIDS, getParent().width/2, getParent().height/4.05);
 
         getParent().textSize(getParent().width/20);
-        getParent().text("GLOBAL HIGHSCORE", getParent().width/2, getParent().height/2.70);
+        getParent().text(HIGH_SCORE, getParent().width/2, getParent().height/2.70);
 
         getParent().textFont(getMFont());
         getParent().textSize(getParent().width/30);
@@ -195,7 +209,7 @@ public class TitleScreen{
 
 
         getParent().textSize(18);
-        drawButton("MAIN MENU", getParent().width/2, getParent().height/1.35f, getParent().width/50);
+        drawButton(MAINMENU, getParent().width/2, getParent().height/1.35f, getParent().width/50);
 
     }
 
