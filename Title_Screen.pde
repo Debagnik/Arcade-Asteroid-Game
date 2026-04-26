@@ -230,7 +230,6 @@ public class TitleScreen{
      * You have been warned.
      */
     private void drawHighScores() {
-        // 1. Draw static header
         getParent().textFont(tFont);
         getParent().textSize(getParent().width/10);
         getParent().text(ASTEROIDS, getParent().width/2, getParent().height/4.05f);
@@ -238,7 +237,6 @@ public class TitleScreen{
         getParent().textSize(getParent().width/20);
         getParent().text(HIGH_SCORE, getParent().width/2, getParent().height/2.70f);
 
-        // 2. Draw scrollable content
         getParent().pushMatrix();
         getParent().translate(0, -scrollOffset);
 
@@ -338,7 +336,6 @@ public class TitleScreen{
 
         getParent().popMatrix();
 
-        // 3. Draw instruction message instead of button
         getParent().fill(20, 20, 30, 240); // semi-transparent background for readability
         getParent().rectMode(processing.core.PConstants.CENTER);
         getParent().noStroke();
